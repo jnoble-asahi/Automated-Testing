@@ -13,7 +13,6 @@ An automated test center with a web interface for electric actuators, sensors, a
 - Use pip to get the following libraries and dependancies for Python3:
   - update me
   - and some more things
-- Run "sudo apt-get install ninja-ide" to get the ninja development environment
 - Set the current directory to where you want your program files
 - Run "git clone <url> to clone the repository into the current directory
 - Run "git branch -b <url> to make a new branch
