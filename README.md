@@ -13,7 +13,28 @@ An automated test center with a web interface for electric actuators, sensors, a
 - Use pip to get the following libraries and dependancies for Python3:
   - update me
   - and some more things
+  
+# Preparing the GPIO to work with Sensors and Relays
+- Get the latest version of the BCM2835 libraries (required for accessing the GPIO?) 
+  - Currently at http://www.airspayce.com/mikem/bcm2835/bcm2835-1.58.tar.gz 
+- Run "tar zxvf bcm2835-1.xx.tar.gz" (replace .xx. with the version number)
+- Run "cd bcm2835-1.xx"
+- Run "./configure"
+- Run "make"
+- Run "sudo make check"
+- Run "sudo make install"
+
+# Sharing libraries and other things to make Python work with the Waveshare hardware
+The Waveshare ADC/DAC board we're working with uses I2C to communicate with hte Pi. I2C doesn't seem to be fully supported yet with Python, so we'll use the test files that came with the board. The test files are written in C, so we'll need to make some shared libraries so the two languages function together.
+- Navigate to bcm2835-1.58/src and run "gcc -shared -o libbcm2835.so -fPIC bcm2835.c"
+- Copy the libbcm2835.so file into /usr/local/lib (use sudo mv <filename> <destination>
+- Clone the python bindings for libbcm2835 from https://github.com/mubeta06/py-libbcm2835 into the /usr/local/lib
+- Go to the root of the download and run "sudo python3 setup.py install"
+
+# Installing the 
+  
+  
 - Set the current directory to where you want your program files
 - Run "git clone <url> to clone the repository into the current directory
 - Run "git branch -b <url> to make a new branch
-- Do some work
+
