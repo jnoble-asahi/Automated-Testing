@@ -24,6 +24,13 @@ An automated test center with a web interface for electric actuators, sensors, a
 - Run "sudo make check"
 - Run "sudo make install"
 
+# Sharing libraries and other things to make Python work with the Waveshare hardware
+The Waveshare ADC/DAC board we're working with uses I2C to communicate with hte Pi. I2C doesn't seem to be fully supported yet with Python, so we'll use the test files that came with the board. The test files are written in C, so we'll need to make some shared libraries so the two languages function together.
+- Navigate to bcm2835-1.58/src and run "gcc -shared -o libbcm2835.so -fPIC bcm2835.c"
+- Copy the libbcm2835.so file into /usr/local/lib (use sudo mv <filename> <destination>
+- Clone the python bindings for libbcm2835 from https://github.com/mubeta06/py-libbcm2835 into the /usr/local/lib
+- Go to the root of the download and run "sudo python3 setup.py install"
+
 # Installing the 
   
   
