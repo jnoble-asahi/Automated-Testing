@@ -14,7 +14,7 @@ This script written by Chris May - pezLyfe on github
 import os
 import RPi.GPIO as GPIO
 import time
-import wiringPI as wp 
+import wiringPi as wp 
 import sys
 from dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Libraries for using the DAC via SPi bus and pigpio module
 from ADS1256_definitions import * #Libraries for using the ADC via the SPi bus and wiringPi module
