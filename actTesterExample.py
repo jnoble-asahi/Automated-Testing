@@ -14,11 +14,12 @@ This script written by Chris May - pezLyfe on github
 import os
 import RPi.GPIO as GPIO
 import time
-import wiringPi as wp 
+#import wiringPi as wp 
 import sys
-from dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Libraries for using the DAC via SPi bus and pigpio module
-from ADS1256_definitions import * #Libraries for using the ADC via the SPi bus and wiringPi module
-from pipyadc import ADS1256
+import math as mt
+#from dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Libraries for using the DAC via SPi bus and pigpio module
+#from ADS1256_definitions import * #Libraries for using the ADC via the SPi bus and wiringPi module
+#from pipyadc import ADS1256
 import gpiozero as gz 
 
 '''Define a bunch of globals that we'll need
@@ -120,45 +121,44 @@ actIn = ch1Input
 
 test1 = 0
 
-try:
-    while True:
-    #Start the test by turning on the relay
-        GPIO.output(Relay_Ch1,GPIO.HIGH)
-        pos = 'HIGH'
-        print("Actuator Opening")
-        time.sleep(0.1)
-        cycleStart = time.time()
-        while 1000 > test1:
-            currentTime = time.time()
-            if currentTime - cycleStart > actTime:
-                if pos == 'HIGH':
-                    GPIO.output(Relay_Ch1, GPIO.LOW)
-                    pos = 'LOW'
-                    cycleStart = time.time()
-                    print('Actuator Closing')
-                    time.sleep(0.1)
-                elif pos == 'LOW':
-                    GPIO.output(Relay_Ch1, GPIO.HIGH)
-                    pos = 'HIGH'
-                    cycleStart = time.time()
-                    print('Actuator Opening')
-                    time.sleep(0.1)
-                else:
-                    print('Error, what the fuck?')
-                    pos = 'HIGH'
-                    cycleStart = time.time()
-                    time.sleep(0.1)
 
-            elif currentTime - cycleStart < actTime:
-                switch = Button(5)
-                if switch.is_pressed:
-                    print('Position Confirmed, ', 'Cycle count is ', test1)
-                    test1 += 1
-                else:
-                    time.sleep(0.1)
-            else:
-                print('The fucking cycle timers arent working')
-                time.sleep(0.1)
-except:
-	print("except")
-	GPIO.cleanup()
+#Start the test by turning on the relay
+GPIO.output(Relay_Ch1,GPIO.HIGH)
+pos = 'HIGH'
+print("Actuator Opening")
+time.sleep(0.1)
+cycleStart = time.time()
+while 1000 > test1:
+    currentTime = time.time()
+    if currentTime - cycleStart > actTime:
+        if pos == 'HIGH':
+            GPIO.output(Relay_Ch1, GPIO.LOW)
+            pos = 'LOW'
+            cycleStart = time.time()
+            print('Actuator Closing')
+            time.sleep(0.1)
+        elif pos == 'LOW':
+            GPIO.output(Relay_Ch1, GPIO.HIGH)
+            pos = 'HIGH'
+            cycleStart = time.time()
+            print('Actuator Opening')
+            time.sleep(0.1)
+        else:
+            print('Error, what the fuck?')
+            pos = 'HIGH'
+            cycleStart = time.time()
+            time.sleep(0.1)
+
+    #elif currentTime - cycleStart < actTime:
+    #    switch = gz.Button(5)
+    #    if switch.is_pressed:
+    #        print('Position Confirmed, ', 'Cycle count is ', test1)
+    #        test1 += 1
+    #    else:
+    #        time.sleep(0.1)
+    else:
+        left = 10/.75 - (time.time() - cycleStart)
+        print('Actuator in Motion ', left, ' Seconds remaining')
+        time.sleep(1)
+print("except")
+GPIO.cleanup()
