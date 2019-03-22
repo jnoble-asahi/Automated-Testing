@@ -34,19 +34,19 @@ def switchCheck(pins, delay):
     counting a cycle input. We're using low active for the inputs (tied to GND)
     This function tracks the state of the input during the last call and compares it against the current state of the input
 '''
-    for pins in inputStates:
-        if inputStates[pins] == LOW & isLast[pins] == HIGH: 'If the input is currently LOW and the last state was HIGH, the function logs the current epoch time as START'
-        isStart[pins] = time.time()
-        inputStates[pins] = LOW
-        elif inputStates[pins] == LOW & isLast[pins] == LOW: 'If the current state is LOW and the last state was LOW, compare the START time against the debounce delay'
-            if time.time() - isStart[pins] > delay: '- If the difference between the current time and the start time is greater than the delay, increment the cycle counter'
-            test1 += 1
-            else:
-            'do nothing' '- If the difference is less than the delay, do nothing'
-        elif inputStates[pins] == HIGH & isLast[pins] == LOW: 'If the current state is HIGH and the last state was LOW, reset the last state to HIGH'
-        isLast[pins] = HIGH 
-        elif inputStates[pins] == HIGH & isLAst[pins] == HIGH: 'If the current state is HIGH and the last state was HIGH, do nothing'
-        'do nothing'
+    #for pins in inputStates:
+    #    if inputStates[pins] == LOW & isLast[pins] == HIGH: 'If the input is currently LOW and the last state was HIGH, the function logs the current epoch time as START'
+    #    isStart[pins] = time.time()
+    #    inputStates[pins] = LOW
+    #    elif inputStates[pins] == LOW & isLast[pins] == LOW: 'If the current state is LOW and the last state was LOW, compare the START time against the debounce delay'
+    #        if time.time() - isStart[pins] > delay: '- If the difference between the current time and the start time is greater than the delay, increment the cycle counter'
+    #        test1 += 1
+    #        else:
+    #        'do nothing' '- If the difference is less than the delay, do nothing'
+    #    elif inputStates[pins] == HIGH & isLast[pins] == LOW: 'If the current state is HIGH and the last state was LOW, reset the last state to HIGH'
+    #    isLast[pins] = HIGH 
+    #    elif inputStates[pins] == HIGH & isLAst[pins] == HIGH: 'If the current state is HIGH and the last state was HIGH, do nothing'
+    #    'do nothing'
 
 def testAssign(chan, cycle_time, duty_cycle, actIn): 'It may make sense to initiate a class with all of the test parameters here'
     ''' This function assigns the test parameters to the proper test stations.
