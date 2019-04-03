@@ -45,46 +45,40 @@ EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_
 # Eight channels fit on the screen nicely for this example..
 CH_SEQUENCE = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7)
 ################################################################################
-
-
-def do_measurement():
     ### STEP 1: Initialise ADC object using default configuration:
     # (Note1: See ADS1256_default_config.py, see ADS1256 datasheet)
     # (Note2: Input buffer on means limited voltage range 0V...3V for 5V supply)
-    ads = ADS1256()
+ads = ADS1256()
+### STEP 2: Gain and offset self-calibration:
+ads.cal_self() 
 
-    ### STEP 2: Gain and offset self-calibration:
-    ads.cal_self()
-
-    while True:
-        ### STEP 3: Get data:
-        raw_channels = ads.read_sequence(CH_SEQUENCE)
-        voltages     = [i * ads.v_per_digit for i in raw_channels]
-
-        ### STEP 4: DONE. Have fun!
-        nice_output(raw_channels, voltages)
+def do_measurement():
+    start = time.time()
+    '''Read the input voltages from the ADC inputs. The sequence that the channels are read are defined in the configuration files
+    Voltages are converted from the raw integer inputs using a voltage convert function in the pipyadc library
+    The conversion to current readings is given from the datasheet for the current module by sparkfun
+    '''
+    while (time.time() - start) < 6000:
+        raw_channels = ads.read_sequence(CH_SEQUENCE) #Read
+        voltages     = [i * ads.v_per_digit for i in raw_channels] #Convert the raw input to a voltage reading using the pipyadc library function
+        current = [(i - 2.5)/0.066 for i in voltages] #Convert the voltage reading to a current value for the current sensor
+        nice_output(raw_channels, current)
 
 ### END EXAMPLE ###
 
 
 #############################################################################
 # Format nice looking text output:
-def nice_output(digits, volts):
+def nice_output(digits, current):
     sys.stdout.write(
           "\0337" # Store cursor position
         +
 """
-These are the raw sample values for the channels:
-Poti_CH0,  LDR_CH1,     AIN2,     AIN3,     AIN4,     AIN7, Poti NEG, Short 0V
-"""
-        + ", ".join(["{: 8d}".format(i) for i in digits])
-        +
-"""
 
 These are the sample values converted to voltage in V for the channels:
-Poti_CH0,  LDR_CH1,     AIN2,     AIN3,     AIN4,     AIN7, Poti NEG, Short 0V
+AIN0,  AIN1,     AIN2,     AIN3,     AIN4,     AIN5, AIN6, AIN7 
 """
-        + ", ".join(["{: 8.3f}".format(i) for i in volts])
+        + ", ".join(["{: 8.3f}".format(i) for i in current])
         + "\n\033[J\0338" # Restore cursor position etc.
     )
 
@@ -199,7 +193,7 @@ while 1000 > test1:
     else:
         left = 10/.75 - (time.time() - cycleStart)
         print('Actuator in Motion ', left, ' Seconds remaining')
+        do_measurement()
         time.sleep(1)
-    do_measurement()
 print("except")
 GPIO.cleanup()
