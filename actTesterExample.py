@@ -9,7 +9,7 @@ This script written by Chris May - pezLyfe on github
 import os
 import RPi.GPIO as GPIO
 import time
-import wiringPi as wp 
+#import wiringPi as wp 
 import sys
 import math as mt
 import numpy as np
@@ -43,7 +43,7 @@ EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_
 # Specify here an arbitrary length list (tuple) of arbitrary input channel pair
 # eight-bit code values to scan sequentially from index 0 to last.
 # Eight channels fit on the screen nicely for this example..
-CH_SEQUENCE = (POTI, LDR, EXT2, EXT3, EXT4, EXT7, POTI_INVERTED, SHORT_CIRCUIT)
+CH_SEQUENCE = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7)
 ################################################################################
 
 
