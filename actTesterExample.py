@@ -58,10 +58,10 @@ def do_measurement():
     Voltages are converted from the raw integer inputs using a voltage convert function in the pipyadc library
     The conversion to current readings is given from the datasheet for the current module by sparkfun
     '''
-    while (time.time() - start) < 6000:
+    while (time.time() - start) < 6:
         raw_channels = ads.read_sequence(CH_SEQUENCE) #Read
         voltages     = [i * ads.v_per_digit for i in raw_channels] #Convert the raw input to a voltage reading using the pipyadc library function
-        current = [(i - 2.5)/0.066 for i in voltages] #Convert the voltage reading to a current value for the current sensor
+        current = [(i - 2.5)/66 for i in voltages] #Convert the voltage reading to a current value for the current sensor
         nice_output(raw_channels, current)
 
 ### END EXAMPLE ###
