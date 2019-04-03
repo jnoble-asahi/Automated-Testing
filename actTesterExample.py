@@ -1,53 +1,93 @@
 ############################################
 ''' This is a rough draft of code required to run the actuation tester prototype
-
 The script loads two other programs - ADC_Script and DAC_Script
-
 The project requires a large number of dependencies from other libraries
-
 Full details on dependencies and set-up instructions on Github here: exampleURL.com
-
 Pin callouts in this program refer to the wiringPI addresses and not GPIO pin numbers
-
 This script written by Chris May - pezLyfe on github
 ######## '''
 import os
 import RPi.GPIO as GPIO
 import time
-#import wiringPi as wp 
+import wiringPi as wp 
 import sys
 import math as mt
+import numpy as np
 #from dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Libraries for using the DAC via SPi bus and pigpio module
-#from ADS1256_definitions import * #Libraries for using the ADC via the SPi bus and wiringPi module
-#from pipyadc import ADS1256
+from ADS1256_definitions import * #Libraries for using the ADC via the SPi bus and wiringPi module
+from pipyadc import ADS1256
 import gpiozero as gz 
 
-'''Define a bunch of globals that we'll need
-'Use lists for input states and time differences so that tests can be scaled up/down easily'
-inputStates = [] 'A list of the current input states'
-isLast = [] 'A list of the input states during the previous function call'
-isStart = [] 'A list of the epoch times where each pin transitioned from HIGH to LOW'
-availableStations = 3 - t1Samp - t2Samp 'Number of available test stations is 3 - the stations assigned to other tests' 
-stStatus = [] 'Show the status of each relay as available/taken'
-'''
-#def switchCheck(pins, delay):
-#    '''Because we'll likely be using mechanical switches in the actuators we're testing, we need to de-bounce the switches before
-#    counting a cycle input. We're using low active for the inputs (tied to GND)
-#    This function tracks the state of the input during the last call and compares it against the current state of the input
-#'''
-#    for pins in inputStates:
-#        if inputStates[pins] == LOW & isLast[pins] == HIGH: 'If the input is currently LOW and the last state was HIGH, the function logs the current epoch time as START'
-#        isStart[pins] = time.time()
-#        inputStates[pins] = LOW
-#        elif inputStates[pins] == LOW & isLast[pins] == LOW: 'If the current state is LOW and the last state was LOW, compare the START time against the debounce delay'
-#            if time.time() - isStart[pins] > delay: '- If the difference between the current time and the start time is greater than the delay, increment the cycle counter'
-#            test1 += 1
-#            else:
-#            'do nothing' '- If the difference is less than the delay, do nothing'
-#        elif inputStates[pins] == HIGH & isLast[pins] == LOW: 'If the current state is HIGH and the last state was LOW, reset the last state to HIGH'
-#        isLast[pins] = HIGH 
-#        elif inputStates[pins] == HIGH & isLAst[pins] == HIGH: 'If the current state is HIGH and the last state was HIGH, do nothing'
-#        'do nothing'
+######################## Original Code and Function Definitions from the pipyadc library ################################################
+###  STEP 0: CONFIGURE CHANNELS AND USE DEFAULT OPTIONS FROM CONFIG FILE: ###
+#
+# For channel code values (bitmask) definitions, see ADS1256_definitions.py.
+# The values representing the negative and positive input pins connected to
+# the ADS1256 hardware multiplexer must be bitwise OR-ed to form eight-bit
+# values, which will later be sent to the ADS1256 MUX register. The register
+# can be explicitly read and set via ADS1256.mux property, but here we define
+# a list of differential channels to be input to the ADS1256.read_sequence()
+# method which reads all of them one after another.
+#
+# ==> Each channel in this context represents a differential pair of physical
+# input pins of the ADS1256 input multiplexer.
+#
+# ==> For single-ended measurements, simply select AINCOM as the negative input.
+#
+# AINCOM does not have to be connected to AGND (0V), but it is if the jumper
+# on the Waveshare board is set.
+# The other external input screw terminals of the Waveshare board:
+EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
+EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
+
+# Specify here an arbitrary length list (tuple) of arbitrary input channel pair
+# eight-bit code values to scan sequentially from index 0 to last.
+# Eight channels fit on the screen nicely for this example..
+CH_SEQUENCE = (POTI, LDR, EXT2, EXT3, EXT4, EXT7, POTI_INVERTED, SHORT_CIRCUIT)
+################################################################################
+
+
+def do_measurement():
+    ### STEP 1: Initialise ADC object using default configuration:
+    # (Note1: See ADS1256_default_config.py, see ADS1256 datasheet)
+    # (Note2: Input buffer on means limited voltage range 0V...3V for 5V supply)
+    ads = ADS1256()
+
+    ### STEP 2: Gain and offset self-calibration:
+    ads.cal_self()
+
+    while True:
+        ### STEP 3: Get data:
+        raw_channels = ads.read_sequence(CH_SEQUENCE)
+        voltages     = [i * ads.v_per_digit for i in raw_channels]
+
+        ### STEP 4: DONE. Have fun!
+        nice_output(raw_channels, voltages)
+
+### END EXAMPLE ###
+
+
+#############################################################################
+# Format nice looking text output:
+def nice_output(digits, volts):
+    sys.stdout.write(
+          "\0337" # Store cursor position
+        +
+"""
+These are the raw sample values for the channels:
+Poti_CH0,  LDR_CH1,     AIN2,     AIN3,     AIN4,     AIN7, Poti NEG, Short 0V
+"""
+        + ", ".join(["{: 8d}".format(i) for i in digits])
+        +
+"""
+
+These are the sample values converted to voltage in V for the channels:
+Poti_CH0,  LDR_CH1,     AIN2,     AIN3,     AIN4,     AIN7, Poti NEG, Short 0V
+"""
+        + ", ".join(["{: 8.3f}".format(i) for i in volts])
+        + "\n\033[J\0338" # Restore cursor position etc.
+    )
+
 
 #def testAssign(chan, cycle_time, duty_cycle, actIn): 'It may make sense to initiate a class with all of the test parameters here'
 #''' This function assigns the test parameters to the proper test stations.
@@ -160,5 +200,6 @@ while 1000 > test1:
         left = 10/.75 - (time.time() - cycleStart)
         print('Actuator in Motion ', left, ' Seconds remaining')
         time.sleep(1)
+    do_measurement()
 print("except")
 GPIO.cleanup()
