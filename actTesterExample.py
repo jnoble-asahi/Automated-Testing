@@ -8,6 +8,7 @@ This script written by Chris May - pezLyfe on github
 ######## '''
 import os
 import RPi.GPIO as GPIO
+import pigpio as io
 import time
 #import wiringPi as wp 
 import sys
@@ -17,26 +18,9 @@ import numpy as np
 from ADS1256_definitions import * #Libraries for using the ADC via the SPi bus and wiringPi module
 from pipyadc import ADS1256
 import gpiozero as gz 
+from dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K
 
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
-###  STEP 0: CONFIGURE CHANNELS AND USE DEFAULT OPTIONS FROM CONFIG FILE: ###
-#
-# For channel code values (bitmask) definitions, see ADS1256_definitions.py.
-# The values representing the negative and positive input pins connected to
-# the ADS1256 hardware multiplexer must be bitwise OR-ed to form eight-bit
-# values, which will later be sent to the ADS1256 MUX register. The register
-# can be explicitly read and set via ADS1256.mux property, but here we define
-# a list of differential channels to be input to the ADS1256.read_sequence()
-# method which reads all of them one after another.
-#
-# ==> Each channel in this context represents a differential pair of physical
-# input pins of the ADS1256 input multiplexer.
-#
-# ==> For single-ended measurements, simply select AINCOM as the negative input.
-#
-# AINCOM does not have to be connected to AGND (0V), but it is if the jumper
-# on the Waveshare board is set.
-# The other external input screw terminals of the Waveshare board:
 EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
 EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
 
@@ -58,10 +42,10 @@ def do_measurement():
     Voltages are converted from the raw integer inputs using a voltage convert function in the pipyadc library
     The conversion to current readings is given from the datasheet for the current module by sparkfun
     '''
-    while (time.time() - start) < 6:
+    while (time.time() - start) < 6000:
         raw_channels = ads.read_sequence(CH_SEQUENCE) #Read
         voltages     = [i * ads.v_per_digit for i in raw_channels] #Convert the raw input to a voltage reading using the pipyadc library function
-        current = [(i - 2.5)/66 for i in voltages] #Convert the voltage reading to a current value for the current sensor
+        current = [(i - 2.5)/0.066 for i in voltages] #Convert the voltage reading to a current value for the current sensor
         nice_output(raw_channels, current)
 
 ### END EXAMPLE ###
@@ -74,7 +58,6 @@ def nice_output(digits, current):
           "\0337" # Store cursor position
         +
 """
-
 These are the sample values converted to voltage in V for the channels:
 AIN0,  AIN1,     AIN2,     AIN3,     AIN4,     AIN5, AIN6, AIN7 
 """
@@ -125,11 +108,6 @@ AIN0,  AIN1,     AIN2,     AIN3,     AIN4,     AIN5, AIN6, AIN7
 #    If a lot of time has passed, then it's time to write the results to the SD card
 #    '''
 
-'''
-The following set-up code was taken from the Relay_Module example made by the creators of the RPi relay board by Waveshare
-Declare ints for each relay channel to call later, declare the settings for the BCM and the mode of operation for the specific GPIO pins used with the relay module
-'''
-
 Relay_Ch1 = 26
 Relay_Ch2 = 20
 Relay_Ch3 = 21
@@ -142,19 +120,30 @@ GPIO.setup(Relay_Ch1,GPIO.OUT)
 GPIO.setup(Relay_Ch2,GPIO.OUT)
 GPIO.setup(Relay_Ch3,GPIO.OUT)
 
-print("Setup The Relay Module is [success]")
+print("Relay Module Set-up")
 
-
-
-''' Begin original code
-'''
 ch1Input = 5
 actOut = Relay_Ch1
 actTime = 10/0.75
 actIn = ch1Input
 
-test1 = 0
+### Setup for the modulating tests ###
+dac = DAC8552()
+modStart = time.time() #Mark the start time for the cycle
+dac.v_ref = 3.3 # Start with the dac output set to vRef
+aOut = dac.v_ref
+dac.write_dac(DAC_A, aOut)
+modCyTime = 10 #Setup the modulating cycle time to be 10 seconds
+m1 = 1,000 
 
+def modulate(modChan, m1):
+    if (time.time() - modStart) > modCyTime: 
+        aOut = np.random.randint(0, high = dac.v_ref) #Default arguments of none for size, and I for dtype (single value, and int for data type)
+        dac.write_dac(modChan, aOut)
+        modStart = time.time()
+        m1 -= 1
+    else:
+        pass
 
 #Start the test by turning on the relay
 GPIO.output(Relay_Ch1,GPIO.HIGH)
@@ -178,7 +167,7 @@ while 1000 > test1:
             print('Actuator Opening')
             time.sleep(0.1)
         else:
-            print('Error, what the fuck?')
+            print('Error, what did you do?')
             pos = 'HIGH'
             cycleStart = time.time()
             time.sleep(0.1)
@@ -194,6 +183,7 @@ while 1000 > test1:
         left = 10/.75 - (time.time() - cycleStart)
         print('Actuator in Motion ', left, ' Seconds remaining')
         do_measurement()
+        modulate(DAC_A,m1)
         time.sleep(1)
 print("except")
 GPIO.cleanup()
