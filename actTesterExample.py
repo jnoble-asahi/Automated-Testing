@@ -10,15 +10,17 @@ import os
 import RPi.GPIO as GPIO
 import pigpio as io
 import time
+import os
 #import wiringPi as wp 
 import sys
+print sys.path
 import math as mt
 import numpy as np
 #from dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Libraries for using the DAC via SPi bus and pigpio module
 from ADS1256_definitions import * #Libraries for using the ADC via the SPi bus and wiringPi module
 from pipyadc import ADS1256
 import gpiozero as gz 
-from dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K
+from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K
 
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
 EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
@@ -130,27 +132,26 @@ actIn = ch1Input
 ### Setup for the modulating tests ###
 dac = DAC8552()
 modStart = time.time() #Mark the start time for the cycle
-dac.v_ref = 3.3 # Start with the dac output set to vRef
+dac.v_ref = int(3.3 * dac.digit_per_v) # Start with the dac output set to vRef
 aOut = dac.v_ref
 dac.write_dac(DAC_A, aOut)
+print('DAC_A to HIGH')
 modCyTime = 10 #Setup the modulating cycle time to be 10 seconds
-m1 = 1,000 
+m1 = 1000 
 
 def modulate(modChan, m1):
-    if (time.time() - modStart) > modCyTime: 
-        aOut = np.random.randint(0, high = dac.v_ref) #Default arguments of none for size, and I for dtype (single value, and int for data type)
-        dac.write_dac(modChan, aOut)
-        modStart = time.time()
-        m1 -= 1
-    else:
-        pass
-
+    aOut = int(np.random.randint(0, high = dac.v_ref) * dac.digit_per_v) #Default arguments of none for size, and I for dtype (single value, and int for data type)
+    print('DAC_A to Random', aOut)
+    dac.write_dac(modChan, aOut)
+    m1 -= 1
+        
 #Start the test by turning on the relay
 GPIO.output(Relay_Ch1,GPIO.HIGH)
 pos = 'HIGH'
 print("Actuator Opening")
 time.sleep(0.1)
 cycleStart = time.time()
+test1 = 0
 while 1000 > test1:
     currentTime = time.time()
     if currentTime - cycleStart > actTime:
@@ -182,8 +183,13 @@ while 1000 > test1:
     else:
         left = 10/.75 - (time.time() - cycleStart)
         print('Actuator in Motion ', left, ' Seconds remaining')
-        do_measurement()
-        modulate(DAC_A,m1)
         time.sleep(1)
+
+        #do_measurement()
+    if (time.time() - modStart) > modCyTime:
+        modulate(DAC_A,m1)
+        modStart = time.time()
+    else:
+        pass
 print("except")
 GPIO.cleanup()
