@@ -44,9 +44,9 @@ def do_measurement():
     '''
     while (time.time() - start) < 6000:
         raw_channels = ads.read_sequence(CH_SEQUENCE) #Read
-        voltages = [i * ads.v_per_digit for i in raw_channels] #Convert the raw input to a voltage reading using the pipyadc library function
-        current = [(i - 2.5)/0.066 for i in voltages] #Convert the voltage reading to a current value for the current sensor
-        nice_output(raw_channels, current)
+        #voltages = [i * ads.v_per_digit for i in raw_channels] #Convert the raw input to a voltage reading using the pipyadc library function
+        #current = [(i - 2.5)/0.066 for i in voltages] #Convert the voltage reading to a current value for the current sensor
+        nice_output(raw_channels, raw_channels)
 
 #############################################################################
 # Format nice looking text output:
@@ -58,7 +58,7 @@ def nice_output(digits, current):
 These are the sample values converted to voltage in V for the channels:
 AIN0,  AIN1, AIN2, AIN3, AIN4, AIN5, AIN6, AIN7 
 """
-        + ", ".join(["{: 8.3f}".format(i) for i in current])
+        + ", ".join(["{: 8.3f}".format(i) for i in raw_channels])
         + "\n\033[J\0338" # Restore cursor position etc.
     )
 
@@ -74,7 +74,7 @@ aOut = dac.v_ref
 dac.write_dac(DAC_A, aOut)
 print('DAC_A to HIGH')
 while test1 < 1000:
-    if time.time() > 20:
+    if time.time() - modStart > 20:
         aOut = 0
         dac.write_dac(DAC_A, aOut)
     do_measurement()
