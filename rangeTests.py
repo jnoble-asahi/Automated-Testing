@@ -69,7 +69,7 @@ test1 = 0
 ### Setup for the modulating tests ###
 dac = DAC8552()
 modStart = time.time() #Mark the start time for the cycle
-dac.v_ref = int(5 * dac.digit_per_v) # Start with the dac output set to vRef
+dac.v_ref = int(3.3 * dac.digit_per_v) # Start with the dac output set to vRef
 aOut = dac.v_ref
 dac.write_dac(DAC_A, aOut)
 print('DAC_A to HIGH')
