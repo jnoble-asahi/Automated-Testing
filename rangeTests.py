@@ -50,7 +50,7 @@ def do_measurement():
 
 #############################################################################
 # Format nice looking text output:
-def nice_output(digits, current):
+def nice_output(digits, raw_channels):
     sys.stdout.write(
           "\0337" # Store cursor position
         +
