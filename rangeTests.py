@@ -6,6 +6,7 @@ Full details on dependencies and set-up instructions on Github here: exampleURL.
 Pin callouts in this program refer to the wiringPI addresses and not GPIO pin numbers
 This script written by Chris May - pezLyfe on github
 ######## '''
+# Adding a couple of things that need to be worked out later
 import os
 import RPi.GPIO as GPIO
 import pigpio as io
