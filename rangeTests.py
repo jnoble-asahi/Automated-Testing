@@ -10,6 +10,7 @@ import os
 import RPi.GPIO as GPIO
 import pigpio as io
 import time
+import pandas as pd
 import os
 import sys
 print sys.path
@@ -20,21 +21,20 @@ from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 
+maxRaw = 6700000
+minRaw = 300000
+ads = ADS1256()
+ads.cal_self() 
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
 EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
 EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
-
-# Specify here an arbitrary length list (tuple) of arbitrary input channel pair
-# eight-bit code values to scan sequentially from index 0 to last.
-# Eight channels fit on the screen nicely for this example..
-CH_SEQUENCE = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7)
-################################################################################
-    ### STEP 1: Initialise ADC object using default configuration:
-    # (Note1: See ADS1256_default_config.py, see ADS1256 datasheet)
-    # (Note2: Input buffer on means limited voltage range 0V...3V for 5V supply)
-ads = ADS1256()
-### STEP 2: Gain and offset self-calibration:
-ads.cal_self() 
+CH_SEQUENCE = (EXT1, EXT2)
+GPIO.setwarnings(False)
+GPIO.setmode(GPIO.BCM)
+dac = DAC8552()
+dac.v_ref = int(3.3 * dac.digit_per_v) # Start with the dac output set to vRef
+act1Pos = positionConvert(aOut)
+test1 = 0
 
 def do_measurement():
     start = time.time()
@@ -42,41 +42,64 @@ def do_measurement():
     Voltages are converted from the raw integer inputs using a voltage convert function in the pipyadc library
     The conversion to current readings is given from the datasheet for the current module by sparkfun
     '''
-    while (time.time() - start) < 6000:
-        raw_channels = ads.read_sequence(CH_SEQUENCE) #Read
-        #voltages = [i * ads.v_per_digit for i in raw_channels] #Convert the raw input to a voltage reading using the pipyadc library function
-        #current = [(i - 2.5)/0.066 for i in voltages] #Convert the voltage reading to a current value for the current sensor
-        nice_output(raw_channels, raw_channels)
+    raw_channels = ads.read_sequence(CH_SEQUENCE) #Read the raw integer input on the channels defined in read_sequence
+    pos_channels = "{0:.1f}".format(positionConvert(raw_channels))
+    print('act Position', pos_channels, time.time())
+    return(pos_channels)
 
-#############################################################################
-# Format nice looking text output:
-def nice_output(digits, raw_channels):
-    sys.stdout.write(
-          "\0337" # Store cursor position
-        +
-"""
-These are the sample values converted to voltage in V for the channels:
-AIN0,  AIN1, AIN2, AIN3, AIN4, AIN5, AIN6, AIN7 
-"""
-        + ", ".join(["{: 8.3f}".format(i) for i in raw_channels])
-        + "\n\033[J\0338" # Restore cursor position etc.
-    )
+def positionConvert(raw):
+    '''
+    This is a linearization function for converting raw digital conversions into a human readable position reading
+    Position readings vary from 0 - 100%, and are based on the 4-20 mA feedback signal from the actuator
+    '''
+    pos = (raw - minRaw) / 50223
+    return(pos)
 
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)
+def rawConvert(position):
+    '''
+    This is a linearization function for converting position readings to raw digital readings
+    Position readings vary from 0 - 100%, and the raw readings vary from 0 to 8,388,608
+    '''
+    raw = (position * 50223) + minRaw
+    return(raw)
 
-test1 = 0
+def modulate(modChan, m1):
+    aOut = int(np.random.randint(0, high = dac.v_ref) * dac.digit_per_v) #Default arguments of none for size, and I for dtype (single value, and int for data type)
+    dac.write_dac(modChan, aOut)
+    act1Pos = positionConvert(aOut)
+    print('DAC_A to Random', act1Pos)
+    return(act1Pos)
+
+
 ### Setup for the modulating tests ###
-dac = DAC8552()
+
 modStart = time.time() #Mark the start time for the cycle
-dac.v_ref = int(3.3 * dac.digit_per_v) # Start with the dac output set to vRef
-aOut = dac.v_ref
-dac.write_dac(DAC_A, aOut)
+dac.write_dac(DAC_A, dac.v_ref)
 print('DAC_A to HIGH')
-while test1 < 1000:
-    if time.time() - modStart > 20:
-        aOut = 0
-        dac.write_dac(DAC_A, aOut)
-    do_measurement()
+pointTime = []
+posReads = []
+aOutPoints = []
+wait = 0.5
+while test1 < 50:
+    do_measurement() # Do a single measurement of the actuator position
+    pointTime = pointTime.append(time.time()) # Append the current time to a list of time points
+    posReads = positionConvert.append(pos_channels[0]) # Append the position reading to a list of position readings
+    aoutPoints = aOutPoints.append(act1Pos) # Append the setpoint to a list of setpoints
+    if (pos_channels[0] > act1Pos) - 2 & (pos_channels[0] < act1Pos + 2):
+        '''
+        If the current position reading on the actuator is within 2% of the position setpoint, change the setpoint
+        '''
+        modulate(DAC_A)
+        test1 += 1
+        wait = 0.5
+        time.sleep(3)
+    else:
+        wait = wait * 2
+        time.sleep(wait)
+df = pd.DataFrame({ 'time' : pointTime,
+                    'Positions' : posReads,
+                    'Set Point' : aOutPoints
+                    })
+pd.to_csv('actData.csv', sep = ',')
 print('except')
 GPIO.cleanup()
