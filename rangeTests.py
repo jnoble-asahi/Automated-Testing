@@ -74,9 +74,11 @@ aOut = dac.v_ref
 dac.write_dac(DAC_A, aOut)
 print('DAC_A to HIGH')
 while test1 < 1000:
-    if time.time() - modStart > 20:
+    if int(time.time() - modStart) > 20:
         aOut = 0
         dac.write_dac(DAC_A, aOut)
-    do_measurement()
+    else:
+        left = 20 - (time.time() - modStart)
+        print('time left', left)
 print('except')
 GPIO.cleanup()
