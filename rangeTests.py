@@ -37,17 +37,6 @@ dac.v_ref = int(3.3 * dac.digit_per_v) # Start with the dac output set to vRef
 act1Pos = positionConvert(aOut)
 test1 = 0
 
-def do_measurement():
-    start = time.time()
-    '''Read the input voltages from the ADC inputs. The sequence that the channels are read are defined in the configuration files
-    Voltages are converted from the raw integer inputs using a voltage convert function in the pipyadc library
-    The conversion to current readings is given from the datasheet for the current module by sparkfun
-    '''
-    raw_channels = ads.read_sequence(CH_SEQUENCE) #Read the raw integer input on the channels defined in read_sequence
-    pos_channels = "{0:.1f}".format(positionConvert(raw_channels))
-    print('act Position', pos_channels, time.time())
-    return(pos_channels)
-
 def positionConvert(raw):
     '''
     This is a linearization function for converting raw digital conversions into a human readable position reading
@@ -64,12 +53,24 @@ def rawConvert(position):
     raw = (position * 50223) + minRaw
     return(raw)
 
+def do_measurement():
+    start = time.time()
+    '''Read the input voltages from the ADC inputs. The sequence that the channels are read are defined in the configuration files
+    Voltages are converted from the raw integer inputs using a voltage convert function in the pipyadc library
+    The conversion to current readings is given from the datasheet for the current module by sparkfun
+    '''
+    raw_channels = ads.read_sequence(CH_SEQUENCE) #Read the raw integer input on the channels defined in read_sequence
+    pos_channels = "{0:.1f}".format(positionConvert(raw_channels))
+    print('act Position', pos_channels, time.time())
+    return(pos_channels)
+
 def modulate(modChan, m1):
     aOut = int(np.random.randint(0, high = dac.v_ref) * dac.digit_per_v) #Default arguments of none for size, and I for dtype (single value, and int for data type)
     dac.write_dac(modChan, aOut)
     act1Pos = positionConvert(aOut)
     print('DAC_A to Random', act1Pos)
     return(act1Pos)
+
 
 
 ### Setup for the modulating tests ###
