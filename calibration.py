@@ -22,8 +22,8 @@ from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 
-maxRaw = 5625100
-minRaw = 22500
+maxRaw = 6700000
+minRaw = 300000
 ads = ADS1256()
 ads.cal_self() 
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
@@ -41,7 +41,7 @@ def positionConvert(raw):
     This is a linearization function for converting raw digital conversions into a human readable position reading
     Position readings vary from 0 - 100%, and are based on the 4-20 mA feedback signal from the actuator
     '''
-    pos = ((float(raw - minRaw)) / maxRaw)*100
+    pos = (float(raw - minRaw)) / 64000
     return(pos)
 
 def rawConvert(position):
@@ -59,63 +59,28 @@ def do_measurement():
     The conversion to current readings is given from the datasheet for the current module by sparkfun
     '''
     raw_channels = ads.read_sequence(CH_SEQUENCE) #Read the raw integer input on the channels defined in read_sequence
-    pos_channels = int(positionConvert(raw_channels[0]))
-    print('act Position', pos_channels, time.time())
-    return(pos_channels)
+    #pos_channels = int(positionConvert(raw_channels[0]))
+    print('act Position', raw_channels[0])
+    return(raw_channels)
 
-def modulate(modChan):
-    aOut = int(np.random.randint(0, high = dac.v_ref) * dac.digit_per_v) #Default arguments of none for size, and I for dtype (single value, and int for data type)
-    dac.write_dac(modChan, aOut)
-    act1Pos = int((float(aOut) / (dac.v_ref)) * 100)
-    print('DAC_A to Random', act1Pos)
-    return(act1Pos)
+def modulate(position):
+    aOut = int(float(dac.v_ref * dac.digit_per_v) * float(position)/100)
+    dac.write_dac(DAC_A, aOut)
+    print(aOut)
 
 ### Setup for the modulating tests ###
-act1Pos = (dac.v_ref / dac.v_ref) * 100
-print(dac.v_ref)
-test1 = 0
-modStart = time.time() #Mark the start time for the cycle
-dac.write_dac(DAC_A, dac.v_ref)
-print('DAC_A to HIGH')
-pointTime = []
-posReads = []
-aOutPoints = []
-lastTime = time.time()
-wait = 0.5
-while test1 < 100000:
-    read = do_measurement() # Do a single measurement of the actuator position
-    posReads.append(read) # Append the position reading to a list of position readings
-    pointTime.append(time.time()) # Append the current time to a list of time points
-    aOutPoints.append(act1Pos) # Append the setpoint to a list of setpoints
-    lastTime = time.time() - start
-    if lastTime > 10000:
-        df = pd.DataFrame({ 'time' : pointTime,
-                    'Positions' : posReads,
-                    'Set Point' : aOutPoints})
-        df.to_csv('actData.csv', sep = ',')
-        lastTime = time.time()
+positions = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+start = time.time()
+i = 0
+while i < len(positions):
+    if time.time() - start < 15:
+        do_measurement()
+        time.sleep(1)
     else:
-        pass
-    
-    if read in range(int(act1Pos - 2), int(act1Pos + 2)):
-        '''
-        If the current position reading on the actuator is within 2% of the position setpoint, change the setpoint
-        '''
-        act1Pos = modulate(DAC_A)
-        print('Current Cycle Number is ', test1)
-        test1 += 1
-        wait = 0.75
-        time.sleep(5)
-    else:
-        wait = wait * 2
-        print('Set Point', int(act1Pos - 2), read, int(act1Pos + 2))
-        time.sleep(wait)
-df = pd.DataFrame({ 'time' : pointTime,
-                    'Positions' : posReads,
-                    'Set Point' : aOutPoints
-                    })
-df.to_csv('actData.csv', sep = ',')
+        print('moving to ', positions[i])
+        modulate(positions[i])
+        start = time.time()
+        i += 1
 print('except')
 GPIO.cleanup()
-
 
