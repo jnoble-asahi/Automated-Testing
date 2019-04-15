@@ -22,7 +22,7 @@ from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 
-maxRaw = 5625100
+maxRaw = 5625100 
 minRaw = 22500
 ads = ADS1256()
 ads.cal_self() 
@@ -52,6 +52,15 @@ def rawConvert(position):
     raw = (position * 64000) + minRaw
     return(raw)
 
+    def currentConvert(raw):
+    '''
+    This is a linearization function for converting position readings to raw digital readings
+    Position readings vary from 0 - 100%, and the raw readings vary from 0 to 8,388,608
+    '''
+    volts = (raw * dac.digit_per_v)
+    return(volts)
+
+
 def do_measurement():
     start = time.time()
     '''Read the input voltages from the ADC inputs. The sequence that the channels are read are defined in the configuration files
@@ -60,8 +69,9 @@ def do_measurement():
     '''
     raw_channels = ads.read_sequence(CH_SEQUENCE) #Read the raw integer input on the channels defined in read_sequence
     pos_channels = int(positionConvert(raw_channels[0]))
+    curr = int(currentConvert(raw_channels[1]))
     print('act Position', pos_channels, time.time())
-    return(pos_channels)
+    return(pos_channels, curr)
 
 def modulate(modChan):
     aOut = int(np.random.randint(0, high = dac.v_ref) * dac.digit_per_v) #Default arguments of none for size, and I for dtype (single value, and int for data type)
