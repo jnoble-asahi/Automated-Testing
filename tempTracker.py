@@ -108,11 +108,10 @@ last = time.time()
 wait = 5
 i = 0
 df = pd.DataFrame()
-while test1 < 3600:
-    if (last - start) > 1000:
+while test1 < 1800:
+    if (last - start) > 60:
         df = pd.DataFrame({ 'time' : pointTime,
-                    'Temp' : posReads,
-                    'Set Point' : aOutPoints
+                    'Temp' : tempReads
                     })
         df.to_csv('heaterTemps.csv', sep = ',')
     else:
@@ -129,6 +128,9 @@ while test1 < 3600:
         last = time.time()
     else:
         pass
+df = pd.DataFrame({ 'time' : pointTime,
+                    'Temp' : tempReads
+                    })
 df.to_csv('heaterTemps.csv', sep = ',')
 print('except')
 GPIO.cleanup()
