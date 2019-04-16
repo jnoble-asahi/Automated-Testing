@@ -1,3 +1,9 @@
+#Test failed on line 127 - Arrays must be of the same length
+#Check all the instances of act1pos and make sure they only have one variable
+
+
+
+
 ############################################
 ''' This is a rough draft of code required to run the actuation tester prototype
 The script loads two other programs - ADC_Script and DAC_Script
@@ -148,7 +154,7 @@ while test1 < 100000:
         posReads.append(pos) # Append the position reading to a list of position readings
         currReads.append(curr)
         pointTime.append(time.time()) # Append the current time to a list of time points
-        aOutPoints.append(act1Pos) # Append the setpoint to a list of setpoints
+        aOutPoints.append(pos) # Append the setpoint to a list of setpoints
         currReads.append(curr)
         print('Set Point', int(act1Pos - 2), pos, int(act1Pos + 2))
         print('Current Draw ', curr )
