@@ -27,16 +27,41 @@ An automated test center with a web interface for electric actuators, sensors, a
 - Run "sudo make install"
 
 # Clone the Github repository
+The sensor and relay boards communicate with the Raspberry Pi via the SPI Bus. A couple of clever folks made open source libraries for making the SPI bus work in Python (Our language of choice for this application)
 - Navigate back to the pi directory
   - From ./boot directory
     - "cd ..", then "cd home", then "cd pi"
   - Or just start a new terminal window
-- Run "git clone 
+- Run "git clone https://github.com/pezLyfe/Automated-Testing"
+- Run "cd Automated-Testing"
+- Run "git clone https://github.com/pezLyfe/PiPyADC"
+  - This clones the repository for working with the ADC chip and SPI bus, originally created by ul-gh on github
+  - The original creators github repository is located here - https://github.com/ul-gh/PiPyADC , but we're using our own copy of the         repository for version control
+    - License: GNU LGPLv2.1 
+- Run "git clone https://github.com/pezLyfe/dac8552"
+  - This clones the repository for working with the DAC chip and the SPI bus, originally created by adn05 on github
+  - Original repository here - https://github.com/adn05/dac8552 , again we're working with our own copy for version control
+    - License: GNU LGPLv2.1 
+    
+# Making the new libraries work correctly
+- First install the wiringpi library
+  - In directory ./Automated-Testing
+    - Run "sudo pip install wiringpi"
+    - Run "sudo sed -E -i s/"(#)(dtparam=spi).*"/"\2=on"/ /boot/config.txt" (This activates the SPI bus)
+    - Run "sudo reboot"
+- Now install the pigpio library
+  - In directory ./Automated-Testing
+    - run "wget abyz.me.uk/rpi/pigpio/pigpio.tar"
+    - run "tar xf pigpio.tar
+    - run "cd PIGPIO"
+    - run "make"
+    - run "sudo make install"
 
-# Installing the 
-  
-  
-- Set the current directory to where you want your program files
-- Run "git clone <url> to clone the repository into the current directory
-- Run "git branch -b <url> to make a new branch
+# Relay board libraries
+- 
+
+# Assemble the Pi with the ADC
+
+
+
 
