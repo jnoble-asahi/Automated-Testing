@@ -10,8 +10,11 @@ An automated test center with a web interface for electric actuators, sensors, a
 - Connect to a wireless network during the set-up
 - Open a terminal window and run "sudo apt-get update && sudo apt-get dist-upgrade" to make sure the OS is up to date
 - run 'sudo apt-get install python3-pip" to install a package manager for Python3
-- Use pip to get the following libraries and dependancies for Python3:
-  - None yet
+- run 'pip install RPi.GPIO'
+- run 'pip install spidev'
+- Setup the SPI bus for use:
+  - run 'sudo raspi-config'
+  - Select Interfacing Options -> P4 SPi -> Yes
   
 # Preparing the GPIO to work with the new hardware boards
 - While in a terminal window, navigate to ./boot
@@ -25,6 +28,11 @@ An automated test center with a web interface for electric actuators, sensors, a
 - Run "make"
 - Run "sudo make check"
 - Run "sudo make install"
+
+# Update packages and install python-dev
+- run "sudo apt-get update"
+- run "sudo apt-get install python-dev"
+- 
 
 # Clone the Github repository
 The sensor and relay boards communicate with the Raspberry Pi via the SPI Bus. A couple of clever folks made open source libraries for making the SPI bus work in Python (Our language of choice for this application)
@@ -57,11 +65,11 @@ The sensor and relay boards communicate with the Raspberry Pi via the SPI Bus. A
     - run "make"
     - run "sudo make install"
 
-# Relay board libraries
-- 
+# Assemble the Pi with the external hardware and enclosure
 
-# Assemble the Pi with the ADC
+# Set the zero off-set and span of the current - voltage converters
 
+# Connect one or more modulating actuators and run rangetests.py
 
 
 
