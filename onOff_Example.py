@@ -62,6 +62,11 @@ import numpy as np
 # Since the wiringpi module communicates through the GPIO, there shouldn't be a need to initiate the SPI bus connection
 wp.wiringPiSetupPhys()
 
+INPUT = 0
+OUTPUT = 1
+LOW = 0
+HIGH = 1
+
 Relay_Ch1 = 37
 Relay_Ch2 = 38
 Relay_Ch3 = 40
@@ -108,10 +113,10 @@ while 1000 > test1:
             time.sleep(0.1)
     elif currentTime - cycleStart < actTime:
         switchState = wp.digitalRead(actIn)
-        if switchState == 1:
+        if switchState == HIGH:
             print('switch is closed')
             time.sleep(1)
-        elif switchState == 0:
+        elif switchState == LOW:
             print('switch is open')
             time.sleep(1)
         else:
