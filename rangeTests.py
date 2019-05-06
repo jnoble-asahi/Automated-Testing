@@ -1,9 +1,21 @@
-#Test failed on line 127 - Arrays must be of the same length
-#Check all the instances of act1pos and make sure they only have one variable
-
-
-
-
+'''
+Notes on the differences in GPIO pin numbering schemes:
+- For a variety of reasons, there's different pin numbering schemes across the GPIO physical header position (the 40 pin connector on the pi)
+the pin numbering on the BCM2835 chip, the pin numbering scheme used by the wiringPI module, and the scheme used for the piGPIO module
+- The pypiADC module used in this program uses *phys() method to initialize wiringPi. In this case, pin numbers called by wiringPI refer to the
+physical location on the GPIO header
+- The pigpio module uses the BCM pin numbering scheme, layout here: https://abyz.me.uk/rpi/pigpio/#Type_3
+- Compatibility issues may come up in the future as hardware architectures change 
+    - The creator of wiringPI made their schema to future proof against changes
+- Refer to the layout in the documentation to find the pin numbers under each scheme
+- A list of resources for pin numbering here:
+    - https://abyz.me.uk/rpi/pigpio/#Type_3
+        - pigpio pin numbering schema (based on BCM pinout)
+    - http://wiringpi.com/pins/
+        - Pin layouts for wiringPI
+    - http://wiringpi.com/reference/setup/
+        - Overview of the different setup methods available for wiringPI
+'''
 ############################################
 ''' This is a rough draft of code required to run the actuation tester prototype
 The script loads two other programs - ADC_Script and DAC_Script

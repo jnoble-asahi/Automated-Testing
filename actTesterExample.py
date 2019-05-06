@@ -11,7 +11,7 @@ import RPi.GPIO as GPIO
 import pigpio as io
 import time
 import os
-#import wiringPi as wp 
+import wiringPi as wp 
 import sys
 print sys.path
 import math as mt
@@ -121,6 +121,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(Relay_Ch1,GPIO.OUT)
 GPIO.setup(Relay_Ch2,GPIO.OUT)
 GPIO.setup(Relay_Ch3,GPIO.OUT)
+GPIO.setup(ch1Input, GPIO.Input)
 
 print("Relay Module Set-up")
 
