@@ -108,10 +108,10 @@ while 1000 > test1:
             time.sleep(0.1)
     elif currentTime - cycleStart < actTime:
         switchState = wp.digitalRead(actIn)
-        if switchState = 1:
+        if switchState == 1:
             print('switch is closed')
             time.sleep(1)
-        elif switchState = 0:
+        elif switchState == 0:
             print('switch is open')
             time.sleep(1)
         else:
