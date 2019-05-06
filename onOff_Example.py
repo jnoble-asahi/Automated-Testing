@@ -83,13 +83,15 @@ actIn = ch1_in
 actOut = Relay_Ch1
 actTime = 10/0.75
         
-#Start the test by turning on the relay
+# Start the test by turning on the relay
 wp.digitalWrite(actOut, HIGH)
 pos = 'HIGH'
 print("Actuator Opening")
 time.sleep(0.1)
 cycleStart = time.time()
 test1 = 0
+
+# GPIO inputs are low active (we're tying inputs to GND), so a low input to the GPIO should read as a switch confirmation
 
 while 1000 > test1:
     currentTime = time.time()
@@ -113,10 +115,10 @@ while 1000 > test1:
             time.sleep(0.1)
     elif currentTime - cycleStart < actTime:
         switchState = wp.digitalRead(actIn)
-        if switchState == HIGH:
+        if switchState == LOW:
             print('switch is closed')
             time.sleep(1)
-        elif switchState == LOW:
+        elif switchState == HIGH:
             print('switch is open')
             time.sleep(1)
         else:
