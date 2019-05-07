@@ -112,18 +112,23 @@ class on_off:
 # Test it out by creating a new class instance
 
 one = on_off('Ch1')
-one.setTime()
-one.setCycles()
-one.setDuty()
-one.setTorque()
-one.setVoltage()
 
-print('Relay channel: ', chans)
-print('Test started at: ', one.setTime)
-print('Test target cycles set at: ', one.setTime)
-print('Duty cycle set for: ', one.setCycles)
-print('Torque range set for: ', one.setTorque)
-print('Voltage set for: ', one.setVoltage)
+one.setTime()
+print('Test started at: ' + one.time)
+
+one.setCycles()
+print('Test target cycles set at: ' + one.no_cycles)
+
+one.setDuty()
+print('Duty cycle set for: ' + one.duty_cycle)
+
+one.setTorque()
+print('Torque range set for: ' + one.torque_req)
+
+one.setVoltage()
+print('Voltage set for: ' +  one.in_voltage)
+
+
 
 # Set pin numbers for the relay channels and the limit switch inputs
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
