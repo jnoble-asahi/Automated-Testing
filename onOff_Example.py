@@ -11,51 +11,119 @@ import time
 import os
 import wiringpi as wp 
 import sys
-print sys.path
 import math as mt
 import numpy as np
 
-#def testAssign(chan, cycle_time, duty_cycle, actIn): 'It may make sense to initiate a class with all of the test parameters here'
-#''' This function assigns the test parameters to the proper test stations.
-#        Parameters can include:
-#            - Relay channel
-#            - ADC addresses (for temperature and current sensors)
-#            - DAC addresses (if necessary for modulating outputs)
-#            - The desired duty cycle
-#            - The length of the test
-#        Notice that this test station can run two modulating tests simultaneously with 3 on/off tests, so that's pretty baller
-#            - Check the GPIO availability to make sure that's true
-#    '''
-#channel = chan 
-#fullCycle = cycle_time / duty_cycle #calculate the test time based on duty cycle and actuator cycle time
-#switchConf = actIn
+relayChannels = {'Ch1' : 37,
+                 'Ch2' : 38,
+                 'Ch3' : 40}
 
-#def relayCheck(variables)
-#    '''This function will compare the amount of time that's passed since the last relay state change, and compare it against the required duty cycle
-#      - If the time is longer than required by duty cycle
-#            - Change the relay state
-#            - Reset the time counter
-#      - If the time is not longer than required by duty cycle
-#            - Do nothing
-#      - Iterate through all of the on/off test that are currently running
-#    '''
+chans = list(relayChannels.keys())
 
-#def modCheck(variables)
-#    ''' This function will check whether the actuator has reached the required position
-#    It does this by comparing the DAC output against the ADC input (For actuators with position tracking)
-#    If the actuator doesn't have position tracking, we'll have to do something else
-#    Store a moving average of the duty cycle of the actuator on random modulating positions
-#        - If the duty cycle is too high, introduce a delay in the program
-#    If the actuator is in the correct position, check how long it's been there fore
-#        - If it's been long enough, set a new random position
-#        - If it hasn't do nothing
-#    '''
+actInputs = {'Ch1' : 31,
+             'Ch2' : 33,
+             'Ch3' : 35}
 
-#def getADC(variables)
-#    '''This function will call the ADC program from the PiPyADC library
-#    results from the call will be stored in a couple of variables
-#    If a lot of time has passed, then it's time to write the results to the SD card
-#    '''
+voltages = {'120VAC': 120,
+            '220VAC': 220,
+            '24VDC' : 24,
+            '12VDC' : 12}
+
+volts = list(voltages.keys())
+
+Relay_Ch1 = 37
+Relay_Ch2 = 38
+Relay_Ch3 = 40
+ch1_in = 31
+
+# Define the on/off test as a class
+class on_off:
+    '''
+    Define a class used only for on/off actuator tests. When the test is initiated, require the test channel to be specified
+    '''
+    def __init__(self, channel):
+        if channel not in chans:
+             raise ValueError('Test channels can only be specified as Ch1, Ch2, or Ch3')
+        self.time = []
+        self.no_cycles = []
+        self.channel = [relayChannels[channel]]
+        self.duty_cycle = []
+        self.length = []
+        self.inputs = [actInputs[channel]]
+        self.torque_req = []
+        self.in_voltage = []
+
+    def setTime(self):
+        self.time.append(time.time())
+        print('Test start time logged')
+    
+    def setCycles(self):
+        '''
+        Raise a text prompt that requests the test length. If the number is outside the normal working range, throw an exception
+        Otherwise, set the test length and then cast it as a tuple to make it immutable
+        '''
+        temp = input('Enter the desired number of test cycles')
+        if temp not in range(1, 1000000, 1):
+            raise ValueError('Number of cycles must be a whole number, between 1 and 1,000,000')
+        else:
+            self.no_cycles.append(int(temp))
+            tuple(self.no_cycles)
+            print('Test cycles set point created')
+    
+    def setDuty(self):
+        '''
+        Raise a text prompt that requests the duty cycle. If the number is outside the normal working range, throw an exception
+        Otherwise, set the test length and then cast it as a tuple to make it immutable
+        '''
+        temp = input('Enter the desired duty cycle, as a number betweeo 1 - 100')
+        if temp not in range(0, 100, 1):
+            raise ValueError('Duty cycle must be a whole number between 1 and 100')
+        else:
+            self.duty_cycle.append(int(temp))
+            tuple(self.duty_cycle)
+            print('Test duty cycle created')
+
+    def setTorque(self):
+        '''
+        Raise a text prompt for the user to input hte torque rating of the actuator. This portion is only logged right now, but will be
+        important for future use when it's combined with an electromechanical load
+        '''
+        temp = input('Enter the torque rating of the actuator, in in-lbs')
+        if temp not in range(20, 5000, 1):
+            raise ValueError('Test torques must be a whole number between 20 - 5000')
+        else:
+            self.torque_req.append(int(temp))
+            tuple(self.torque_req)
+            print('Torque range created')
+
+    def setVoltage(self):
+        '''
+        Raise a text prompt for the user to input the operating voltage of the actuator. This portion is only logged right now, but will
+        be important later when we abstract away setting operating voltages through terminal connections
+        '''
+        temp = input('Enter the working voltage of the actuator. Options are: ', volts)
+        if temp not in volts:
+            raise ValueError('Voltage not in the correct range, please enter one of the following, ', volts)
+        else:
+            self.in_voltage.append(temp)
+            tuple(self.in_voltage)
+            print('Working voltage fixed')
+
+# Test it out by creating a new class instance
+
+one = on_off('Ch1')
+one.setTime()
+one.setCycles()
+one.setDuty()
+one.setTorque()
+one.setVoltage()
+
+print('Relay channel: ', chans)
+print('Test started at: ', one.setTime)
+print('Test target cycles set at: ', one.setTime)
+print('Duty cycle set for: ', one.setCycles)
+print('Torque range set for: ', one.setTorque)
+print('Voltage set for: ', one.setVoltage)
 
 # Set pin numbers for the relay channels and the limit switch inputs
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
@@ -66,11 +134,6 @@ INPUT = 0
 OUTPUT = 1
 LOW = 0
 HIGH = 1
-
-Relay_Ch1 = 37
-Relay_Ch2 = 38
-Relay_Ch3 = 40
-ch1_in = 31
 
 wp.pinMode(Relay_Ch1, OUTPUT)
 wp.pinMode(Relay_Ch2, OUTPUT)
