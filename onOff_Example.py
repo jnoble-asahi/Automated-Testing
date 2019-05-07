@@ -125,8 +125,8 @@ print('Duty cycle set for: ', one.duty_cycle[0], '%')
 one.setTorque()
 print('Torque range set for: ', one.torque_req[0], ' in-lbs')
 
-one.setVoltage()
-print('Voltage set for: ', one.in_voltage[0], ' volts')
+#one.setVoltage()
+#print('Voltage set for: ', one.in_voltage[0], ' volts')
 
 
 
