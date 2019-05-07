@@ -114,19 +114,19 @@ class on_off:
 one = on_off('Ch1')
 
 one.setTime()
-print('Test started at: ' + one.time)
+print('Test started at: ' + one.time[0])
 
 one.setCycles()
-print('Test target cycles set at: ' + one.no_cycles)
+print('Test target cycles set at: ' + one.no_cycles[0])
 
 one.setDuty()
-print('Duty cycle set for: ' + one.duty_cycle)
+print('Duty cycle set for: ' + one.duty_cycle[0])
 
 one.setTorque()
-print('Torque range set for: ' + one.torque_req)
+print('Torque range set for: ' + one.torque_req[0])
 
 one.setVoltage()
-print('Voltage set for: ' +  one.in_voltage)
+print('Voltage set for: ' +  one.in_voltage[0])
 
 
 
