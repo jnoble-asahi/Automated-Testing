@@ -101,9 +101,9 @@ class on_off:
         Raise a text prompt for the user to input the operating voltage of the actuator. This portion is only logged right now, but will
         be important later when we abstract away setting operating voltages through terminal connections
         '''
-        temp = input('Enter the working voltage of the actuator. Options are: ', volts)
+        temp = input('Enter the working voltage of the actuator. Options are: ' + volts)
         if temp not in volts:
-            raise ValueError('Voltage not in the correct range, please enter one of the following, ', volts)
+            raise ValueError('Voltage not in the correct range, please enter one of the following, ' + volts)
         else:
             self.in_voltage.append(temp)
             tuple(self.in_voltage)
