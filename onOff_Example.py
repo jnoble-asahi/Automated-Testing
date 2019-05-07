@@ -126,7 +126,7 @@ one.setTorque()
 print('Torque range set for: ', one.torque_req[0], ' in-lbs')
 
 one.setVoltage()
-print('Voltage set for: ', one.in_voltage[0], ' volts')
+#print('Voltage set for: ', one.in_voltage[0], ' volts')
 
 
 
