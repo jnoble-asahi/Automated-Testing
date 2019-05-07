@@ -62,7 +62,7 @@ class on_off:
         Raise a text prompt that requests the test length. If the number is outside the normal working range, throw an exception
         Otherwise, set the test length and then cast it as a tuple to make it immutable
         '''
-        temp = input('Enter the desired number of test cycles')
+        temp = input('Enter the desired number of test cycles: ')
         if temp not in range(1, 1000000, 1):
             raise ValueError('Number of cycles must be a whole number, between 1 and 1,000,000')
         else:
@@ -75,7 +75,7 @@ class on_off:
         Raise a text prompt that requests the duty cycle. If the number is outside the normal working range, throw an exception
         Otherwise, set the test length and then cast it as a tuple to make it immutable
         '''
-        temp = input('Enter the desired duty cycle, as a number betweeo 1 - 100')
+        temp = input('Enter the desired duty cycle, as a number betweeo 1 - 100: ')
         if temp not in range(0, 100, 1):
             raise ValueError('Duty cycle must be a whole number between 1 and 100')
         else:
@@ -88,7 +88,7 @@ class on_off:
         Raise a text prompt for the user to input hte torque rating of the actuator. This portion is only logged right now, but will be
         important for future use when it's combined with an electromechanical load
         '''
-        temp = input('Enter the torque rating of the actuator, in in-lbs')
+        temp = input('Enter the torque rating of the actuator, in in-lbs: ')
         if temp not in range(20, 5000, 1):
             raise ValueError('Test torques must be a whole number between 20 - 5000')
         else:
@@ -101,9 +101,9 @@ class on_off:
         Raise a text prompt for the user to input the operating voltage of the actuator. This portion is only logged right now, but will
         be important later when we abstract away setting operating voltages through terminal connections
         '''
-        temp = input('Enter the working voltage of the actuator. Options are: ' + volts)
+        temp = input('Enter the working voltage of the actuator. Options are: 120VAC, 220VAC, 24VDC, 12VDC: ')
         if temp not in volts:
-            raise ValueError('Voltage not in the correct range, please enter one of the following, ' + volts)
+            raise ValueError('Voltage not in the correct range, please enter one of the following: 120VAC, 220VAC, 24VDC, 12VDC')
         else:
             self.in_voltage.append(temp)
             tuple(self.in_voltage)
