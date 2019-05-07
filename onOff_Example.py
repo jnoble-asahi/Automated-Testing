@@ -105,7 +105,7 @@ class on_off:
         if temp not in volts:
             raise ValueError('Voltage not in the correct range, please enter one of the following: 120VAC, 220VAC, 24VDC, 12VDC')
         else:
-            self.in_voltage.append(temp)
+            self.in_voltage.append(str(temp))
             tuple(self.in_voltage)
             print('Working voltage fixed')
 
@@ -126,7 +126,7 @@ one.setTorque()
 print('Torque range set for: ', one.torque_req[0], ' in-lbs')
 
 one.setVoltage()
-#print('Voltage set for: ', one.in_voltage[0], ' volts')
+print('Voltage set for: ', one.in_voltage[0], ' volts')
 
 
 
