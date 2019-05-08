@@ -148,6 +148,7 @@ def switchCheck(ls, pin):
     state = wp.digitalRead(pin)
     if ls == HIGH & state == LOW:
         time.sleep(0.125)
+        state = wp.digitalRead(pin)
         if state == LOW:
             return('Confirmed')
         else:
