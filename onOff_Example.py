@@ -59,23 +59,24 @@ torque = [one.torque_req[0], two.torque_req[0], three.torque_req[0]]
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
 # Since the wiringpi module communicates through the GPIO, there shouldn't be a need to initiate the SPI bus connection
 wp.wiringPiSetupPhys()
+HIGH = onf.HIGH
+LOW = onf.LOW
 
 for i in range(len(channels)):
     wp.pinMode(channels[i], onf.OUTPUT)
     wp.pinMode(inputs[i], onf.INPUT)
-    wp.digitalWrite(channels[i], onf.HIGH)
+    wp.digitalWrite(channels[i], HIGH)
     print('Channel ', i, 'set HIGH')
 
 print("Relay Module Set-up")
 
-pos = ['HIGH', 'HIGH', 'HIGH']
 print("Actuator Opening")
 time.sleep(0.1)
 cycleStart = [time.time(), time.time(), time.time()]
 pv = [0, 0, 0]
 cnt = [0, 0, 0]
-ls = ['HIGH', 'HIGH', 'HIGH']
-sw = ['HIGH', 'HIGH', 'HIGH']
+ls = [HIGH, HIGH, HIGH]
+sw = [HIGH, HIGH, HIGH]
 
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
     currentTime = time.time()
@@ -85,36 +86,36 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
         status = onf.switchCheck(temp1, temp2) # Make sure the iterator works here, may have to change to i
         if status == 'Confirmed':
             pv[pin] += 1
-            sw[pin] = 'LOW'
+            sw[pin] = LOW
             length = time.time() - cycleStart[pin]
             print('Switch position confirmed')
             if pv[pin] > 2:
                 cycleTimes[pin] = onf.restCalc(length, duty[pin])
                 print('Setting cycle time as: ', cycleTimes[pin])
         elif status == 'Changed':
-            sw[pin] = 'HIGH'
+            sw[pin] = HIGH
         elif status == 'Same':
             pass
         else:
             Warning('Error with switchCheck function')
     for pin in range(len(channels)):
         if currentTime - cycleStart[pin] > cycleTimes[pin]:
-            if ls[pin] == 'HIGH':
+            if ls[pin] == HIGH:
                 wp.digitalWrite(channels[pin], onf.LOW)
-                ls[pin] = 'LOW'
+                ls[pin] = LOW
                 cycleStart[pin] = time.time()
                 print('Actuator Closing')
                 time.sleep(0.1)
-            elif ls[pin] == 'LOW':
+            elif ls[pin] == LOW:
                 wp.digitalWrite(channels[pin], onf.HIGH)
-                ls[pin] = 'HIGH'
+                ls[pin] = HIGH
                 cycleStart[pin] = time.time()
                 cnt[pin] += 1
                 print('Actuator Opening')
                 time.sleep(0.1)
             else:
                 Warning('Open the pod bay doors Hal')
-                ls[pin] = 'HIGH'
+                ls[pin] = HIGH
                 cycleStart[pin] = time.time()
                 time.sleep(0.1)
 print("except")
