@@ -284,8 +284,8 @@ def switchCheck(ls, pin):
 
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
     currentTime = time.time()
-    for i in inputs:
-        print(len(inputs))
+    for i in range(len(inputs)):
+        print(i)
         temp1 = ls[i]
         temp2 = inputs[i]
         status = switchCheck(temp1, temp2) # Make sure the iterator works here, may have to change to i
@@ -302,7 +302,7 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
             pass
         else:
             Warning('Error with switchCheck function')
-    for pin in channels:
+    for pin in range(len(channels)):
         if currentTime - cycleStart[pin] > cycleTimes[pin]:
             if ls[pin] == 'HIGH':
                 wp.digitalWrite(channels[pin], LOW)
