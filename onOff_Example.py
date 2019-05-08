@@ -81,24 +81,32 @@ sw = [HIGH, HIGH, HIGH]
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
     currentTime = time.time()
     for pin in range(len(inputs)):
-        temp1 = sw[pin]
-        temp2 = inputs[pin]
-        status = onf.switchCheck(temp1, temp2) # Make sure the iterator works here, may have to change to i
-        print(status)
-        if status == 'Confirmed':
-            pv[pin] += 1
-            sw[pin] = LOW
-            length = time.time() - cycleStart[pin]
-            print('Switch position confirmed')
-            if pv[pin] > 2:
-                cycleTimes[pin] = onf.restCalc(length, duty[pin])
-                print('Setting cycle time as: ', cycleTimes[pin])
-        elif status == 'Changed':
-            sw[pin] = HIGH
-        elif status == 'Same':
-            pass
+        state = wp.digitalRead(pin)
+        if sw[pin] == HIGH & state == LOW:
+            time.sleep(0.125)
+            state = wp.digitalRead(pin)
+            if state == LOW:
+                print('Switch Confirmed')
+                pv[pin] += 1
+                sw[pin] = LOW
+                length = time.time() - cycleStart[pin]
+                if pv[pin] > 2:
+                    cycleTimes[pin] = onf.restCalc(length, duty[pin])
+                    print('Setting cycle time as: ', cycleTimes[pin])
+                else:
+                    pass
+            else:
+                pass
+        if ls == LOW & state == HIGH:
+            time.sleep(0.125)
+            state = wp.digitalRead(pin)
+            if state == HIGH:
+                print('Switch position changed')
+                sw[pin] = HIGH
+            else:
+                pass
         else:
-            Warning('Error with switchCheck function')
+            Warning('Error with switch check function, did you catch all the possible cases?')        
     for pin in range(len(channels)):
         if currentTime - cycleStart[pin] > cycleTimes[pin]:
             if ls[pin] == HIGH:
