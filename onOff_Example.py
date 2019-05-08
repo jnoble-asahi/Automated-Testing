@@ -88,6 +88,7 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
             pv[pin] += 1
             ls[pin] = 'LOW'
             length = time.time() - cycleStart[pin]
+            print('Switch position confirmed')
             if pv[pin] > 2:
                 cycleTimes[pin] = onf.restCalc(length, duty[pin])
                 print('Setting cycle time as: ', cycleTimes[pin])
