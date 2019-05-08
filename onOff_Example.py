@@ -1,7 +1,5 @@
 ############################################
 ''' This is a rough draft of code required to run the actuation tester prototype
-The script loads two other programs - ADC_Script and DAC_Script
-The project requires a large number of dependencies from other libraries
 Full details on dependencies and set-up instructions on Github here: exampleURL.com
 Pin callouts in this program refer to the wiringPI addresses and not GPIO pin numbers
 This script written by Chris May - pezLyfe on github

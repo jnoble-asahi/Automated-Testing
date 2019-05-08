@@ -146,13 +146,13 @@ def switchCheck(ls, pin):
     If the state has changed, debounce it and then do something
     '''
     state = wp.digitalRead(pin)
-    if ls == HIGH & state == LOW:
+    if ls == 'HIGH' & state == LOW:
         time.sleep(0.125)
         if state == LOW:
             return('Confirmed')
         else:
             return('Same')
-    if ls == LOW & state == HIGH:
+    if ls == 'LOW' & state == HIGH:
         time.sleep(0.125)
         if state == HIGH:
             return('Changed')
