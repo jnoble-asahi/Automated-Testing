@@ -285,7 +285,7 @@ def switchCheck(ls, pin):
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
     currentTime = time.time()
     for pin in inputs:
-        state = switchCheck(ls[pin], pin) # Make sure the iterator works here, may have to change to i
+        state = switchCheck(ls[pin], inputs[pin]) # Make sure the iterator works here, may have to change to i
         if state == 'Confirmed':
             pv[pin] += 1
             ls[pin] = 'LOW'
