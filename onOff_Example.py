@@ -81,10 +81,10 @@ sw = [HIGH, HIGH, HIGH]
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
     currentTime = time.time()
     for pin in range(len(inputs)):
-        state = wp.digitalRead(pin)
+        state = wp.digitalRead(inputs[pin])
         if sw[pin] == HIGH & state == LOW:
             time.sleep(0.125)
-            state = wp.digitalRead(pin)
+            state = wp.digitalRead(inputs[pin])
             if state == LOW:
                 print('Switch Confirmed')
                 pv[pin] += 1
@@ -97,7 +97,7 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
                     pass
             else:
                 pass
-        if ls == LOW & state == HIGH:
+        if sw[pin] == LOW & state == HIGH:
             time.sleep(0.125)
             state = wp.digitalRead(pin)
             if state == HIGH:
