@@ -286,17 +286,19 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
     currentTime = time.time()
     for i in inputs:
         print(len(inputs))
-        state = switchCheck(ls[i], inputs[i]) # Make sure the iterator works here, may have to change to i
-        if state == 'Confirmed':
+        temp1 = ls[i]
+        temp2 = inputs[i]
+        status = switchCheck(temp1, temp2) # Make sure the iterator works here, may have to change to i
+        if status == 'Confirmed':
             pv[i] += 1
             ls[i] = 'LOW'
             length = time.time() - cycleStart[i]
             if pv[i] > 2:
                 cycleTimes[i] = restCalc(length, duty[i])
                 print('Setting cycle time as: ', cycleTimes[i])
-        elif state == 'Changed':
+        elif status == 'Changed':
             ls[i] = 'HIGH'
-        elif state == 'Same':
+        elif status == 'Same':
             pass
         else:
             Warning('Error with switchCheck function')
