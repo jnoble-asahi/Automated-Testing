@@ -284,17 +284,18 @@ def switchCheck(ls, pin):
 
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
     currentTime = time.time()
-    for pin in inputs:
-        state = switchCheck(ls[pin], inputs[pin]) # Make sure the iterator works here, may have to change to i
+    for i in inputs:
+        print(len(inputs))
+        state = switchCheck(ls[i], inputs[i]) # Make sure the iterator works here, may have to change to i
         if state == 'Confirmed':
-            pv[pin] += 1
-            ls[pin] = 'LOW'
-            length = time.time() - cycleStart[pin]
-            if pv[pin] > 2:
-                cycleTimes[pin] = restCalc(length, duty[pin])
-                print('Setting cycle time as: ', cycleTimes[pin])
+            pv[i] += 1
+            ls[i] = 'LOW'
+            length = time.time() - cycleStart[i]
+            if pv[i] > 2:
+                cycleTimes[i] = restCalc(length, duty[i])
+                print('Setting cycle time as: ', cycleTimes[i])
         elif state == 'Changed':
-            ls[pin] = 'HIGH'
+            ls[i] = 'HIGH'
         elif state == 'Same':
             pass
         else:
