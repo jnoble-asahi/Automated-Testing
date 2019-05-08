@@ -77,23 +77,24 @@ cycleStart = [time.time(), time.time(), time.time()]
 pv = [0, 0, 0]
 cnt = [0, 0, 0]
 ls = ['HIGH', 'HIGH', 'HIGH']
+sw = ['HIGH', 'HIGH', 'HIGH']
 
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
     currentTime = time.time()
     for pin in range(len(inputs)):
-        temp1 = ls[pin]
+        temp1 = sw[pin]
         temp2 = inputs[pin]
         status = onf.switchCheck(temp1, temp2) # Make sure the iterator works here, may have to change to i
         if status == 'Confirmed':
             pv[pin] += 1
-            ls[pin] = 'LOW'
+            sw[pin] = 'LOW'
             length = time.time() - cycleStart[pin]
             print('Switch position confirmed')
             if pv[pin] > 2:
                 cycleTimes[pin] = onf.restCalc(length, duty[pin])
                 print('Setting cycle time as: ', cycleTimes[pin])
         elif status == 'Changed':
-            ls[pin] = 'HIGH'
+            sw[pin] = 'HIGH'
         elif status == 'Same':
             pass
         else:
