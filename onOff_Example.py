@@ -72,7 +72,7 @@ class on_off:
         Otherwise, set the test length and then cast it as a tuple to make it immutable
         '''
         temp = input('Enter the desired test channel: ')
-        if temp not in range(1, 3, 1):
+        if temp not in range(1, 4, 1):
             Warning('Test channel must be iether 1, 2, or 3')
         else:
             self.channel.append(relayChannels[temp])
