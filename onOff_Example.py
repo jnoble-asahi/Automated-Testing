@@ -84,6 +84,7 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
         temp1 = sw[pin]
         temp2 = inputs[pin]
         status = onf.switchCheck(temp1, temp2) # Make sure the iterator works here, may have to change to i
+        print(status)
         if status == 'Confirmed':
             pv[pin] += 1
             sw[pin] = LOW
