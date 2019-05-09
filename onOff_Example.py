@@ -6,54 +6,28 @@ This script written by Chris May - pezLyfe on github
 ######## '''
 import os
 import time
-import os
 import wiringpi as wp 
+import pigpio as io
 import sys
 import math as mt
 import numpy as np
 import pandas as pd 
 import onOffConfigs as onf 
+import adc_dac_config as an 
+import subprocess
 
-# Test it out by creating a new class instance
-testUrl = 'https://tufts.box.com/shared/static/kpsnw7ozeytd04wyge1h2oly5pqbrb3k.csv'
-paras = pd.read_csv(testUrl)
-paras.head()
+# Start the pigpio daemon 
+bash = "sudo pigpiod" 
+process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
 
-one = onf.on_off()
-two = onf.on_off()
-three = onf.on_off()
-
-one.setChannel(paras['channel'][0])
-two.setChannel(paras['channel'][1])
-three.setChannel(paras['channel'][2])
-
-one.setCycleTime(paras['cycle time'][0])
-two.setCycleTime(paras['cycle time'][1])
-three.setCycleTime(paras['cycle time'][2])
-
-one.setCycles(paras['target'][0])
-two.setCycles(paras['target'][1])
-three.setCycles(paras['target'][2])
-
-one.setTime()
-two.setTime()
-three.setTime()
-
-one.setDuty(paras['duty cycle'][0])
-two.setDuty(paras['duty cycle'][1])
-three.setDuty(paras['duty cycle'][2])
-
-one.setTorque(paras['duty cycle'][0])
-two.setTorque(paras['duty cycle'][1])
-three.setTorque(paras['duty cycle'][2])
-
-channels = [one.channel[0], two.channel[0], three.channel[0]]
-inputs = [one.inputs[0], two.inputs[0], three.inputs[0]]
-cycleTimes = [one.cycleTime[0], two.cycleTime[0], three.cycleTime[0]]
-testTime = [one.time[0], two.time[0], three.time[0]]
-cycles = [one.no_cycles[0], two.no_cycles[0], three.no_cycles[0]]
-duty = [one.duty_cycle[0], two.duty_cycle[0], three.duty_cycle[0]]
-torque = [one.torque_req[0], two.torque_req[0], three.torque_req[0]]
+channels = [onf.one.channel[0], onf.two.channel[0], onf.three.channel[0]]
+inputs = [onf.one.inputs[0], onf.two.inputs[0], onf.three.inputs[0]]
+cycleTimes = [onf.one.cycleTime[0], onf.two.cycleTime[0], onf.three.cycleTime[0]]
+testTime = [onf.one.time[0], onf.two.time[0], onf.three.time[0]]
+cycles = [onf.one.no_cycles[0], onf.two.no_cycles[0], onf.three.no_cycles[0]]
+duty = [onf.one.duty_cycle[0], onf.two.duty_cycle[0], onf.three.duty_cycle[0]]
+torque = [onf.one.torque_req[0], onf.two.torque_req[0], onf.three.torque_req[0]]
 
 # Set pin numbers for the relay channels and the limit switch inputs
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
@@ -63,50 +37,56 @@ HIGH = onf.HIGH
 LOW = onf.LOW
 
 for i in range(len(channels)):
-    wp.pinMode(channels[i], onf.OUTPUT)
-    wp.pinMode(inputs[i], onf.INPUT)
-    wp.digitalWrite(channels[i], HIGH)
+    wp.pinMode(channels[i], onf.OUTPUT) # Declare pins to be used as outputs
+    wp.pinMode(inputs[i], onf.INPUT) # Declare pins to be used as inputs
+    wp.pullUpDnControl(inputs[i], 2) # Set the input pins for pull up control
+    wp.digitalWrite(channels[i], HIGH) # Set the output pins HIGH to start the test
     print('Channel ', i, 'set HIGH')
-
 print("Relay Module Set-up")
 
-print("Actuator Opening")
-time.sleep(0.1)
+# Log times to set a baseline for when to take measurements/cycle the actuators
 cycleStart = [time.time(), time.time(), time.time()]
+tempTime = [time.time(), time.time(), time.time()]
+currTime = [time.time(), time.time(), time.time()]
+last_print = time.time()
+print_rate = 3600
+
+# Set initial states for cycle pv, shot counts, relay state, and switch position
 pv = [0, 0, 0]
 cnt = [0, 0, 0]
 ls = [HIGH, HIGH, HIGH]
 sw = [HIGH, HIGH, HIGH]
+
+# Create tuples for the ADC addresses for current, temperature, and position inputs
+address = an.INPUTS_ADDRESS
+posIn = (address[0], address[1])
+curIn = (address[2], address[3], address[4])
+tempIn = (address[5], address[6], address[7])
+
+# Create empty dataframes for the test channels. Since the tests aren't necessarily synchronous, the datalogging should be kept separate
+test1 = pd.DataFrame()
+test2 = pd.DataFrame()
+test3 = pd.DataFrame()
 
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
     currentTime = time.time()
     for pin in range(len(inputs)):
         state = wp.digitalRead(inputs[pin])
         if sw[pin] == HIGH & state == LOW:
-            time.sleep(0.125)
-            state = wp.digitalRead(inputs[pin])
-            if state == LOW:
-                print('Switch Confirmed')
-                pv[pin] += 1
-                sw[pin] = LOW
-                length = time.time() - cycleStart[pin]
-                if pv[pin] > 2:
-                    cycleTimes[pin] = onf.restCalc(length, duty[pin])
-                    print('Setting cycle time as: ', cycleTimes[pin])
-                else:
-                    pass
+            print('Switch Confirmed')
+            pv[pin] += 1
+            sw[pin] = LOW
+            length = time.time() - cycleStart[pin]
+            if pv[pin] > 2:
+                cycleTimes[pin] = onf.restCalc(length, duty[pin])
+                print('Setting cycle time as: ', cycleTimes[pin])
             else:
                 pass
-        if sw[pin] == LOW & state == HIGH:
-            time.sleep(0.125)
-            state = wp.digitalRead(pin)
-            if state == HIGH:
-                print('Switch position changed')
-                sw[pin] = HIGH
-            else:
-                pass
+        elif sw[pin] == LOW & state == HIGH:
+            print('Switch position changed')
+            sw[pin] = HIGH
         else:
-            Warning('Error with switch check function, did you catch all the possible cases?')        
+            Warning('Error with switch check, did you catch all the possible cases?')        
     for pin in range(len(channels)):
         if currentTime - cycleStart[pin] > cycleTimes[pin]:
             if ls[pin] == HIGH:
@@ -121,10 +101,34 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
                 cycleStart[pin] = time.time()
                 cnt[pin] += 1
                 print('Actuator Opening')
-                time.sleep(0.1)
+                time.sleep(0.25)
+                temp = an.tempMeasurement(tempIn[i])
+                curr = an.currentMeasurement(curIn[i])
+                df = pd.DataFrame([currentTime, temp, curr, pv[i], cnt[i]], columns = list('time', 'temp', 'current', 'present_value', 'shot_count'))
+                if i == 1:
+                    test1 = test1.append(df, ignore_index = True)
+                elif i == 2:
+                    test2 = test2.append(df, ignore_index = True)
+                elif i == 3:
+                    test3 = test3.append(df, ignore_index = True)
+                else:
+                    Warning('Test index out of range, check setup')
             else:
                 Warning('Open the pod bay doors Hal')
                 ls[pin] = HIGH
                 cycleStart[pin] = time.time()
                 time.sleep(0.1)
+    if currentTime - last_print > print_rate:
+        test1.to_csv("test1_logs.csv")
+        test2.to_csv("test2_logs.csv")
+        test3.t0_csv("test3_logs.csv")
+
+test1.to_csv("test1_logs.csv")
+test2.to_csv("test2_logs.csv")
+test3.to_csv("test3_logs.csv")
+
+bash = "sudo killall pigpiod" 
+process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
+
 print("except")
