@@ -38,7 +38,7 @@ HIGH = onf.HIGH
 LOW = onf.LOW
 
 print('setting IO channels')
-for i in enumerate(channels):
+for i in range(len(channels)):
     wp.pinMode(channels[i], onf.OUTPUT) # Declare pins to be used as outputs
     wp.pinMode(inputs[i], onf.INPUT) # Declare pins to be used as inputs
     wp.pullUpDnControl(inputs[i], 2) # Set the input pins for pull up control
@@ -104,9 +104,9 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
                 cnt[pin] += 1
                 print('Actuator Opening')
                 time.sleep(0.25)
-                t = an.tempMeasurement(tempIn[i])
-                c = an.currentMeasurement(curIn[i])
-                data_list = list([currentTime, t, c, pv[i], cnt[i]])
+                t = an.tempMeasurement(tempIn[pin])
+                c = an.currentMeasurement(curIn[pin])
+                data_list = list([currentTime, t, c, pv[pin], cnt[pin]])
                 df = pd.DataFrame(data = [data_list], columns = ['time', 'temp', 'current', 'present_value', 'shot_count'])
                 if pin == 0:
                     test1 = test1.append(df, ignore_index = True)

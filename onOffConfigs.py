@@ -141,10 +141,9 @@ class on_off:
 
 def restCalc(length, dCycle):
     '''
-    Calculate the rest time between cycles. First calculate the length of the last cycle then divide by the duty cycle.
-    Divide that result by 2, since we want the rest time for each half cycle and we're only tracking the full cycle positively. 
+    Calculate a new cycle time using the length of the last half cycle, and the duty cycle setting of the test 
     '''
-    rest = (length / dCycle) / 2
+    rest = (length / (dCycle/100))
     return(rest)
 
 def switchCheck(ls, pin):
