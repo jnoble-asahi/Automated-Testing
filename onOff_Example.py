@@ -36,7 +36,7 @@ wp.wiringPiSetupPhys()
 HIGH = onf.HIGH
 LOW = onf.LOW
 
-for i in range(len(channels)):
+for i in enumerate(channels):
     wp.pinMode(channels[i], onf.OUTPUT) # Declare pins to be used as outputs
     wp.pinMode(inputs[i], onf.INPUT) # Declare pins to be used as inputs
     wp.pullUpDnControl(inputs[i], 2) # Set the input pins for pull up control
@@ -49,7 +49,7 @@ cycleStart = [time.time(), time.time(), time.time()]
 tempTime = [time.time(), time.time(), time.time()]
 currTime = [time.time(), time.time(), time.time()]
 last_print = time.time()
-print_rate = 3600
+print_rate = 900
 
 # Set initial states for cycle pv, shot counts, relay state, and switch position
 pv = [0, 0, 0]
@@ -70,9 +70,9 @@ test3 = pd.DataFrame()
 
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
     currentTime = time.time()
-    for pin in range(len(inputs)):
+    for pin in enumerate(inputs):
         state = wp.digitalRead(inputs[pin])
-        if sw[pin] == HIGH & state == LOW:
+        if ((sw[pin] == HIGH )& (state == LOW)):
             print('Switch Confirmed')
             pv[pin] += 1
             sw[pin] = LOW
@@ -82,12 +82,12 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
                 print('Setting cycle time as: ', cycleTimes[pin])
             else:
                 pass
-        elif sw[pin] == LOW & state == HIGH:
+        elif ((sw[pin] == LOW) & (state == HIGH)):
             print('Switch position changed')
             sw[pin] = HIGH
         else:
             Warning('Error with switch check, did you catch all the possible cases?')        
-    for pin in range(len(channels)):
+    for pin in enumerate(channels):
         if currentTime - cycleStart[pin] > cycleTimes[pin]:
             if ls[pin] == HIGH:
                 wp.digitalWrite(channels[pin], onf.LOW)
@@ -102,15 +102,15 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
                 cnt[pin] += 1
                 print('Actuator Opening')
                 time.sleep(0.25)
-                temp = an.tempMeasurement(tempIn[i])
-                curr = an.currentMeasurement(curIn[i])
-                data_list = list([currentTime, temp, curr, pv[i], cnt[i]])
+                t = an.tempMeasurement(tempIn[i])
+                c = an.currentMeasurement(curIn[i])
+                data_list = list([currentTime, t, c, pv[i], cnt[i]])
                 df = pd.DataFrame(data = [data_list], columns = ['time', 'temp', 'current', 'present_value', 'shot_count'])
-                if i == 1:
+                if pin == 0:
                     test1 = test1.append(df, ignore_index = True)
-                elif i == 2:
+                elif pin == 1:
                     test2 = test2.append(df, ignore_index = True)
-                elif i == 3:
+                elif pin == 2:
                     test3 = test3.append(df, ignore_index = True)
                 else:
                     Warning('Test index out of range, check setup')
@@ -122,7 +122,8 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
     if currentTime - last_print > print_rate:
         test1.to_csv("test1_logs.csv")
         test2.to_csv("test2_logs.csv")
-        test3.t0_csv("test3_logs.csv")
+        test3.to_csv("test3_logs.csv")
+        last_print = time.time()
 
 test1.to_csv("test1_logs.csv")
 test2.to_csv("test2_logs.csv")
