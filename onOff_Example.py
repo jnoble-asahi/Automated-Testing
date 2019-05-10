@@ -72,24 +72,23 @@ test3 = pd.DataFrame()
 
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
     currentTime = time.time()
-    for pin in range(len(inputs)):
-        state = wp.digitalRead(inputs[pin])
-        if ((sw[pin] == HIGH) & (state == LOW)):
+    for pin in range(len(channels)):
+        check = onf.switchCheck(sw[pin], pin)
+        if check == 'Confirmed':
+            length = time.time() - cycleStart[pin]
             print('Switch ', pin, ' confirmed')
             pv[pin] += 1
             sw[pin] = LOW
-            length = time.time() - cycleStart[pin]
             if pv[pin] > 2:
                 cycleTimes[pin] = onf.restCalc(length, duty[pin])
-                print('Setting cycle time as: ', cycleTimes[pin])
-            else:
-                pass
-        elif ((sw[pin] == LOW) & (state == HIGH)):
+                print('Setting cycle time as: ', cycleTimes[pin], 'on ', pin)
+        elif check == 'Changed':
             print('Switch ', pin, ' changed')
             sw[pin] = HIGH
         else:
-            Warning('Error with switch check, did you catch all the possible cases?')        
-    for pin in range(len(channels)):
+            pass
+        check = 'Hold'
+
         if currentTime - cycleStart[pin] > cycleTimes[pin]:
             if ls[pin] == HIGH:
                 wp.digitalWrite(channels[pin], onf.LOW)
@@ -104,9 +103,9 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
                 cnt[pin] += 1
                 print('Actuator Opening')
                 time.sleep(0.25)
-                t = an.tempMeasurement(tempIn[pin])
-                c = an.currentMeasurement(curIn[pin])
-                data_list = list([currentTime, t, c, pv[pin], cnt[pin]])
+                t = an.tempMeasurement(tempIn[i])
+                c = an.currentMeasurement(curIn[i])
+                data_list = list([currentTime, t, c, pv[i], cnt[i]])
                 df = pd.DataFrame(data = [data_list], columns = ['time', 'temp', 'current', 'present_value', 'shot_count'])
                 if pin == 0:
                     test1 = test1.append(df, ignore_index = True)
