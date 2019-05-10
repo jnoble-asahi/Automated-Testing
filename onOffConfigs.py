@@ -1,11 +1,16 @@
 import os
 import time
-import os
 import sys
 import math as mt
 import numpy as np
 import wiringpi as wp
 import pandas as pd
+import subprocess
+
+# Start the pigpio daemon 
+bash = "sudo pigpiod" 
+process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
 
 binary = {'INPUT' : 0,
           'OUTPUT': 1,
