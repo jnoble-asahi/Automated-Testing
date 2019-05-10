@@ -104,7 +104,8 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
                 time.sleep(0.25)
                 temp = an.tempMeasurement(tempIn[i])
                 curr = an.currentMeasurement(curIn[i])
-                df = pd.DataFrame(np.array([currentTime, temp, curr, pv[i], cnt[i]]), columns = ['time', 'temp', 'current', 'present_value', 'shot_count'])
+                data_list = list([currentTime, temp, curr, pv[i], cnt[i]])
+                df = pd.DataFrame(data = [data_list], columns = ['time', 'temp', 'current', 'present_value', 'shot_count'])
                 if i == 1:
                     test1 = test1.append(df, ignore_index = True)
                 elif i == 2:

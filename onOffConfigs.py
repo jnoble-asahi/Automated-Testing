@@ -152,9 +152,9 @@ testUrl = 'https://tufts.box.com/shared/static/kpsnw7ozeytd04wyge1h2oly5pqbrb3k.
 paras = pd.read_csv(testUrl)
 paras.head()
 
-one = onf.on_off()
-two = onf.on_off()
-three = onf.on_off()
+one = on_off()
+two = on_off()
+three = on_off()
 
 one.setChannel(paras['channel'][0])
 two.setChannel(paras['channel'][1])
