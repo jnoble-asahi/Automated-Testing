@@ -26,7 +26,6 @@ This script written by Chris May - pezLyfe on github
 ######## '''
 # Adding a couple of things that need to be worked out later
 import os
-import RPi.GPIO as GPIO
 import pigpio as io
 import time
 import pandas as pd
@@ -39,6 +38,11 @@ from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 import subprocess
+
+# Start the pigpio daemon 
+bash = "sudo pigpiod" 
+process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
 
 maxRaw = 5625100 
 minRaw = 22500
