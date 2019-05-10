@@ -38,7 +38,7 @@ HIGH = onf.HIGH
 LOW = onf.LOW
 
 print('setting IO channels')
-for i in enumerate(channels):
+for i in range(len(channels)):
     wp.pinMode(channels[i], onf.OUTPUT) # Declare pins to be used as outputs
     wp.pinMode(inputs[i], onf.INPUT) # Declare pins to be used as inputs
     wp.pullUpDnControl(inputs[i], 2) # Set the input pins for pull up control
