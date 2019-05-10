@@ -1,10 +1,16 @@
 import os
 import time
-import os
 import sys
 import math as mt
 import numpy as np
 import wiringpi as wp
+import pandas as pd
+import subprocess
+
+# Start the pigpio daemon 
+bash = "sudo pigpiod" 
+process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
 
 binary = {'INPUT' : 0,
           'OUTPUT': 1,
@@ -145,20 +151,36 @@ def switchCheck(ls, pin):
     Check the state of the input and compare it against the previous state
     If the state has changed, debounce it and then do something
     '''
-    state = wp.digitalRead(pin)
-    if ls == HIGH & state == LOW:
-        time.sleep(0.125)
-        state = wp.digitalRead(pin)
-        if state == LOW:
-            return('Confirmed')
-        else:
-            return('Same')
-    if ls == LOW & state == HIGH:
-        time.sleep(0.125)
-        if state == HIGH:
-            return('Changed')
-        else:
-            return('Same')
-    else:
-        Warning('Error with switch check function, did you catch all the possible cases?')
-        return('Same')
+
+# Set test parameters from a .csv file shared in the cloud
+testUrl = 'https://tufts.box.com/shared/static/kpsnw7ozeytd04wyge1h2oly5pqbrb3k.csv'
+paras = pd.read_csv(testUrl)
+paras.head()
+
+one = on_off()
+two = on_off()
+three = on_off()
+
+one.setChannel(paras['channel'][0])
+two.setChannel(paras['channel'][1])
+three.setChannel(paras['channel'][2])
+
+one.setCycleTime(paras['cycle time'][0])
+two.setCycleTime(paras['cycle time'][1])
+three.setCycleTime(paras['cycle time'][2])
+
+one.setCycles(paras['target'][0])
+two.setCycles(paras['target'][1])
+three.setCycles(paras['target'][2])
+
+one.setTime()
+two.setTime()
+three.setTime()
+
+one.setDuty(paras['duty cycle'][0])
+two.setDuty(paras['duty cycle'][1])
+three.setDuty(paras['duty cycle'][2])
+
+one.setTorque(paras['duty cycle'][0])
+two.setTorque(paras['duty cycle'][1])
+three.setTorque(paras['duty cycle'][2])
