@@ -21,6 +21,7 @@ bash = "sudo pigpiod"
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()
 
+print('configuring test parameters')
 channels = [onf.one.channel[0], onf.two.channel[0], onf.three.channel[0]]
 inputs = [onf.one.inputs[0], onf.two.inputs[0], onf.three.inputs[0]]
 cycleTimes = [onf.one.cycleTime[0], onf.two.cycleTime[0], onf.three.cycleTime[0]]
@@ -36,6 +37,7 @@ wp.wiringPiSetupPhys()
 HIGH = onf.HIGH
 LOW = onf.LOW
 
+print('setting IO channels')
 for i in enumerate(channels):
     wp.pinMode(channels[i], onf.OUTPUT) # Declare pins to be used as outputs
     wp.pinMode(inputs[i], onf.INPUT) # Declare pins to be used as inputs
@@ -128,6 +130,8 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
 test1.to_csv("test1_logs.csv")
 test2.to_csv("test2_logs.csv")
 test3.to_csv("test3_logs.csv")
+
+print('sacrificing IO daemons')
 
 bash = "sudo killall pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)

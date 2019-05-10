@@ -7,6 +7,7 @@ import wiringpi as wp
 import pandas as pd
 import subprocess
 
+print('summoning IO daemons')
 # Start the pigpio daemon 
 bash = "sudo pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
@@ -152,6 +153,7 @@ def switchCheck(ls, pin):
     If the state has changed, debounce it and then do something
     '''
 
+print('collecting test parameters from THE CLOUD')
 # Set test parameters from a .csv file shared in the cloud
 testUrl = 'https://tufts.box.com/shared/static/kpsnw7ozeytd04wyge1h2oly5pqbrb3k.csv'
 paras = pd.read_csv(testUrl)
