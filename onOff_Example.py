@@ -72,10 +72,10 @@ test3 = pd.DataFrame()
 
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
     currentTime = time.time()
-    for pin in enumerate(inputs):
+    for pin in range(len(inputs)):
         state = wp.digitalRead(inputs[pin])
-        if ((sw[pin] == HIGH )& (state == LOW)):
-            print('Switch Confirmed')
+        if ((sw[pin] == HIGH) & (state == LOW)):
+            print('Switch ', pin, ' confirmed')
             pv[pin] += 1
             sw[pin] = LOW
             length = time.time() - cycleStart[pin]
@@ -85,11 +85,11 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
             else:
                 pass
         elif ((sw[pin] == LOW) & (state == HIGH)):
-            print('Switch position changed')
+            print('Switch ', pin, ' changed')
             sw[pin] = HIGH
         else:
             Warning('Error with switch check, did you catch all the possible cases?')        
-    for pin in enumerate(channels):
+    for pin in range(len(channels)):
         if currentTime - cycleStart[pin] > cycleTimes[pin]:
             if ls[pin] == HIGH:
                 wp.digitalWrite(channels[pin], onf.LOW)

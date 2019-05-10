@@ -186,3 +186,9 @@ three.setDuty(paras['duty cycle'][2])
 one.setTorque(paras['duty cycle'][0])
 two.setTorque(paras['duty cycle'][1])
 three.setTorque(paras['duty cycle'][2])
+
+print('sacrificing IO daemons')
+
+bash = "sudo killall pigpiod" 
+process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
