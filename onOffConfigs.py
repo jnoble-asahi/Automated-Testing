@@ -152,16 +152,18 @@ def switchCheck(ls, pin):
     If the state has changed, debounce it and then do something
     '''
     state = wp.digitalRead(pin)
-    if ((ls == HIGH) & (state == LOW)):
-        return('Confirmed')
-    elif ((ls == LOW) & (state == HIGH)):
-        return('Changed')
-    elif ((ls == HIGH) & (state == HIGH)):
-        return('Waiting')
-    elif ((ls == LOW) & (state == LOW)):
-        return('Waiting')    
+    status = 0
+    if ((ls == 1) & (state == 0)):
+        status = 1
+    elif ((ls == 0) & (state == 1)):
+        status = 2
+    elif ((ls == 1) & (state == 1)):
+        status = 3
+    elif ((ls == 0) & (state == LOW)):
+        status = 3
     else:
-        Warning('Error with switch check, did you catch all the possible cases?')  
+        Warning('Error with switch check, did you catch all the possible cases?')
+    return(status)
 
 print('collecting test parameters from THE CLOUD')
 # Set test parameters from a .csv file shared in the cloud
