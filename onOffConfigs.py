@@ -143,7 +143,7 @@ def restCalc(length, dCycle):
     '''
     Calculate a new cycle time using the length of the last half cycle, and the duty cycle setting of the test 
     '''
-    rest = (length / (dCycle/100))
+    rest = float(length / (float(dCycle)/100))
     return(rest)
 
 def switchCheck(ls, pin):
