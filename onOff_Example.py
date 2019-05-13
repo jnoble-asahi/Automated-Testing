@@ -75,7 +75,6 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
     for pin in range(len(channels)):
         state = wp.digitalRead(address[pin])
         if (sw[pin] == 1) & (state == 0):
-            length = time.time() - cycleStart[pin]
             print('Switch ', pin, ' confirmed')
             pv[pin] += 1
             sw[pin] = LOW
@@ -84,10 +83,11 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
                 print('Setting cycle time as: ', cycleTimes[pin], 'on ', pin)
         elif (sw[pin] == 0) & (state == 1):
             print('Switch ', pin, ' changed')
+            length = time.time() - cycleStart[pin]
             sw[pin] = HIGH
         else:
             pass
-
+    for pin in range(len(channels)):
         if currentTime - cycleStart[pin] > cycleTimes[pin]:
             if ls[pin] == HIGH:
                 wp.digitalWrite(channels[pin], onf.LOW)
