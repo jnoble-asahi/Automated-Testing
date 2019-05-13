@@ -73,7 +73,7 @@ test3 = pd.DataFrame()
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
     currentTime = time.time()
     for i in range(len(channels)):
-        state = wp.digitalRead(address[i])
+        state = wp.digitalRead(inputs[i])
         swWas = sw[i]
         if (swWas == 1) & (state == 0):
             print('Switch ', i, ' confirmed')
