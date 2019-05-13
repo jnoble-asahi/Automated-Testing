@@ -58,6 +58,7 @@ pv = [0, 0, 0]
 cnt = [0, 0, 0]
 ls = [HIGH, HIGH, HIGH]
 sw = [HIGH, HIGH, HIGH]
+bounces = [0,0,0]
 
 # Create tuples for the ADC addresses for current, temperature, and position inputs
 address = an.INPUTS_ADDRESS
@@ -84,12 +85,12 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
             # Change the new rest calc to be a minimum of 1 sec, if it's less set it to the default, or the previous
             if pv[i] > 2:
                 temp = onf.restCalc(length, duty[i])
-                if abs(cycleTimes[i - temp]) > 5:
-                    pass
+                if abs(cycleTimes[i] - temp) > 5:
+                    print('switch ', i, ' bounced')
+                    bounces[i] += 1
                 else:
                     cycleTimes[i] = temp
-                cycleTimes[i] = onf.restCalc(length, duty[i])
-                print('Setting cycle time as: ', cycleTimes[i], 'on ', i)
+                    print('Setting cycle time as: ', cycleTimes[i], 'on ', i)
         elif (swWas == 0) & (state == 1):
             print('Switch ', i, ' changed')
             sw[i] = HIGH
