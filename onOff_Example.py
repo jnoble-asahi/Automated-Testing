@@ -73,8 +73,8 @@ test3 = pd.DataFrame()
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
     currentTime = time.time()
     for pin in range(len(channels)):
-        check = onf.switchCheck(sw[pin], pin)
-        if check == 1:
+        state = wp.digitalRead(address[pin])
+        if (sw[pin] == 1) & (state == 0):
             length = time.time() - cycleStart[pin]
             print('Switch ', pin, ' confirmed')
             pv[pin] += 1
@@ -82,12 +82,11 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
             if pv[pin] > 2:
                 cycleTimes[pin] = onf.restCalc(length, duty[pin])
                 print('Setting cycle time as: ', cycleTimes[pin], 'on ', pin)
-        elif check == 2:
+        elif (sw[pin] == 0) & (state == 1):
             print('Switch ', pin, ' changed')
             sw[pin] = HIGH
         else:
             pass
-        check = 3
 
         if currentTime - cycleStart[pin] > cycleTimes[pin]:
             if ls[pin] == HIGH:
