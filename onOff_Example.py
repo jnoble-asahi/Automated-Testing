@@ -79,12 +79,12 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
             print('Switch ', i, ' confirmed')
             pv[i] += 1
             sw[i] = LOW
+            length = time.time() - cycleStart[i]
             if pv[i] > 2:
                 cycleTimes[i] = onf.restCalc(length, duty[i])
                 print('Setting cycle time as: ', cycleTimes[i], 'on ', i)
         elif (swWas == 0) & (state == 1):
             print('Switch ', i, ' changed')
-            length = time.time() - cycleStart[i]
             sw[i] = HIGH
         else:
             pass
