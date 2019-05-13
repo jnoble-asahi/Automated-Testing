@@ -71,6 +71,7 @@ test2 = pd.DataFrame()
 test3 = pd.DataFrame()
 
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
+    # Switch inputs use external pull-up resistors to prevent floating. Debounce provided via an RC circuit
     currentTime = time.time()
     for i in range(len(channels)):
         state = wp.digitalRead(inputs[i])
@@ -80,6 +81,7 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
             pv[i] += 1
             sw[i] = LOW
             length = time.time() - cycleStart[i]
+            # Change the new rest calc to be a minimum of 1 sec, if it's less set it to the default, or the previous
             if pv[i] > 2:
                 cycleTimes[i] = onf.restCalc(length, duty[i])
                 print('Setting cycle time as: ', cycleTimes[i], 'on ', i)
