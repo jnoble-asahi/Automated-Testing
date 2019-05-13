@@ -83,6 +83,11 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
             length = time.time() - cycleStart[i]
             # Change the new rest calc to be a minimum of 1 sec, if it's less set it to the default, or the previous
             if pv[i] > 2:
+                temp = onf.restCalc(length, duty[i])
+                if abs(cycleTimes[i - temp]) > 5:
+                    pass
+                else:
+                    cycleTimes[i] = temp
                 cycleTimes[i] = onf.restCalc(length, duty[i])
                 print('Setting cycle time as: ', cycleTimes[i], 'on ', i)
         elif (swWas == 0) & (state == 1):
