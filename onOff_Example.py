@@ -72,7 +72,6 @@ test3 = pd.DataFrame()
 
 while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
     currentTime = time.time()
-    i = 0
     for i in range(len(channels)):
         state = wp.digitalRead(address[i])
         sw = sw[i]
@@ -89,7 +88,6 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
             sw[i] = HIGH
         else:
             pass
-    i = 0
     for pin in range(len(channels)):
         if currentTime - cycleStart[pin] > cycleTimes[pin]:
             if ls[pin] == HIGH:
