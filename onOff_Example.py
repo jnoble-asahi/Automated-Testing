@@ -74,15 +74,15 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
     currentTime = time.time()
     for i in range(len(channels)):
         state = wp.digitalRead(address[i])
-        sw = sw[i]
-        if (sw == 1) & (state == 0):
+        swWas = sw[i]
+        if (swWas == 1) & (state == 0):
             print('Switch ', i, ' confirmed')
             pv[i] += 1
             sw[i] = LOW
             if pv[i] > 2:
                 cycleTimes[i] = onf.restCalc(length, duty[i])
                 print('Setting cycle time as: ', cycleTimes[i], 'on ', i)
-        elif (sw == 0) & (state == 1):
+        elif (swWas == 0) & (state == 1):
             print('Switch ', i, ' changed')
             length = time.time() - cycleStart[i]
             sw[i] = HIGH
