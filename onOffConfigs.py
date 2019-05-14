@@ -7,12 +7,6 @@ import wiringpi as wp
 import pandas as pd
 import subprocess
 
-print('summoning IO daemons')
-# Start the pigpio daemon 
-bash = "sudo pigpiod" 
-process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()
-
 binary = {'INPUT' : 0,
           'OUTPUT': 1,
           'LOW' : 0,
@@ -198,9 +192,3 @@ three.setDuty(paras['duty cycle'][2])
 one.setTorque(paras['duty cycle'][0])
 two.setTorque(paras['duty cycle'][1])
 three.setTorque(paras['duty cycle'][2])
-
-print('sacrificing IO daemons')
-
-bash = "sudo killall pigpiod" 
-process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()

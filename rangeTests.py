@@ -26,7 +26,6 @@ This script written by Chris May - pezLyfe on github
 ######## '''
 # Adding a couple of things that need to be worked out later
 import os
-import RPi.GPIO as GPIO
 import pigpio as io
 import time
 import pandas as pd
@@ -37,147 +36,137 @@ import math as mt
 import numpy as np
 from ADS1256_definitions import * #Configuration file for the ADC settings
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
-import gpiozero as gz #Library for using the GPIO with python
+import adc_dac_config as an
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 import subprocess
 
-
-bash = "sudo pigpiod"
-process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()
 maxRaw = 5625100 
 minRaw = 22500
+
+
 ads = ADS1256()
-ads.cal_self() 
-######################## Original Code and Function Definitions from the pipyadc library ################################################
-EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
-EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
-CH_SEQUENCE = (EXT1, EXT2, EXT3)
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)
-dac = DAC8552()
-dac.v_ref = int(5 * dac.digit_per_v) # Start with the dac output set to vRef
+ads.cal_self()
 
-
-def positionConvert(raw):
-    '''
-    This is a linearization function for converting raw digital conversions into a human readable position reading
-    Position readings vary from 0 - 100%, and are based on the 4-20 mA feedback signal from the actuator
-    '''
-    pos = ((float(raw - minRaw)) / maxRaw)*100
-    return(pos)
-
-def rawConvert(position):
-    '''
-    This is a linearization function for converting position readings to raw digital readings
-    Position readings vary from 0 - 100%, and the raw readings vary from 0 to 8,388,608
-    '''
-    raw = (position * 64000) + minRaw
-    return(raw)
-
-def currentConvert(raw):
-    '''
-    This is a linearization function for converting position readings to raw digital readings
-    Position readings vary from 0 - 100%, and the raw readings vary from 0 to 8,388,608
-    '''
-    volts = float(raw * ads.v_per_digit)
-    current = (volts * 186)
-    return(current)
-
-def tempConvert(raw):
-    '''
-    Convert temperature readings from the J type thermocouple into a readable format
-    '''
-    volts = float(raw * ads.v_per_digit)
-    temp = (volts - 1.25) / 0.005
-    return(temp)
-
-
-def do_measurement():
-    start = time.time()
-    '''Read the input voltages from the ADC inputs. The sequence that the channels are read are defined in the configuration files
-    Voltages are converted from the raw integer inputs using a voltage convert function in the pipyadc library
-    The conversion to current readings is given from the datasheet for the current module by sparkfun
-    '''
-    raw_channels = ads.read_sequence(CH_SEQUENCE) #Read the raw integer input on the channels defined in read_sequence
-    pos_channels = int(positionConvert(raw_channels[0]))
-    curr = raw_channels[1]
-    temp = raw_channels[2]
-    #curr = int(currentConvert(raw_channels[1]))
-    #temp = tempConvert(raw_channels[2])
-    print('act Position', pos_channels, time.time())
-    return(pos_channels, curr, temp)
-
-def modulate(modChan):
-    aOut = int(np.random.randint(0, high = dac.v_ref) * dac.digit_per_v) #Default arguments of none for size, and I for dtype (single value, and int for data type)
-    dac.write_dac(modChan, aOut)
-    act1Pos = int((float(aOut) / (dac.v_ref)) * 100)
-    print('DAC_A to Random', act1Pos)
-    return(act1Pos)
+CH1_SEQUENCE = (an.INPUTS_ADDRESS[0], an.INPUTS_ADDRESS[2], an.INPUTS_ADDRESS[5] ) #Position, Current, Temperature channels
+CH2_SEQUENCE =  (an.INPUTS_ADDRESS[1], an.INPUTS_ADDRESS[3], an.INPUTS_ADDRESS[6] ) #Position, Current, Temperature channels
 
 ### Setup for the modulating tests ###
-act1Pos = (dac.v_ref / dac.v_ref) * 100
-print(dac.v_ref)
-test1 = 0
-start = time.time() #Mark the start time for the cycle
+stamp1 = stamp2 = time.time() # Used as a reference for the datalogger
+ap1 = ap2 = 100
+pos1 = pos2 = [] # Create empty lists to add position readings to
+cur1 = cur2 = [] # Create empty lists to add current readings to
+temp1 = temp2 = [] # Create empty lists to add temperature readings to
+ct1 = ct2 = [] # Create empty lists to add timestamps to
+a1 = a2 = [] # Create empty lists to add test setpoints to
+t1 = t2 = [] # Create empty lists to add cycle counts to
+w1 = w2 = 0.75 # initialize a wait time to reach the next setpoint
+slack1 = slack2 = 2
+
 dac.write_dac(DAC_A, dac.v_ref)
 print('DAC_A to HIGH')
-pointTime = []
-posReads = []
-currReads = []
-aOutPoints = []
-lastTime = time.time()
-wait = 0.75
-while test1 < 100000:
-    read = do_measurement() # Do a single measurement of the actuator position
-    curr = currentConvert(read[1])
-    temp = tempConvert(read[2])
-    pos = read[0]
-    posReads.append(pos) # Append the position reading to a list of position readings
-    currReads.append(curr)
-    pointTime.append(time.time()) # Append the current time to a list of time points
-    aOutPoints.append(act1Pos) # Append the setpoint to a list of setpoints
-    lastTime = time.time() - start
-    if lastTime > 10000:
-        df = pd.DataFrame({ 'time' : pointTime,
-                    'Positions' : posReads,
-                    'Current' : currReads,
-                    'Set Point' : aOutPoints})
-        df.to_csv('actData.csv', sep = ',')
-        lastTime = time.time()
-    else:
-        pass
-    
-    if pos in range(int(act1Pos - 2), int(act1Pos + 2)):
-        '''
-        If the current position reading on the actuator is within 2% of the position setpoint, change the setpoint
-        '''
-        time.sleep(1)
-        act1Pos = modulate(DAC_A)
-        print('Current Cycle Number is ', test1)
-        print('Actuator Current Draw', curr)
-        print('Actuator Temperature ', temp)
-        test1 += 1
-        wait = 0.75
-    else:
-        wait = wait * 2
-        read = do_measurement()
-        pos = read[0]
-        posReads.append(pos) # Append the position reading to a list of position readings
-        currReads.append(curr)
-        pointTime.append(time.time()) # Append the current time to a list of time points
-        aOutPoints.append(pos) # Append the setpoint to a list of setpoints
-        currReads.append(curr)
-        print('Set Point', int(act1Pos - 2), pos, int(act1Pos + 2))
-        print('Current Draw ', curr )
-        print('Actuator Temperature ', temp)
-        time.sleep(wait)
-df = pd.DataFrame({ 'time' : pointTime,
-                    'Positions' : posReads,
-                    'Set Point' : aOutPoints
-                    })
-df.to_csv('actData.csv', sep = ',')
-print('except')
-GPIO.cleanup()
 
+dac.write_dac(DAC_B, dac.v_ref)
+print('DAC_B to HIGH')
+t1State = t2State = True
+
+while (t1State | t2State) == True: # If either t1 or t2 still have cycles left, continue the test
+    if t1 < 1000000:
+        read = an.do_measurement(CH1_SEQUENCE) # Measure a sequence of inputs outline in CH1_Sequence
+        pos1.append(read[0])
+        cur1.append(read[1])
+        temp1.append(read[2])
+        ct1.append(time.time())
+        lastTime1 = time.time() - stamp1
+        if lastTime1 > 3600:
+            df1 = pd.DataFrame({ 'time' : time.time(),
+                        'Positions' : pos1,
+                        'Current' : cur1,
+                        'Temperature' : temp1,
+                        'Set Point' : a1})
+            df1.to_csv('act1Data.csv', sep = ',')
+            stamp1 = time.time()
+        else:
+            pass
+        if read[0] in range(int(a1 - slack1), int(a1 + slack1)):
+            '''
+            If the current position reading on the actuator is within 2% of the position setpoint, change the setpoint
+            '''
+            time.sleep(1)
+            ap1 = an.modulate(DAC_A)
+            print('Current Cycle Number is ', t1)
+            print('Actuator Current Draw', cur1)
+            print('Actuator Temperature ', temp1)
+            t1 += 1
+            w1 = 0.75
+            slack1 = 2
+        else:
+            w1 = w1 * 1.5
+            slack1 = slack1*1.05
+            print('Set Point', int(a1 - slack1), read[0], int(a1 + slack1))
+            print('Current Draw ', cur1 )
+            print('Actuator Temperature ', temp1)
+            time.sleep(w1)
+    else:
+        t1State = False
+    if t2 < 1000000:
+        read = an.do_measurement(CH2_SEQUENCE) # Measure a sequence of inputs outline in CH1_Sequence
+        pos2.append(read[0])
+        cur2.append(read[1])
+        temp2.append(read[2])
+        ct2.append(time.time())
+        lastTime2 = time.time() - stamp2
+        if lastTime2 > 3600:
+            df2 = pd.DataFrame({ 'time' : time.time(),
+                        'Positions' : pos2,
+                        'Current' : cur2,
+                        'Temperature' : temp2,
+                        'Set Point' : a2})
+            df2.to_csv('act2Data.csv', sep = ',')
+            stamp2 = time.time()
+        else:
+            pass
+        if read[0] in range(int(a2 - slack2), int(a2 + slack2)):
+            '''
+            If the current position reading on the actuator is within 2% of the position setpoint, change the setpoint
+            '''
+            time.sleep(1)
+            ap1 = an.modulate(DAC_B)
+            print('Current Cycle Number is ', t2)
+            print('Actuator Current Draw', cur2)
+            print('Actuator Temperature ', temp2)
+            t2 += 1
+            w2 = 0.75
+            slack2 = 2
+        else:
+            w2 = w2 * 1.5
+            slack2 = slack2*1.05
+            print('Set Point', int(a2 - slack2), read[0], int(a2 + slack2))
+            print('Current Draw ', cur2 )
+            print('Actuator Temperature ', temp2)
+            time.sleep(w2)
+    else:
+        t2State = False
+df1 = pd.DataFrame({ 'time' : time.time(),
+                    'Positions' : pos1,
+                    'Current' : cur1,
+                    'Temperature' : temp1,
+                    'Set Point' : a1})
+
+df1.to_csv('act2Data.csv', sep = ',')
+
+df2 = pd.DataFrame({ 'time' : time.time(),
+                    'Positions' : pos2,
+                    'Current' : cur2,
+                    'Temperature' : temp2,
+                    'Set Point' : a2})
+
+df2.to_csv('act2Data.csv', sep = ',')
+
+print('sacrificing IO daemons')
+
+bash = "sudo killall pigpiod" 
+process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
+
+print('except')
 

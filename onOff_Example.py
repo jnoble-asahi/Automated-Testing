@@ -140,6 +140,8 @@ test3.to_csv("test3_logs.csv")
 
 print('sacrificing IO daemons')
 
+print('sacrificing IO daemons')
+
 bash = "sudo killall pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()
