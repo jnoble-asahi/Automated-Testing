@@ -100,8 +100,7 @@ while (t1State | t2State) == True: # If either t1 or t2 still have cycles left, 
             If the current position reading on the actuator is within 2% of the position setpoint, change the setpoint
             '''
             time.sleep(1)
-            apR1 = an.modulate(DAC_A)
-            apC1 = an.positionConvert(apR1, 0)
+            apC1 = an.modulate(DAC_A)
             print('Act 1 Cycle Number is ', t1, 'Actuator Current Draw', read[1], 'Actuator Temperature ', read[2] )
             t1 += 1
             w1 = 0.75
@@ -136,8 +135,7 @@ while (t1State | t2State) == True: # If either t1 or t2 still have cycles left, 
             If the current position reading on the actuator is within 2% of the position setpoint, change the setpoint
             '''
             time.sleep(1)
-            apR1 = an.modulate(DAC_B)
-            apC2 = an.positionConvert(apR2, 1)
+            apC2 = an.modulate(DAC_B)
             print('Act2 Cycle Number is ', t2, 'Actuator Current Draw', read[1], 'Actuator Temperature ', read[2])
             t2 += 1
             w2 = 0.75
