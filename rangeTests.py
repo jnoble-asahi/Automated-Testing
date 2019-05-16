@@ -58,7 +58,8 @@ CH2_SEQUENCE =  (an.INPUTS_ADDRESS[1], an.INPUTS_ADDRESS[3], an.INPUTS_ADDRESS[6
 ### Setup for the modulating tests ###
 stamp1 = stamp2 = time.time() # Used as a reference for the datalogger
 apR1 = apR2 = dac.v_ref * dac.digit_per_v # The raw value for a high output on the DAC channels
-apC1 = apC2 = an.positionConvert(apR1) # Convert the raw value to a position readingg
+apC1 = 100
+apC2 = 100 # Convert the raw value to a position readingg
 pos1 = pos2 = [] # Create empty lists to add position readings to
 cur1 = cur2 = [] # Create empty lists to add current readings to
 temp1 = temp2 = [] # Create empty lists to add temperature readings to
@@ -66,7 +67,7 @@ ct1 = ct2 = [] # Create empty lists to add timestamps to
 a1 = a2 = [] # Create empty lists to add test setpoints to
 t1 = t2 = 0 # Create empty lists to add cycle counts to
 w1 = w2 = 0.75 # initialize a wait time to reach the next setpoint
-slack1 = slack2 = 2
+slack1 = slack2 = 10
 
 dac.write_dac(DAC_A, apR1) # Set DAC0 to full open
 print('DAC_A to HIGH')
@@ -75,14 +76,14 @@ dac.write_dac(DAC_B, apR2) # Set DAC1 to full open
 print('DAC_B to HIGH')
 t1State = t2State = True
 
-while (t1 | t2) == True: # If either t1 or t2 still have cycles left, continue the test
+while (t1State | t2State) == True: # If either t1 or t2 still have cycles left, continue the test
     if t1 < 1000000:
         read = an.do_measurement(CH1_SEQUENCE, 0) # Measure a sequence of inputs outline in CH1_Sequence
         pos1.append(read[0])
         cur1.append(read[1])
         temp1.append(read[2])
         ct1.append(time.time())
-        a1.append(apc1)
+        a1.append(apC1)
         lastTime1 = time.time() - stamp1
         if lastTime1 > 3600:
             df1 = pd.DataFrame({ 'time' : time.time(),
@@ -100,15 +101,15 @@ while (t1 | t2) == True: # If either t1 or t2 still have cycles left, continue t
             '''
             time.sleep(1)
             apR1 = an.modulate(DAC_A)
-            apC1 = an.positionConvert(apR1)
-            print('Current Cycle Number is ', t1, 'Actuator Current Draw', read[1], 'Actuator Temperature ', read[2] )
+            apC1 = an.positionConvert(apR1, 0)
+            print('Act 1 Cycle Number is ', t1, 'Actuator Current Draw', read[1], 'Actuator Temperature ', read[2] )
             t1 += 1
             w1 = 0.75
             slack1 = 2
         else:
             w1 = w1 * 1.5
-            slack1 = slack1*1.05
-            print('Set Point', int(apC1 - slack1), read[0], int(apC1 + slack1), 'Current Draw ', read[1], 'Actuator Temperature ', read[2])
+            slack1 = slack1*1.25
+            print('Act1 Set Point', int(apC1 - slack1), read[0], int(apC1 + slack1), 'Current Draw ', read[1], 'Actuator Temperature ', read[2])
             time.sleep(w1)
     else:
         t1State = False
@@ -136,15 +137,15 @@ while (t1 | t2) == True: # If either t1 or t2 still have cycles left, continue t
             '''
             time.sleep(1)
             apR1 = an.modulate(DAC_B)
-            apC2 = an.positionConvert(apR2)
-            print('Current Cycle Number is ', t2, 'Actuator Current Draw', read[1], 'Actuator Temperature ', read[2])
+            apC2 = an.positionConvert(apR2, 1)
+            print('Act2 Cycle Number is ', t2, 'Actuator Current Draw', read[1], 'Actuator Temperature ', read[2])
             t2 += 1
             w2 = 0.75
             slack2 = 2
         else:
             w2 = w2 * 1.5
-            slack2 = slack2*1.05
-            print('Set Point', int(apC2 - slack2), read[0], int(apC2 + slack2), 'Current Draw ', read[1], 'Actuator Temperature ', read[2] )
+            slack2 = slack2*1.25
+            print('Act2 Set Point', int(apC2 - slack2), read[0], int(apC2 + slack2), 'Current Draw ', read[1], 'Actuator Temperature ', read[2] )
             time.sleep(w2)
     else:
         t2State = False

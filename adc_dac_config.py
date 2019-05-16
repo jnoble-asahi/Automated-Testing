@@ -120,7 +120,7 @@ def single_measurement(chanIn):
 def modulate(modChan):
     aOut = int(np.random.randint(0, high = dac.v_ref) * dac.digit_per_v) #Default arguments of none for size, and I for dtype (single value, and int for data type)
     dac.write_dac(modChan, aOut)
-    aPos = int((float(aOut) / (dac.v_ref)) * 100)
+    aPos = int((float(aOut) / (dac.v_ref * dac.digit_per_v)) * 100)
     print('DAC_A to Random', aPos)
     return(aPos)
 
