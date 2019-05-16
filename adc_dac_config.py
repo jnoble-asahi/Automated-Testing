@@ -56,7 +56,7 @@ EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_
 EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
 INPUTS_ADDRESS = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7, EXT8)
 dac = DAC8552()
-dac.v_ref = int(5 * dac.digit_per_v) # Start with the dac output set to vRef
+dac.v_ref = int(3.3 * dac.digit_per_v) # Start with the dac output set to vRef
 
 
 def positionMeasurement(chanIn):
@@ -70,7 +70,7 @@ def positionMeasurement(chanIn):
 def positionConvert(pos, chan):
     '''Take the raw value from a position measurment and convert that to a value of 0 - 100%
     '''
-    x = ((float(pos - minRaw[chan]) / maxRaw[chan]) * 100)
+    x = ((float(float(pos - minRaw[chan]) / maxRaw[chan])) * 100)
     return(x)
 
 def rawConvert(y):
@@ -121,7 +121,7 @@ def modulate(modChan):
     aOut = int(np.random.randint(0, high = dac.v_ref) * dac.digit_per_v) #Default arguments of none for size, and I for dtype (single value, and int for data type)
     dac.write_dac(modChan, aOut)
     aPos = int((float(aOut) / (dac.v_ref * dac.digit_per_v)) * 100)
-    print('DAC_A to Random', aPos)
+    print( modChan, ' to Random', aPos)
     return(aPos)
 
 def do_measurement(inputs, chan):
@@ -133,5 +133,4 @@ def do_measurement(inputs, chan):
     pos_channel = int(positionConvert(raw_channels[0], chan))
     curr = int(currentConvert(raw_channels[1]))
     temp = tempConvert(raw_channels[2])
-    print('act Position', pos_channel, time.time())
     return(pos_channel, curr, temp, time.time())
