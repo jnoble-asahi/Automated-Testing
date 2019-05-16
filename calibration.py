@@ -8,30 +8,22 @@ This script written by Chris May - pezLyfe on github
 ######## '''
 # Adding a couple of things that need to be worked out later
 import os
-import RPi.GPIO as GPIO
 import pigpio as io
 import time
 import pandas as pd
-import os
-import sys
-print(sys.path)
-import math as mt
 import numpy as np
 from ADS1256_definitions import * #Configuration file for the ADC settings
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
-import gpiozero as gz #Library for using the GPIO with python
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 
-maxRaw = 6700000
-minRaw = 300000
+maxRaw = [6700000, 6700000 ]
+minRaw = [300000, 300000 ]
 ads = ADS1256()
 ads.cal_self() 
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
 EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
 EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
 CH_SEQUENCE = (EXT1, EXT2)
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BCM)
 dac = DAC8552()
 dac.v_ref = int(5 * dac.digit_per_v) # Start with the dac output set to vRef
 
@@ -41,7 +33,7 @@ def positionConvert(raw):
     This is a linearization function for converting raw digital conversions into a human readable position reading
     Position readings vary from 0 - 100%, and are based on the 4-20 mA feedback signal from the actuator
     '''
-    pos = (float(raw - minRaw)) / 64000
+    pos = (float(raw - minRaw)) / 65535
     return(pos)
 
 def rawConvert(position):
@@ -49,7 +41,7 @@ def rawConvert(position):
     This is a linearization function for converting position readings to raw digital readings
     Position readings vary from 0 - 100%, and the raw readings vary from 0 to 8,388,608
     '''
-    raw = (position * 64000) + minRaw
+    raw = (position * 65535) + minRaw
     return(raw)
 
 def do_measurement():
@@ -61,11 +53,13 @@ def do_measurement():
     raw_channels = ads.read_sequence(CH_SEQUENCE) #Read the raw integer input on the channels defined in read_sequence
     #pos_channels = int(positionConvert(raw_channels[0]))
     print('act Position', raw_channels[0])
+    print('act2 Position', raw_channels[1])
     return(raw_channels)
 
 def modulate(position):
     aOut = int(float(dac.v_ref * dac.digit_per_v) * float(position)/100)
     dac.write_dac(DAC_A, aOut)
+    dac.write_dac(DAC_B, aOut)
     print(aOut)
 
 ### Setup for the modulating tests ###
@@ -73,7 +67,7 @@ positions = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 start = time.time()
 i = 0
 while i < len(positions):
-    if time.time() - start < 15:
+    if time.time() - start < 30:
         do_measurement()
         time.sleep(1)
     else:
