@@ -17,7 +17,7 @@ from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 
 maxRaw = [6700000, 6700000 ]
-minRaw = [300000, 300000 ]
+minRaw = [22500, 22500 ]
 ads = ADS1256()
 ads.cal_self() 
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
@@ -25,7 +25,7 @@ EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_
 EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
 CH_SEQUENCE = (EXT1, EXT2)
 dac = DAC8552()
-dac.v_ref = int(5 * dac.digit_per_v) # Start with the dac output set to vRef
+dac.v_ref = 5
 
 
 def positionConvert(raw):
@@ -57,7 +57,7 @@ def do_measurement():
     return(raw_channels)
 
 def modulate(position):
-    aOut = int(float(dac.v_ref * dac.digit_per_v) * float(position)/100)
+    aOut = int((float(position)/100) * (dac.v_ref * dac.digit_per_v))
     dac.write_dac(DAC_A, aOut)
     dac.write_dac(DAC_B, aOut)
     print(aOut)

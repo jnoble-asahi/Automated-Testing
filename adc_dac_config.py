@@ -56,7 +56,7 @@ EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_
 EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
 INPUTS_ADDRESS = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7, EXT8)
 dac = DAC8552()
-dac.v_ref = int(3.3 * dac.digit_per_v) # Start with the dac output set to vRef
+dac.v_ref = int(5 * dac.digit_per_v) # Start with the dac output set to vRef
 
 
 def positionMeasurement(chanIn):
