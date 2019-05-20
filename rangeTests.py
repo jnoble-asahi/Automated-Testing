@@ -56,7 +56,8 @@ CH1_SEQUENCE = (an.INPUTS_ADDRESS[0], an.INPUTS_ADDRESS[2], an.INPUTS_ADDRESS[5]
 CH2_SEQUENCE =  (an.INPUTS_ADDRESS[1], an.INPUTS_ADDRESS[3], an.INPUTS_ADDRESS[6] ) #Position, Current, Temperature channels
 
 ### Setup for the modulating tests ###
-stamp1, stamp2 = time.time() # Used as a reference for the datalogger
+stamp1 = time.time()
+stamp2 = time.time() # Used as a reference for the datalogger
 apR1 = apR2 = dac.v_ref * dac.digit_per_v # The raw value for a high output on the DAC channels
 apC1 = 100
 apC2 = 100 # Convert the raw value to a position readingg
