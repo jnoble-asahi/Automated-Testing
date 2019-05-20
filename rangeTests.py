@@ -76,7 +76,7 @@ dac.write_dac(DAC_B, apR2) # Set DAC1 to full open
 print('DAC_B to HIGH')
 t1State = t2State = True
 
-while (t1State | t2State) == True: # If either t1 or t2 still have cycles left, continue the test
+while True: # If either t1 or t2 still have cycles left, continue the test
     if (t1 < 1000000) & ((time.time() - stamp1) > w1):
         read = an.do_measurement(CH1_SEQUENCE, 0) # Measure a sequence of inputs outline in CH1_Sequence
         pos1.append(read[0])
