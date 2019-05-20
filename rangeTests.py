@@ -56,18 +56,26 @@ CH1_SEQUENCE = (an.INPUTS_ADDRESS[0], an.INPUTS_ADDRESS[2], an.INPUTS_ADDRESS[5]
 CH2_SEQUENCE =  (an.INPUTS_ADDRESS[1], an.INPUTS_ADDRESS[3], an.INPUTS_ADDRESS[6] ) #Position, Current, Temperature channels
 
 ### Setup for the modulating tests ###
-stamp1 = stamp2 = time1 = time2 = time.time() # Used as a reference for the datalogger
+stamp1, stamp2 = time.time() # Used as a reference for the datalogger
 apR1 = apR2 = dac.v_ref * dac.digit_per_v # The raw value for a high output on the DAC channels
 apC1 = 100
 apC2 = 100 # Convert the raw value to a position readingg
-pos1 = pos2 = [] # Create empty lists to add position readings to
-cur1 = cur2 = [] # Create empty lists to add current readings to
-temp1 = temp2 = [] # Create empty lists to add temperature readings to
-ct1 = ct2 = [] # Create empty lists to add timestamps to
-a1 = a2 = [] # Create empty lists to add test setpoints to
-t1 = t2 = 0 # Create empty lists to add cycle counts to
-w1 = w2 = 1.5 # initialize a wait time to reach the next setpoint
-slack1 = slack2 = 2
+pos1 =[]
+pos2 = [] # Create empty lists to add position readings to
+cur1 = []
+cur2 = [] # Create empty lists to add current readings to
+temp1 = []
+temp2 = [] # Create empty lists to add temperature readings to
+ct1 = [] 
+ct2 = [] # Create empty lists to add timestamps to
+a1 = [] 
+a2 = [] # Create empty lists to add test setpoints to
+t1 = 0
+t2 = 0 # Create empty lists to add cycle counts to
+w1 = 1.5
+w2 = 1.5 # initialize a wait time to reach the next setpoint
+slack1 = 2
+slack2 = 2
 
 dac.write_dac(DAC_A, apR1) # Set DAC0 to full open
 print('DAC_A to HIGH')
