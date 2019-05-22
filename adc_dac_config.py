@@ -134,3 +134,9 @@ def do_measurement(inputs, chan):
     curr = int(currentConvert(raw_channels[1]))
     temp = tempConvert(raw_channels[2])
     return(pos_channel, curr, temp, time.time())
+
+def curTempRead(inputs):
+    '''Read the input voltages from ADC inputs specifically for temperature and current
+    '''
+    raw_channels = ads.read_sequence(inputs) #Read the raw integer input on the channels defined in read_sequence
+    return(raw_channels)
