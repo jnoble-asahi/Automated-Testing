@@ -49,7 +49,7 @@ cur2 = []
 cur3 = []
 stamp = []
 
-sampleRate = 30
+sampleRate = 5
 writeRate = 1800
 testTime = 21600
 start = time.time()
@@ -58,27 +58,16 @@ lastWrite = time.time()
 
 while (time.time() - start) < testTime:
     if (time.time() - last) > sampleRate:
-<<<<<<< HEAD
         read1 = an.curTempRead(CH1_SEQ)
-        temp1 = temp1.append(an.tempConvert(read1[0]))
-        temp2 = temp2.append(an.tempConvert(read1[1]))
-        temp3 = temp3.append(an.tempConvert(read1[2]))
-        cur1 = cur1.append(an.currentConvert(read1[3]))
-        cur2 = cur2.append(an.currentConvert(read1[4]))
-        cur3 = cur3.append(an.currentConvert(read1[5]))
-        print('Temp1 Measurement', an.tempConvert(read1[0]))
-        print('Current 1 Measurement', an.currentConvert(read1[4]))
-        stamp = stamp.append(time.time())
-=======
-        read1 = an.do_measurement(CH1_SEQ, 0)
         temp1.append(an.tempConvert(read1[0]))
         temp2.append(an.tempConvert(read1[1]))
         temp3.append(an.tempConvert(read1[2]))
         cur1.append(an.currentConvert(read1[3]))
         cur2.append(an.currentConvert(read1[4]))
         cur3.append(an.currentConvert(read1[5]))
+        print('Temp1 Measurement', an.tempConvert(read1[0]))
+        print('Current 1 Measurement', an.currentConvert(read1[4]))
         stamp.append(time.time())
->>>>>>> upstream/master
         last = time.time()
     else:
         time.sleep(2)
