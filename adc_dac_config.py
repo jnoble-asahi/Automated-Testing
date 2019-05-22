@@ -87,13 +87,13 @@ def currentMeasurement(chanIn):
     '''
     x = ads.read_oneshot(chanIn) #Read the raw integer input on the channels
     y = float(x * ads.v_per_digit)
-    current = (y * 186)
+    current = (2.5 - y) * 186
     return(current)
 
 def currentConvert(curr):
     '''Linearize a raw current input reading
     '''
-    x = float(curr * ads.v_per_digit)*186
+    x = (2.5 - float(curr * ads.v_per_digit))*186
     return(x)
 
 def tempMeasurement(chanIn):
