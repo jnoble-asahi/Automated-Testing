@@ -59,7 +59,7 @@ class on_off:
         Read the cycleTime from the test parameters sheet and check that it's in the proper range. If not raise a warning. Cast it as 
         a list for security.
         '''
-        if cycleTime not in range(1, 61, 1):
+        if cycleTime not in range(1, 100, 1):
             raise ValueError('Cycle times must be whole number between 1 and 60')
         else:
             self.cycleTime.append(cycleTime)
