@@ -108,8 +108,9 @@ def tempMeasurement(chanIn):
 def tempConvert(temp):
     '''Convert a temperature reading from the J type thermocouple in a fahrenheit reading
     '''
-    x = float(temp * ads.v_per_digit - 1.25)/ 0.005
-    return(x)
+    x = float(temp * ads.v_per_digit)
+    y = (x- 1.25)/ 0.005
+    return(y)
 
 def single_measurement(chanIn):
     '''Read the input voltages from the ADC inputs, returns as a raw integer value
