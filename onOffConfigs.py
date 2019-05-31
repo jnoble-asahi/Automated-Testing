@@ -114,12 +114,12 @@ class on_off:
         a tuple to make it immutable. This isn't used right now, but will be important when we tie the test center in with an electro-mechanical
         load
         '''
-        if torqueRating not in range(20, 5000, 1):
-            raise ValueError('Test torques must be a whole number between 20 - 5000')
-        else:
-            self.torque_req.append(int(torqueRating))
-            tuple(self.torque_req)
-            print('Torque range created')
+        #if torqueRating not in range(20, 5000, 1):
+        #    raise ValueError('Test torques must be a whole number between 20 - 5000')
+        #else:
+        self.torque_req.append(int(torqueRating))
+        tuple(self.torque_req)
+        #    print('Torque range created')
 
     def setVoltage(self, voltageInput):
         '''
