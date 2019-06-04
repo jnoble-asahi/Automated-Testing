@@ -15,18 +15,14 @@ import numpy as np
 from ADS1256_definitions import * #Configuration file for the ADC settings
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
+from sklearn.linear_model import LinearRegression
 
-maxRaw = [6700000, 6700000 ]
-minRaw = [22500, 22500 ]
+maxRaw = []
+minRaw = []
 ads = ADS1256()
 ads.cal_self() 
-######################## Original Code and Function Definitions from the pipyadc library ################################################
-EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
-EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
-CH_SEQUENCE = (EXT1, EXT2)
 dac = DAC8552()
 dac.v_ref = 5
-
 
 def positionConvert(raw):
     '''
@@ -44,37 +40,81 @@ def rawConvert(position):
     raw = (position * 65535) + minRaw
     return(raw)
 
-def do_measurement():
-    start = time.time()
+def do_measurement(channel):
     '''Read the input voltages from the ADC inputs. The sequence that the channels are read are defined in the configuration files
     Voltages are converted from the raw integer inputs using a voltage convert function in the pipyadc library
     The conversion to current readings is given from the datasheet for the current module by sparkfun
     '''
-    raw_channels = ads.read_sequence(CH_SEQUENCE) #Read the raw integer input on the channels defined in read_sequence
+    raw_channels = ads.read_sequence(channel) #Read the raw integer input on the channels defined in read_sequence
     #pos_channels = int(positionConvert(raw_channels[0]))
     print('act Position', raw_channels[0])
-    print('act2 Position', raw_channels[1])
     return(raw_channels)
 
-def modulate(position):
+def move(position, chan):
     aOut = int((float(position)/100) * (dac.v_ref * dac.digit_per_v))
-    dac.write_dac(DAC_A, aOut)
-    dac.write_dac(DAC_B, aOut)
+    dac.write_dac(chan, aOut)
     print(aOut)
+
+EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
+EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
+
+# A dictionary that maps the channel number input from the user to the addresses in pipyadc
+chanDict = {1 : 'EXT1', 2 : 'EXT2'}
+aOutDict = {1 : 'DAC_A', 2 : 'DAC_B'}
+validChans = list(chanDict.keys)
+
+channel = input('Please enter the channel # ')
+
+if channel not in validChans:
+    raise ValueError('Channel can only be 1 or 2')
+else:
+    print('Setting IO addresses')
+
+# Set the actuator to full close
+move(0, channel)
+while True:
+    i = input('Adjust the zero point on the IV converter and press any key to continue ')
+    if not i:
+        do_measurement(channel)
+        time.sleep(2)
+    else:
+        False
+
+move(100, channel)
+while True:
+    i = input('Adjust the span on the IV converter and press any key to continue ')
+    if not i:
+        do_measurement(channel)
+        time.sleep(2)
+    else:
+        False
 
 ### Setup for the modulating tests ###
 positions = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+readings = []
 start = time.time()
 i = 0
-while i < len(positions):
-    if time.time() - start < 30:
-        do_measurement()
-        time.sleep(1)
+for i in range(len(positions)):
+    if time.time() - start < 10: # Give the actuator time to move into position
+        pass
     else:
-        print('moving to ', positions[i])
-        modulate(positions[i])
-        start = time.time()
-        i += 1
-print('except')
-GPIO.cleanup()
+        pos = []
+        for j in range(15):
+            pos[j] = do_measurement(channel)
+            time.sleep(1)
+    readings[i] = np.mean(pos)
+    move(positions[i], channel)
+    start = time.time()
+
+df = pd.DataFrame()
+df['readings'] = readings
+df['positions'] = positions
+x = df['readings']
+y = df['positions']
+
+regression_model = LinearRegression()
+regression_model.fit(x,y)
+
+for idx, col_name in enumerate(x.columns):
+    print("Coefficient for {} is {}".format(col_name, regression_model.coef_[0][idx]))
 
