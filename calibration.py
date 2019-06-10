@@ -29,15 +29,21 @@ def nice_output(digits, positions):
     sys.stdout.write(
           "\0337" # Store cursor position
         +
-"""The position value being read is:
+"""
+
+The position value being read is:
 Channel
 """
         + ", ".join(["{: 8d}".format(i) for i in digits])
+        +
 
-"""The position value being sent is:
+"""
+
+The position value being sent is:
 Channel 
 """
-        +",".join(["{: 8d}".format(i), for i in positions])
+        + ", ".join(["{: 8.3f}".format(i) for i in positions])
+        + "\n\033[J\0338" # Restore cursor position etc.
     )
 
 def positionConvert(raw):
@@ -81,7 +87,7 @@ EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_
 # A dictionary that maps the channel number input from the user to the addresses in pipyadc
 chanDict = {1 : 'EXT1', 2 : 'EXT2'}
 aOutDict = {1 : 'DAC_A', 2 : 'DAC_B'}
-validChans = chanDict.keys()
+validChans = list(chanDict.keys())
 
 channel = input('Please enter the channel # ')
 
@@ -93,12 +99,15 @@ else:
 # Set the actuator to full close
 pos = 0
 move(pos, channel)
+
 while True:
-    i = input('Adjust the zero point on the IV converter and press any key to continue ')
-    if not i:
-        do_measurement(channel, pos )
-    else:
+    i = prompt()
+    if i != 'Y':
+        do_measurement(channel, pos)
+    elif i == 'Y':
         False
+    else:
+        break
 
 pos = 100
 move(pos, channel)
@@ -107,11 +116,13 @@ This shit didn't work, find another way to pause until instructions are given to
 Also, this shit needs to display the current status of the IV converter, look that up from the example code
 '''
 while True:
-    i = input('Adjust the span on the IV converter, if ')
-    if not i:
+    i = prompt()
+    if i != 'Y':
         do_measurement(channel, pos)
-    else:
+    elif i == 'Y':
         False
+    else:
+        break
 
 ### Setup for the modulating tests ###
 positions = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -124,7 +135,7 @@ for i in range(len(positions)):
     else:
         pos = []
         for j in range(15):
-            pos[j] = do_measurement(channel)
+            pos[j] = do_measurement(channel, positions[i])
             time.sleep(1)
     readings[i] = np.mean(pos)
     move(positions[i], channel)
