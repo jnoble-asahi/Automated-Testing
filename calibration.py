@@ -61,7 +61,7 @@ EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_
 # A dictionary that maps the channel number input from the user to the addresses in pipyadc
 chanDict = {1 : 'EXT1', 2 : 'EXT2'}
 aOutDict = {1 : 'DAC_A', 2 : 'DAC_B'}
-validChans = list(chanDict.keys)
+validChans = chanDict.keys()
 
 channel = input('Please enter the channel # ')
 
