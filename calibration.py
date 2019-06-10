@@ -147,7 +147,8 @@ for i in range(len(positions)):
         for j in range(15):
             pos[j] = do_measurement(chan, positions[i])
             time.sleep(1)
-    readings[i] = np.mean(pos)
+        x = np.mean(pos)
+    readings.append(x)
     move(positions[i], chan)
     start = time.time()
 
