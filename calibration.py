@@ -12,6 +12,7 @@ import pigpio as io
 import time
 import pandas as pd
 import numpy as np
+import sys
 from ADS1256_definitions import * #Configuration file for the ADC settings
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
@@ -23,6 +24,21 @@ ads = ADS1256()
 ads.cal_self() 
 dac = DAC8552()
 dac.v_ref = 5
+
+def nice_output(digits, positions):
+    sys.stdout.write(
+          "\0337" # Store cursor position
+        +
+"""The position value being read is:
+Channel
+"""
+        + ", ".join(["{: 8d}".format(i) for i in digits])
+
+"""The position value being sent is:
+Channel 
+"""
+        +",".join(["{: 8d}".format(i), for i in positions])
+    )
 
 def positionConvert(raw):
     '''
@@ -40,20 +56,24 @@ def rawConvert(position):
     raw = (position * 65535) + minRaw
     return(raw)
 
-def do_measurement(channel):
+def do_measurement(channel, position):
     '''Read the input voltages from the ADC inputs. The sequence that the channels are read are defined in the configuration files
     Voltages are converted from the raw integer inputs using a voltage convert function in the pipyadc library
     The conversion to current readings is given from the datasheet for the current module by sparkfun
     '''
     raw_channels = ads.read_sequence(channel) #Read the raw integer input on the channels defined in read_sequence
     #pos_channels = int(positionConvert(raw_channels[0]))
-    print('act Position', raw_channels[0])
+    nice_output(raw_channels, positions)
     return(raw_channels)
 
 def move(position, chan):
     aOut = int((float(position)/100) * (dac.v_ref * dac.digit_per_v))
     dac.write_dac(chan, aOut)
     print(aOut)
+
+def prompt():
+    x = input("Ready to continue? (Y or N)")
+    return(x)
 
 EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
 EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
@@ -71,21 +91,25 @@ else:
     print('Setting IO addresses')
 
 # Set the actuator to full close
-move(0, channel)
+pos = 0
+move(pos, channel)
 while True:
     i = input('Adjust the zero point on the IV converter and press any key to continue ')
     if not i:
-        do_measurement(channel)
-        time.sleep(2)
+        do_measurement(channel, pos )
     else:
         False
 
-move(100, channel)
+pos = 100
+move(pos, channel)
+'''
+This shit didn't work, find another way to pause until instructions are given to move on
+Also, this shit needs to display the current status of the IV converter, look that up from the example code
+'''
 while True:
-    i = input('Adjust the span on the IV converter and press any key to continue ')
+    i = input('Adjust the span on the IV converter, if ')
     if not i:
-        do_measurement(channel)
-        time.sleep(2)
+        do_measurement(channel, pos)
     else:
         False
 
