@@ -9,6 +9,7 @@ This script written by Chris May - pezLyfe on github
 # Adding a couple of things that need to be worked out later
 import os
 import pigpio as io
+import subprocess
 import time
 import pandas as pd
 import numpy as np
@@ -40,7 +41,7 @@ def nice_output(digits, positions):
 The position value being read is:
 Channel
 """
-        + ", ".join(["{: 8d}".format(i) for i in digits])
+        + ", ".join(["{: 8d}".format(digits)])
         +
 
 """
@@ -48,7 +49,7 @@ Channel
 The position value being sent is:
 Channel 
 """
-        + ", ".join(["{: 8.3f}".format(i) for i in positions])
+        + ", ".join(["{: 8.3f}".format(positions)])
         + "\n\033[J\0338" # Restore cursor position etc.
     )
 
@@ -73,9 +74,9 @@ def do_measurement(channel, position):
     Voltages are converted from the raw integer inputs using a voltage convert function in the pipyadc library
     The conversion to current readings is given from the datasheet for the current module by sparkfun
     '''
-    raw_channels = ads.read_sequence(channel) #Read the raw integer input on the channels defined in read_sequence
+    raw_channels = ads.read_oneshot(channel) #Read the raw integer input on the channels defined in read_sequence
     #pos_channels = int(positionConvert(raw_channels[0]))
-    nice_output(raw_channels, positions)
+    nice_output(raw_channels, position)
     return(raw_channels)
 
 def move(position, chan):
@@ -91,11 +92,12 @@ EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_
 EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
 
 # A dictionary that maps the channel number input from the user to the addresses in pipyadc
-chanDict = {1 : 'EXT1', 2 : 'EXT2'}
-aOutDict = {1 : 'DAC_A', 2 : 'DAC_B'}
+chanDict = {1 : EXT1, 2 : EXT2}
+aOutDict = {1 : DAC_A, 2 : DAC_B}
 validChans = list(chanDict.keys())
 
 channel = input('Please enter the channel # ')
+chan = chanDict[channel]
 
 if channel not in validChans:
     raise ValueError('Channel can only be 1 or 2')
@@ -104,18 +106,20 @@ else:
 
 # Set the actuator to full close
 pos = 0
-move(pos, channel)
+move(pos, chan)
 
 while True:
-    i = prompt()
-    if i == 'Y':
-        break
-    else:
-        do_measurement(channel, pos)
-
+    do_measurement(chan, pos)
+    #i = str(prompt())
+    #if i == 'Y':
+    #    break
+    #else:
+    #    continue
+except(keyboardInterrupt):
+    break
 
 pos = 100
-move(pos, channel)
+move(pos, chan)
 '''
 This shit didn't work, find another way to pause until instructions are given to move on
 Also, this shit needs to display the current status of the IV converter, look that up from the example code
@@ -125,7 +129,7 @@ while True:
     if i == 'Y':
         break
     else:
-        do_measurement(channel, pos)
+        do_measurement(chan, pos)
 
 ### Setup for the modulating tests ###
 positions = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
@@ -138,10 +142,10 @@ for i in range(len(positions)):
     else:
         pos = []
         for j in range(15):
-            pos[j] = do_measurement(channel, positions[i])
+            pos[j] = do_measurement(chan, positions[i])
             time.sleep(1)
     readings[i] = np.mean(pos)
-    move(positions[i], channel)
+    move(positions[i], chan)
     start = time.time()
 
 df = pd.DataFrame()
