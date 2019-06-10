@@ -18,6 +18,12 @@ from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 #from sklearn.linear_model import LinearRegression
 
+
+# Start the pigpio daemon 
+bash = "sudo pigpiod" 
+process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
+
 maxRaw = []
 minRaw = []
 ads = ADS1256()
@@ -102,12 +108,11 @@ move(pos, channel)
 
 while True:
     i = prompt()
-    if i != 'Y':
-        do_measurement(channel, pos)
-    elif i == 'Y':
-        False
-    else:
+    if i == 'Y':
         break
+    else:
+        do_measurement(channel, pos)
+
 
 pos = 100
 move(pos, channel)
@@ -117,12 +122,10 @@ Also, this shit needs to display the current status of the IV converter, look th
 '''
 while True:
     i = prompt()
-    if i != 'Y':
-        do_measurement(channel, pos)
-    elif i == 'Y':
-        False
-    else:
+    if i == 'Y':
         break
+    else:
+        do_measurement(channel, pos)
 
 ### Setup for the modulating tests ###
 positions = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
