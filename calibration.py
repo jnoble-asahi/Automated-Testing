@@ -108,28 +108,30 @@ else:
 pos = 0
 move(pos, chan)
 
-while True:
-    do_measurement(chan, pos)
+try: 
+    while True:
+        do_measurement(chan, pos)
+except KeyboardInterrupt:
+    break
     #i = str(prompt())
     #if i == 'Y':
     #    break
     #else:
     #    continue
-except(keyboardInterrupt):
-    break
+
 
 pos = 100
 move(pos, chan)
-'''
-This shit didn't work, find another way to pause until instructions are given to move on
-Also, this shit needs to display the current status of the IV converter, look that up from the example code
-'''
-while True:
-    i = prompt()
-    if i == 'Y':
-        break
-    else:
+
+try:
+    while True:
         do_measurement(chan, pos)
+    #i = prompt()
+    #if i == 'Y':
+    #    break
+    #else:
+except KeyboardInterrupt:
+    break       
 
 ### Setup for the modulating tests ###
 positions = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
