@@ -98,6 +98,7 @@ validChans = list(chanDict.keys())
 
 channel = input('Please enter the channel # ')
 chan = chanDict[channel]
+out = aOutDict[channel]
 
 if channel not in validChans:
     raise ValueError('Channel can only be 1 or 2')
@@ -106,13 +107,14 @@ else:
 
 # Set the actuator to full close
 pos = 0
-move(pos, chan)
+move(pos, out)
 
 try: 
     while True:
         do_measurement(chan, pos)
 except KeyboardInterrupt:
-    break
+    pos = 100
+    move(pos, out)
     #i = str(prompt())
     #if i == 'Y':
     #    break
@@ -120,8 +122,7 @@ except KeyboardInterrupt:
     #    continue
 
 
-pos = 100
-move(pos, chan)
+
 
 try:
     while True:
@@ -131,7 +132,7 @@ try:
     #    break
     #else:
 except KeyboardInterrupt:
-    break       
+    pass       
 
 ### Setup for the modulating tests ###
 positions = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
