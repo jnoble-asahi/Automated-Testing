@@ -15,7 +15,7 @@ import numpy as np
 from ADS1256_definitions import * #Configuration file for the ADC settings
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
-from sklearn.linear_model import LinearRegression
+#from sklearn.linear_model import LinearRegression
 
 maxRaw = []
 minRaw = []
@@ -109,12 +109,15 @@ for i in range(len(positions)):
 df = pd.DataFrame()
 df['readings'] = readings
 df['positions'] = positions
+df.to_csv('calibrationReadings.csv', sep = ',')
+
+
+'''
 x = df['readings']
 y = df['positions']
-
 regression_model = LinearRegression()
 regression_model.fit(x,y)
 
 for idx, col_name in enumerate(x.columns):
     print("Coefficient for {} is {}".format(col_name, regression_model.coef_[0][idx]))
-
+'''
