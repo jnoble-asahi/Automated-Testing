@@ -139,6 +139,7 @@ positions = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 readings = []
 start = time.time()
 i = 0
+x = 0
 for i in range(len(positions)):
     if time.time() - start < 10: # Give the actuator time to move into position
         pass
