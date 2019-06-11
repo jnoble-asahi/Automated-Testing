@@ -147,13 +147,14 @@ i = 0
 x = 0
 for i in range(len(places)):
     elapsed = time.time() - start
+    p = places[i]
     if (elapsed > 10): # Give the actuator time to move into position
         pos = []
         for j in range(15):
-            pos[j] = do_measurement(chan, places[i])
+            pos.append(do_measurement(chan, p))
             time.sleep(1)
         x = np.mean(pos)
-        move(places[i], out)
+        move(p, out)
         readings.append(x)
         start = time.time()
     else:
