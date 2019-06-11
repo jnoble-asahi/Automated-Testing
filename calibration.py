@@ -146,17 +146,20 @@ start = time.time()
 i = 0
 x = 0
 for i in range(len(places)):
-    if ((time.time() - start) > 10): # Give the actuator time to move into position
+    elapsed = time.time() - start
+    if (elapsed > 10): # Give the actuator time to move into position
         pos = []
         for j in range(15):
             pos[j] = do_measurement(chan, places[i])
             time.sleep(1)
+        x = np.mean(pos)
+        move(places[i], out)
+        readings.append(x)
+        start = time.time()
     else:
         time.sleep(1)
-    x = np.mean(pos)
-    readings.append(x)
-    move(places[i], chan)
-    start = time.time()
+    
+    
 
 df = pd.DataFrame()
 df['readings'] = readings
