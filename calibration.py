@@ -145,23 +145,22 @@ readings = []
 start = time.time()
 i = 0
 x = 0
+# The top level loop executes several times while waiting for the comparision operation to return True
+# Re-organize the loop, or break it into functions such that the top level loop won't increment until the actuator has moved, and
+# the readings have finished being taken
 for i in range(len(places)):
-    elapsed = time.time() - start
     p = places[i]
-    if (elapsed > 10): # Give the actuator time to move into position
+    for j in range(20):
         pos = []
-        for j in range(15):
-            pos.append(do_measurement(chan, p))
+        move(p, out)
+        if (j > 10):
+            pos.append(do_measurement(chan,p))
+            time.sleep(1)
+        else:
             time.sleep(1)
         x = np.mean(pos)
-        move(p, out)
         readings.append(x)
-        start = time.time()
-    else:
-        time.sleep(1)
     
-    
-
 df = pd.DataFrame()
 df['readings'] = readings
 df['positions'] = places
