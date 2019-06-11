@@ -140,27 +140,27 @@ Using keyboard interrupt, the try/except exits past the next for loop. I gave th
 '''
 
 ### Setup for the modulating tests ###
-positions = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
+places = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
 readings = []
 start = time.time()
 i = 0
 x = 0
-for i in range(len(positions)):
-    if time.time() - start < 10: # Give the actuator time to move into position
-        pass
-    else:
+for i in range(len(places)):
+    if ((time.time() - start) > 10): # Give the actuator time to move into position
         pos = []
         for j in range(15):
-            pos[j] = do_measurement(chan, positions[i])
+            pos[j] = do_measurement(chan, places[i])
             time.sleep(1)
-        x = np.mean(pos)
+    else:
+        time.sleep(1)
+    x = np.mean(pos)
     readings.append(x)
-    move(positions[i], chan)
+    move(places[i], chan)
     start = time.time()
 
 df = pd.DataFrame()
 df['readings'] = readings
-df['positions'] = positions
+df['positions'] = places
 df.to_csv('calibrationReadings.csv', sep = ',')
 
 
