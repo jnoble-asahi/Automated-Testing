@@ -132,7 +132,12 @@ try:
     #    break
     #else:
 except KeyboardInterrupt:
-    pass       
+    pos = 0
+    move(pos, out)       
+
+'''
+Using keyboard interrupt, the try/except exits past the next for loop. I gave the except block something to do, check if it exits correctly now
+'''
 
 ### Setup for the modulating tests ###
 positions = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100]
