@@ -161,10 +161,13 @@ for i in range(len(places)):
         x = np.mean(pos)
         readings.append(x)
     
-df = pd.DataFrame()
-df['readings'] = readings
-df['positions'] = places
-df.to_csv('calibrationReadings.csv', sep = ',')
+print('Number of positions: ', len(places))
+print('Number of readings', len(readings))
+
+#df = pd.DataFrame()
+#df['readings'] = readings
+#df['positions'] = places
+#df.to_csv('calibrationReadings.csv', sep = ',')
 
 
 '''
