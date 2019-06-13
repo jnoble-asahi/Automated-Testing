@@ -88,9 +88,10 @@ while 1000 > pv[0]: # Flagging this to change later, should be changed to while 
                 if abs(cycleTimes[i] - temp) > (cycleTimes[i]/2):
                     print('switch ', i, ' bounced')
                     bounces[i] += 1
-                else:
-                    cycleTimes[i] = temp
-                    print('Setting cycle time as: ', cycleTimes[i], 'on ', i)
+                else: 
+                    pass
+                    #cycleTimes[i] = temp
+                    #print('Setting cycle time as: ', cycleTimes[i], 'on ', i)
         elif (swWas == 0) & (state == 1):
             print('Switch ', i, ' changed')
             sw[i] = HIGH
