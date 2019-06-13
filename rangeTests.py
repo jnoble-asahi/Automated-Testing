@@ -87,10 +87,13 @@ t1State = t2State = True
 
 while True: # If either t1 or t2 still have cycles left, continue the test
     if (t1 < 1000000) & ((time.time() - stamp1) > w1):
-        read = an.do_measurement(CH1_SEQUENCE, 0) # Measure a sequence of inputs outline in CH1_Sequence
-        pos1.append(read[0])
-        cur1.append(read[1])
-        temp1.append(read[2])
+        pos1Read = an.single_measurement(CH1_SEQUENCE[0])
+        cur1Read = an.single_measurement(CH1_SEQUENCE[1])
+        temp1Read = an.single_measurement(CH1_SEQUENCE[2]) 
+        #an.do_measurement(CH1_SEQUENCE, 0) # Measure a sequence of inputs outline in CH1_Sequence
+        pos1.append(pos1Read)
+        cur1.append(cur1Read)
+        temp1.append(temp1Read)
         ct1.append(time.time())
         a1.append(apC1)
         lastTime1 = time.time() - stamp1
@@ -122,10 +125,14 @@ while True: # If either t1 or t2 still have cycles left, continue the test
     else:
         t1State = False
     if (t2 < 1000000) & ((time.time() - stamp2) > w2):
-        read = an.do_measurement(CH2_SEQUENCE, 1) # Measure a sequence of inputs outline in CH1_Sequence
-        pos2.append(read[0])
-        cur2.append(read[1])
-        temp2.append(read[2])
+        #read = an.do_measurement(CH2_SEQUENCE, 1) # Measure a sequence of inputs outline in CH1_Sequence
+        pos2Read = an.single_measurement(CH2_SEQUENCE[0])
+        cur2Read = an.single_measurement(CH2_SEQUENCE[1])
+        temp2Read = an.single_measurement(CH2_SEQUENCE[2]) 
+        #an.do_measurement(CH1_SEQUENCE, 0) # Measure a sequence of inputs outline in CH1_Sequence
+        pos2.append(pos2Read)
+        cur2.append(cur2Read)
+        temp2.append(temp2Read)
         ct2.append(time.time())
         a2.append(apC2)
         lastTime2 = time.time() - stamp2
