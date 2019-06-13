@@ -70,7 +70,7 @@ def positionMeasurement(chanIn):
 def positionConvert(pos, chan):
     '''Take the raw value from a position measurment and convert that to a value of 0 - 100%
     '''
-    x = ((float(float(pos - minRaw[chan]) / maxRaw[chan])) * 100)
+    x = (1.54566315430365*10**-5 - 0.05730031258085688) #This conversion only holds for the current installation
     return(x)
 
 def rawConvert(y):
