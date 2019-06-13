@@ -158,16 +158,16 @@ for i in range(len(places)):
             time.sleep(1)
         else:
             time.sleep(1)
-        x = np.mean(pos)
-        readings.append(x)
+    x = np.mean(pos)
+    readings.append(x)
     
 print('Number of positions: ', len(places))
 print('Number of readings', len(readings))
 
-#df = pd.DataFrame()
-#df['readings'] = readings
-#df['positions'] = places
-#df.to_csv('calibrationReadings.csv', sep = ',')
+df = pd.DataFrame()
+df['readings'] = readings
+df['positions'] = places
+df.to_csv('calibrationReadings.csv', sep = ',')
 
 
 '''
