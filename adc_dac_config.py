@@ -70,7 +70,7 @@ def positionMeasurement(chanIn):
 def positionConvert(pos, chan):
     '''Take the raw value from a position measurment and convert that to a value of 0 - 100%
     '''
-    x = (1.55991453001704*10**-5 - 0.35929652281208746) #This conversion only holds for the current installation
+    x = (1.55991453001704*10**-5 * pos - 0.35929652281208746) #This conversion only holds for the current installation
     return(x)
 
 def rawConvert(y):

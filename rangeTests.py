@@ -87,7 +87,7 @@ t1State = t2State = True
 
 while True: # If either t1 or t2 still have cycles left, continue the test
     if (t1 < 1000000) & ((time.time() - stamp1) > w1):
-        pos1Read = an.single_measurement(CH1_SEQUENCE[0])
+        pos1Read = int(an.positionConvert(an.single_measurement(CH1_SEQUENCE[0]),1))
         cur1Read = an.single_measurement(CH1_SEQUENCE[1])
         temp1Read = an.single_measurement(CH1_SEQUENCE[2]) 
         #an.do_measurement(CH1_SEQUENCE, 0) # Measure a sequence of inputs outline in CH1_Sequence
@@ -107,26 +107,26 @@ while True: # If either t1 or t2 still have cycles left, continue the test
             stamp1 = time.time()
         else:
             pass
-        if read[0] in range(int(apC1 - slack1), int(apC1 + slack1)):
+        if pos1Read in range(int(apC1 - slack1), int(apC1 + slack1)):
             '''
             If the current position reading on the actuator is within 2% of the position setpoint, change the setpoint
             '''
             time.sleep(1)
             apC1 = an.modulate(DAC_A)
-            print('Act 1 Cycle Number is ', t1, 'Actuator Current Draw', read[1], 'Actuator Temperature ', read[2] )
+            print('Act 1 Cycle Number is ', t1, 'Actuator Current Draw', cur1Read, 'Actuator Temperature ', temp1Read)
             t1 += 1
             w1 = 1.5
             slack1 = 2
         else:
             w1 = w1 * 1.5
-            slack1 = slack1*1.25
-            print('Act1 Set Point', int(apC1 - slack1), read[0], int(apC1 + slack1), 'Current Draw ', read[1], 'Actuator Temperature ', read[2])
+            slack1 = slack1*1.10
+            print('Act1 Set Point', int(apC1 - slack1), pos1Read, int(apC1 + slack1), 'Current Draw ', cur1Read, 'Actuator Temperature ', temp1Read)
             time.sleep(0.5)
     else:
         t1State = False
     if (t2 < 1000000) & ((time.time() - stamp2) > w2):
         #read = an.do_measurement(CH2_SEQUENCE, 1) # Measure a sequence of inputs outline in CH1_Sequence
-        pos2Read = an.single_measurement(CH2_SEQUENCE[0])
+        pos2Read = int(an.positionConvert(an.single_measurement(CH2_SEQUENCE[0]), 2))
         cur2Read = an.single_measurement(CH2_SEQUENCE[1])
         temp2Read = an.single_measurement(CH2_SEQUENCE[2]) 
         #an.do_measurement(CH1_SEQUENCE, 0) # Measure a sequence of inputs outline in CH1_Sequence
@@ -146,20 +146,20 @@ while True: # If either t1 or t2 still have cycles left, continue the test
             stamp2 = time.time()
         else:
             pass
-        if read[0] in range(int(apC2 - slack2), int(apC2 + slack2)):
+        if pos2Read in range(int(apC2 - slack2), int(apC2 + slack2)):
             '''
             If the current position reading on the actuator is within 2% of the position setpoint, change the setpoint
             '''
             time.sleep(1)
             apC2 = an.modulate(DAC_B)
-            print('Act2 Cycle Number is ', t2, 'Actuator Current Draw', read[1], 'Actuator Temperature ', read[2])
+            print('Act2 Cycle Number is ', t2, 'Actuator Current Draw', cur2Read, 'Actuator Temperature ', temp2Read)
             t2 += 1
             w2 = 1.5
             slack2 = 2
         else:
             w2 = w2 * 1.5
-            slack2 = slack2*1.25
-            print('Act2 Set Point', int(apC2 - slack2), read[0], int(apC2 + slack2), 'Current Draw ', read[1], 'Actuator Temperature ', read[2] )
+            slack2 = slack2*1.10
+            print('Act2 Set Point', int(apC2 - slack2), pos2Read, int(apC2 + slack2), 'Current Draw ', cur2Read, 'Actuator Temperature ', temp2Read)
             time.sleep(0.5)
     else:
         t2State = False
