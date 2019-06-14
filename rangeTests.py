@@ -120,7 +120,7 @@ while True: # If either t1 or t2 still have cycles left, continue the test
         else:
             w1 = w1 * 1.5
             slack1 = slack1*1.10
-            print('Act1 Set Point', int(apC1 - slack1), pos1Read, int(apC1 + slack1), 'Current Draw ', cur1Read, 'Actuator Temperature ', temp1Read)
+            print('wait time: ', w1, 'Act1 Set Point', int(apC1 - slack1), pos1Read, int(apC1 + slack1), 'Current Draw ', cur1Read, 'Actuator Temperature ', temp1Read)
             time.sleep(0.5)
     else:
         t1State = False
@@ -159,7 +159,7 @@ while True: # If either t1 or t2 still have cycles left, continue the test
         else:
             w2 = w2 * 1.5
             slack2 = slack2*1.10
-            print('Act2 Set Point', int(apC2 - slack2), pos2Read, int(apC2 + slack2), 'Current Draw ', cur2Read, 'Actuator Temperature ', temp2Read)
+            print('wait time is: ', w2, 'Act2 Set Point', int(apC2 - slack2), pos2Read, int(apC2 + slack2), 'Current Draw ', cur2Read, 'Actuator Temperature ', temp2Read)
             time.sleep(0.5)
     else:
         t2State = False
