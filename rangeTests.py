@@ -98,7 +98,7 @@ while True: # If either t1 or t2 still have cycles left, continue the test
         a1.append(apC1)
         lastTime1 = time.time() - stamp1
         if lastTime1 > 3600:
-            df1 = pd.DataFrame({ 'time' : time.time(),
+            df1 = pd.DataFrame({ 'time' : ct1,
                         'Positions' : pos1,
                         'Current' : cur1,
                         'Temperature' : temp1,
@@ -137,7 +137,7 @@ while True: # If either t1 or t2 still have cycles left, continue the test
         a2.append(apC2)
         lastTime2 = time.time() - stamp2
         if lastTime2 > 3600:
-            df2 = pd.DataFrame({ 'time' : time.time(),
+            df2 = pd.DataFrame({ 'time' : ct2,
                         'Positions' : pos2,
                         'Current' : cur2,
                         'Temperature' : temp2,
@@ -163,7 +163,7 @@ while True: # If either t1 or t2 still have cycles left, continue the test
             time.sleep(0.5)
     else:
         t2State = False
-df1 = pd.DataFrame({ 'time' : time.time(),
+df1 = pd.DataFrame({ 'time' : ct1,
                     'Positions' : pos1,
                     'Current' : cur1,
                     'Temperature' : temp1,
@@ -171,7 +171,7 @@ df1 = pd.DataFrame({ 'time' : time.time(),
 
 df1.to_csv('act2Data.csv', sep = ',')
 
-df2 = pd.DataFrame({ 'time' : time.time(),
+df2 = pd.DataFrame({ 'time' : ct2,
                     'Positions' : pos2,
                     'Current' : cur2,
                     'Temperature' : temp2,
