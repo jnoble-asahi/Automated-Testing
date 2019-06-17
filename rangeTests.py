@@ -65,9 +65,10 @@ CH2_SEQUENCE =  (an.INPUTS_ADDRESS[1], an.INPUTS_ADDRESS[3], an.INPUTS_ADDRESS[6
 ### Setup for the modulating tests ###
 stamp1 = time.time()
 stamp2 = time.time() # Used as a reference for the datalogger
-apR1 = apR2 = dac.v_ref * dac.digit_per_v # The raw value for a high output on the DAC channels
+apR1 = dac.v_ref * dac.digit_per_v
+apR2 = dac.v_ref * dac.digit_per_v # The raw value for a high output on the DAC channels
 apC1 = 100
-apC2 = 100 # Convert the raw value to a position readingg
+apC2 = 100 # Convert the raw value to a position reading
 pos1 =[]
 pos2 = [] # Create empty lists to add position readings to
 cur1 = []

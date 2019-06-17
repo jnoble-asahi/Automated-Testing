@@ -54,10 +54,60 @@ ads.cal_self()
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
 EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
 EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
+
 INPUTS_ADDRESS = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7, EXT8)
+
 dac = DAC8552()
+
 dac.v_ref = int(5 * dac.digit_per_v) # Start with the dac output set to vRef
 
+
+
+CH1_Loc = {'pos' : INPUTS_ADDRESS[0],
+           'cur' : INPUTS_ADDRESS[2],
+           'temp' : INPUTS_ADDRESS[5]}
+
+CH2_Loc = {'pos' : INPUTS_ADDRESS[1],
+           'cur' : INPUTS_ADDRESS[3],
+           'temp' : INPUTS_ADDRESS[6]}
+
+CH_Out = {'1' : DAC8552.DAC_A ,
+          '2' : DAC8552.DAC_B}
+
+CH1_SEQUENCE = (CH1_Loc['pos'], CH1_Loc['cur'], CH1_Loc['temp']) #Position, Current, Temperature channels
+
+CH2_SEQUENCE =  (CH2_Loc['pos'], CH2_Loc['cur'], CH2_Loc['temp']) #Position, Current, Temperature channels
+
+channels = {'1' : CH1_SEQUENCE,
+            '2' : CH2_SEQUENCE}
+
+tests = ('1', '2')
+
+class modSample():
+    '''
+    A class used for modulating actuator tests. Test parameters are read from a .csv file stored locally. Later I'll get updated and these
+    parameters will be read remotely. 
+    
+    In addition to the parameters needed to define the test, this class stores a bunch of variables needed to run the test function
+    that's later defined
+    '''
+    def __init__(self):
+        self.stamp = time.time() # Timestamp for the last datalog recording
+        self.positions = [] # List of positions the actuator has been in
+        self.currents = [] # List of current readings from the current sensor assigned
+        self.temps = [] # List of temperature readings from temp sensor assigned
+        self.cts = [] # List containing the length of each cycle, in seconds
+        self.setpoints = [] # List containing the setpoints the actuator went to
+        self.slack = 2 # Allowable position offset from the setpoint
+        self.wait = 1.5 # Wait time between position readings
+        self.cycles = int(0) # Number of cycles completed
+        self.wt = time.time() # A timestamp of when the current cycle started
+        self.sp = 100
+
+    def newTest(self, chan):
+        self.pinsIn = channels[chan]
+        self.pinOut = CH_Out[chan]
+        self.active = True
 
 def positionMeasurement(chanIn):
     '''
@@ -141,3 +191,56 @@ def curTempRead(inputs):
     '''
     raw_channels = ads.read_sequence(inputs) #Read the raw integer input on the channels defined in read_sequence
     return(raw_channels)
+
+def test(target):
+    if target.active == True: # Check if the test being targeted is supposed to be active
+        if (target.cycles < 1000000) & ((time.time() - target.wt) > target.wait):
+            '''
+            If the test hasn't yet completed a million cycles, and it's been longer than the required delay time, take a bunch of signal readings
+            '''
+            posRead = int(positionConvert(single_measurement(target.pinsIn[0]),1))
+            curRead = single_measurement(target.pinsIn[1])
+            tempRead = single_measurement(target.pinsIn[2]) 
+            #an.do_measurement(CH1_SEQUENCE, 0) # Measure a sequence of inputs outline in CH1_Sequence
+            target.positions.append(posRead)
+            target.current.append(curRead)
+            target.temp.append(tempRead)
+            target.cts.append(time.time())
+            target.setpoints.append(target.sp)
+            lastTime = time.time() - target.stamp
+
+            '''
+            *******************************************************
+            Need a solution for writing datalogs periodically to a .csv file. It could be as simple as putting both tests into a single .csv
+            *******************************************************
+
+            if lastTime1 > 3600:
+                df1 = pd.DataFrame({ 'time' : ct1,
+                        'Positions' : pos1,
+                        'Current' : cur1,
+                        'Temperature' : temp1,
+                        'Set Point' : a1,
+                        'Cycles' : t1})
+                df1.to_csv('act1Data.csv', sep = ',')
+                stamp1 = time.time()
+            else:
+                pass
+            '''
+            if posRead in range(int(target.sp - target.slack), int(target.sp + target.slack)):
+                '''
+                If the current position reading on the actuator is within 2% of the position setpoint, change the setpoint
+                '''
+                time.sleep(1)
+                target.sp = modulate(target.pinOut)
+                target.wt = time.time()
+                print('Act 1 Cycle Number is ', t1, 'Actuator Current Draw', cur1Read, 'Actuator Temperature ', temp1Read)
+                t1 += 1
+                w1 = 1.5
+                slack1 = 2
+            else:
+                w1 = w1 * 1.5
+                slack1 = slack1*1.10
+                print('wait time: ', w1, 'Act1 Set Point', int(apC1 - slack1), pos1Read, int(apC1 + slack1), 'Current Draw ', cur1Read, 'Actuator Temperature ', temp1Read)
+                time.sleep(0.5)
+        else:
+            t1State = False
