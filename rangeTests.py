@@ -123,8 +123,8 @@ while True: # If either t1 or t2 still have cycles left, continue the test
                         'Positions' : pos1,
                         'Current' : cur1,
                         'Temperature' : temp1,
-                        'Set Point' : a1,
-                        'Cycles' : t1})
+                        'Set Point' : a1
+                            })
             df1.to_csv('act1Data.csv', sep = ',')
             stamp1 = time.time()
         else:
@@ -159,14 +159,15 @@ while True: # If either t1 or t2 still have cycles left, continue the test
         temp2.append(temp2Read)
         ct2.append(time.time())
         a2.append(apC2)
+        t2.append(t2)
         lastTime2 = time.time() - stamp2
         if lastTime2 > 3600:
             df2 = pd.DataFrame({ 'time' : ct2,
                         'Positions' : pos2,
                         'Current' : cur2,
                         'Temperature' : temp2,
-                        'Set Point' : a2,
-                        'Cycles' : t2})
+                        'Set Point' : a2
+                        })
             df2.to_csv('act2Data.csv', sep = ',')
             stamp2 = time.time()
         else:
