@@ -1,4 +1,11 @@
 '''
+Make a class constructor that stores all parameters for each test that's running
+
+Push all of the test code into a canned function that gets called once per loop
+'''
+
+
+'''
 Notes on the differences in GPIO pin numbering schemes:
 - For a variety of reasons, there's different pin numbering schemes across the GPIO physical header position (the 40 pin connector on the pi)
 the pin numbering on the BCM2835 chip, the pin numbering scheme used by the wiringPI module, and the scheme used for the piGPIO module
@@ -67,13 +74,16 @@ cur1 = []
 cur2 = [] # Create empty lists to add current readings to
 temp1 = []
 temp2 = [] # Create empty lists to add temperature readings to
-ct1 = [] 
-ct2 = [] # Create empty lists to add timestamps to
+wt1 = time.time()
+wt2 = time.time() # Create a timestamp to compare cycle times
+ct1 = []
+ct2 = [] # Create empty lists to store cycle times
 a1 = [] 
 a2 = [] # Create empty lists to add test setpoints to
 t1 = 0
-t2 = 0 # Create empty lists to add cycle counts to
+t2 = 0 # Variable to track cycle counts
 w1 = 1.5
+
 w2 = 1.5 # initialize a wait time to reach the next setpoint
 slack1 = 2
 slack2 = 2
@@ -85,8 +95,19 @@ dac.write_dac(DAC_B, apR2) # Set DAC1 to full open
 print('DAC_B to HIGH')
 t1State = t2State = True
 
+'''
+There needs to be two variables to track current time. One should have the current value of wX (wait time for each test), and one should be
+a list of wait times for each cycle.
+
+Program flow should go: Check the delta between the current time and the wait time. If it's more than the wait time, do stuff. If it's 
+less than the wait time, wait some more.
+
+If it's more than the wait time and the actuator position is within the required range, then update the variable and append the cycle time
+to the list
+'''
+
 while True: # If either t1 or t2 still have cycles left, continue the test
-    if (t1 < 1000000) & ((time.time() - stamp1) > w1):
+    if (t1 < 1000000) & ((time.time() - wt1) > w1):
         pos1Read = int(an.positionConvert(an.single_measurement(CH1_SEQUENCE[0]),1))
         cur1Read = an.single_measurement(CH1_SEQUENCE[1])
         temp1Read = an.single_measurement(CH1_SEQUENCE[2]) 
@@ -102,7 +123,8 @@ while True: # If either t1 or t2 still have cycles left, continue the test
                         'Positions' : pos1,
                         'Current' : cur1,
                         'Temperature' : temp1,
-                        'Set Point' : a1})
+                        'Set Point' : a1,
+                        'Cycles' : t1})
             df1.to_csv('act1Data.csv', sep = ',')
             stamp1 = time.time()
         else:
@@ -113,6 +135,8 @@ while True: # If either t1 or t2 still have cycles left, continue the test
             '''
             time.sleep(1)
             apC1 = an.modulate(DAC_A)
+            ct1.append(time.time() - wt1)
+            wt1 = time.time()
             print('Act 1 Cycle Number is ', t1, 'Actuator Current Draw', cur1Read, 'Actuator Temperature ', temp1Read)
             t1 += 1
             w1 = 1.5
@@ -124,7 +148,7 @@ while True: # If either t1 or t2 still have cycles left, continue the test
             time.sleep(0.5)
     else:
         t1State = False
-    if (t2 < 1000000) & ((time.time() - stamp2) > w2):
+    if (t2 < 1000000) & ((time.time() - wt2) > w2):
         #read = an.do_measurement(CH2_SEQUENCE, 1) # Measure a sequence of inputs outline in CH1_Sequence
         pos2Read = int(an.positionConvert(an.single_measurement(CH2_SEQUENCE[0]), 2))
         cur2Read = an.single_measurement(CH2_SEQUENCE[1])
@@ -141,7 +165,8 @@ while True: # If either t1 or t2 still have cycles left, continue the test
                         'Positions' : pos2,
                         'Current' : cur2,
                         'Temperature' : temp2,
-                        'Set Point' : a2})
+                        'Set Point' : a2,
+                        'Cycles' : t2})
             df2.to_csv('act2Data.csv', sep = ',')
             stamp2 = time.time()
         else:
@@ -152,6 +177,8 @@ while True: # If either t1 or t2 still have cycles left, continue the test
             '''
             time.sleep(1)
             apC2 = an.modulate(DAC_B)
+            ct2.append(time.time() - wt2)
+            wt2 = time.time()
             print('Act2 Cycle Number is ', t2, 'Actuator Current Draw', cur2Read, 'Actuator Temperature ', temp2Read)
             t2 += 1
             w2 = 1.5

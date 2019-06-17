@@ -1,3 +1,7 @@
+'''
+Refactor by pushing all test code into a single function that gets called once per loop
+'''
+
 ############################################
 ''' This is a rough draft of code required to run the actuation tester prototype
 Full details on dependencies and set-up instructions on Github here: exampleURL.com
@@ -70,65 +74,71 @@ tempIn = (address[5], address[6], address[7])
 test1 = pd.DataFrame()
 test2 = pd.DataFrame()
 test3 = pd.DataFrame()
+active = True
 
-while 1000 > pv[0]: # Flagging this to change later, should be changed to while True or another statement
+while active == True:
+ # Flagging this to change later, should be changed to while True or another statement
     # Switch inputs use external pull-up resistors to prevent floating. Debounce provided via an RC circuit
     currentTime = time.time()
     for i in range(len(channels)):
-        state = wp.digitalRead(inputs[i])
-        swWas = sw[i]
-        if (swWas == 1) & (state == 0):
-            print('Switch ', i, ' confirmed')
-            pv[i] += 1
-            sw[i] = LOW
-            length = time.time() - cycleStart[i]
-            # Change the new rest calc to be a minimum of 1 sec, if it's less set it to the default, or the previous
-            if pv[i] > 2:
-                temp = onf.restCalc(length, duty[i])
-                if abs(cycleTimes[i] - temp) > (cycleTimes[i]/2):
-                    print('switch ', i, ' bounced')
-                    bounces[i] += 1
-                else: 
-                    pass
-                    #cycleTimes[i] = temp
-                    #print('Setting cycle time as: ', cycleTimes[i], 'on ', i)
-        elif (swWas == 0) & (state == 1):
-            print('Switch ', i, ' changed')
-            sw[i] = HIGH
-        else:
-            pass
-    for pin in range(len(channels)):
-        if currentTime - cycleStart[pin] > cycleTimes[pin]:
-            if ls[pin] == HIGH:
-                wp.digitalWrite(channels[pin], onf.LOW)
-                ls[pin] = LOW
-                cycleStart[pin] = time.time()
-                print('Actuator Closing')
-                time.sleep(0.1)
-            elif ls[pin] == LOW:
-                wp.digitalWrite(channels[pin], onf.HIGH)
-                ls[pin] = HIGH
-                cycleStart[pin] = time.time()
-                cnt[pin] += 1
-                print('Actuator Opening')
-                time.sleep(0.25)
-                t = an.tempMeasurement(tempIn[i])
-                c = an.currentMeasurement(curIn[i])
-                data_list = list([currentTime, t, c, pv[i], cnt[i]])
-                df = pd.DataFrame(data = [data_list], columns = ['time', 'temp', 'current', 'present_value', 'shot_count'])
-                if pin == 0:
-                    test1 = test1.append(df, ignore_index = True)
-                elif pin == 1:
-                    test2 = test2.append(df, ignore_index = True)
-                elif pin == 2:
-                    test3 = test3.append(df, ignore_index = True)
-                else:
-                    Warning('Test index out of range, check setup')
+        if cycles[i] > pv[i]:
+            state = wp.digitalRead(inputs[i])
+            swWas = sw[i]
+            if (swWas == 1) & (state == 0):
+                print('Switch ', i, ' confirmed')
+                pv[i] += 1
+                sw[i] = LOW
+                length = time.time() - cycleStart[i]
+                # Change the new rest calc to be a minimum of 1 sec, if it's less set it to the default, or the previous
+                if pv[i] > 2:
+                    temp = onf.restCalc(length, duty[i])
+                    if abs(cycleTimes[i] - temp) > (cycleTimes[i]/2):
+                        print('switch ', i, ' bounced')
+                        bounces[i] += 1
+                    else: 
+                        pass
+            elif (swWas == 0) & (state == 1):
+                print('Switch ', i, ' changed')
+                sw[i] = HIGH
             else:
-                Warning('Open the pod bay doors Hal')
-                ls[pin] = HIGH
-                cycleStart[pin] = time.time()
-                time.sleep(0.1)
+                pass
+        else:
+            active = False
+    for pin in range(len(channels)):
+        if cycles[i] > pv[i]:
+            if currentTime - cycleStart[pin] > cycleTimes[pin]:
+                if ls[pin] == HIGH:
+                    wp.digitalWrite(channels[pin], onf.LOW)
+                    ls[pin] = LOW
+                    cycleStart[pin] = time.time()
+                    print('Actuator Closing')
+                    time.sleep(0.1)
+                elif ls[pin] == LOW:
+                    wp.digitalWrite(channels[pin], onf.HIGH)
+                    ls[pin] = HIGH
+                    cycleStart[pin] = time.time()
+                    cnt[pin] += 1
+                    print('Actuator Opening')
+                    time.sleep(0.25)
+                    t = an.tempMeasurement(tempIn[i])
+                    c = an.currentMeasurement(curIn[i])
+                    data_list = list([currentTime, t, c, pv[i], cnt[i]])
+                    df = pd.DataFrame(data = [data_list], columns = ['time', 'temp', 'current', 'present_value', 'shot_count'])
+                    if pin == 0:
+                        test1 = test1.append(df, ignore_index = True)
+                    elif pin == 1:
+                        test2 = test2.append(df, ignore_index = True)
+                    elif pin == 2:
+                        test3 = test3.append(df, ignore_index = True)
+                    else:
+                        Warning('Test index out of range, check setup')
+                else:
+                    Warning('Open the pod bay doors Hal')
+                    ls[pin] = HIGH
+                    cycleStart[pin] = time.time()
+                    time.sleep(0.1)
+        else:
+            active = False
     if currentTime - last_print > print_rate:
         test1.to_csv("test1_logs.csv")
         test2.to_csv("test2_logs.csv")
