@@ -108,6 +108,7 @@ class modSample():
         self.pinsIn = channels[chan]
         self.pinOut = CH_Out[chan]
         self.active = True
+        self.name = chan
 
 def positionMeasurement(chanIn):
     '''
@@ -233,14 +234,15 @@ def test(target):
                 time.sleep(1)
                 target.sp = modulate(target.pinOut)
                 target.wt = time.time()
-                print('Act 1 Cycle Number is ', t1, 'Actuator Current Draw', cur1Read, 'Actuator Temperature ', temp1Read)
-                t1 += 1
-                w1 = 1.5
-                slack1 = 2
+                print("Channel {} cycle number is {}, current draw is {}, temperature is {}".format(target.name, taret.cts, curRead, tempRead))
+                target.cycles += 1
+                target.wait = 1.5
+                target.slack = 2
             else:
-                w1 = w1 * 1.5
-                slack1 = slack1*1.10
-                print('wait time: ', w1, 'Act1 Set Point', int(apC1 - slack1), pos1Read, int(apC1 + slack1), 'Current Draw ', cur1Read, 'Actuator Temperature ', temp1Read)
+                target.wait = target.wait * 1.5
+                target.slack = target.slack * 1.10
+                print("wait time is {}, Channel {} Setpoint is {} < {} < {}, Current = {}, Temp = {}".format(target.wait, target.name, \
+                    target.setpoint - target.slack, target.position, target.setpoint + target.slack, curRead, tempRead) )
                 time.sleep(0.5)
         else:
-            t1State = False
+            target.active = False
