@@ -36,10 +36,10 @@ ads = ADS1256()
 dac = DAC8552()
 ads.cal_self()
 
-dac.write_dac(DAC_A, ads.dac.v_ref) # Set DAC0 to full open
+dac.write_dac(DAC_A, an.dac.v_ref) # Set DAC0 to full open
 print('DAC_A to HIGH')
 
-dac.write_dac(DAC_B, ads.dac.v_ref) # Set DAC1 to full open
+dac.write_dac(DAC_B, an.dac.v_ref) # Set DAC1 to full open
 print('DAC_B to HIGH')
 
 chan = ('1', '2')
