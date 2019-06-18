@@ -70,8 +70,8 @@ CH2_Loc = {'pos' : INPUTS_ADDRESS[1],
            'cur' : INPUTS_ADDRESS[3],
            'temp' : INPUTS_ADDRESS[6]}
 
-CH_Out = {'1' : DAC8552.DAC_A ,
-          '2' : DAC8552.DAC_B}
+CH_Out = {'1' : dac.DAC_A ,
+          '2' : dac.DAC_B}
 
 CH1_SEQUENCE = (CH1_Loc['pos'], CH1_Loc['cur'], CH1_Loc['temp']) #Position, Current, Temperature channels
 
