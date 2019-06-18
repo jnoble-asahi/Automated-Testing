@@ -41,7 +41,6 @@ import subprocess
 
 # Start the pigpio daemon 
 print('summoning IO daemons')
-# Start the pigpio daemon 
 bash = "sudo pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()
@@ -193,56 +192,59 @@ def curTempRead(inputs):
     raw_channels = ads.read_sequence(inputs) #Read the raw integer input on the channels defined in read_sequence
     return(raw_channels)
 
-def test(target):
-    if target.active == True: # Check if the test being targeted is supposed to be active
-        if (target.cycles < 1000000) & ((time.time() - target.wt) > target.wait):
-            '''
-            If the test hasn't yet completed a million cycles, and it's been longer than the required delay time, take a bunch of signal readings
-            '''
-            posRead = int(positionConvert(single_measurement(target.pinsIn[0]),1))
-            curRead = single_measurement(target.pinsIn[1])
-            tempRead = single_measurement(target.pinsIn[2]) 
-            #an.do_measurement(CH1_SEQUENCE, 0) # Measure a sequence of inputs outline in CH1_Sequence
-            target.positions.append(posRead)
-            target.current.append(curRead)
-            target.temp.append(tempRead)
-            target.cts.append(time.time())
-            target.setpoints.append(target.sp)
-            lastTime = time.time() - target.stamp
+def modMeasure(target):
+    '''
+    Measures position, current draw, temperature from the target, and appends them to a list in target.parameter
+    Calculates the difference in time between now and the last time the data was written to csv
+    '''
+    if target.cycles < 1000000:
+        posRead = int(positionConvert(single_measurement(target.pinsIn[0]),1))
+        curRead = single_measurement(target.pinsIn[1])
+        tempRead = single_measurement(target.pinsIn[2]) 
+        target.positions.append(posRead)
+        target.current.append(curRead)
+        target.temp.append(tempRead)
+        target.cts.append(time.time())
+        target.setpoints.append(target.sp)
+        target.lastTime = time.time() - target.stamp
+        return(posRead)
+    else:
+        target.active = False
 
-            '''
-            *******************************************************
-            Need a solution for writing datalogs periodically to a .csv file. It could be as simple as putting both tests into a single .csv
-            *******************************************************
+def posCheck(target, position):
+    '''
+    Check the current position of the actuator. If it's within +/- 2% of the setpoint, change the setpoint
+    If it's not, open the tolerance slightly, and increase the wait time a little bit
+    Print a status message
+    '''
+    if position in range(int(target.sp - target.slack), int(target.sp + target.slack)):
+        print("setpoint reached on {}".format(target.name))
+        time.sleep(3)
+        target.sp = modulate(target.pinOut)
+        target.wt = time.time()
+        target.cycles += 1
+        target.wait = 1.5
+        target.slack = 2
+        print("Channel {} cycle number is {}, waiting {} seconds".format(target.name, target.cts, target.wait))
+    else:
+        target.wait = target.wait * 1.5
+        target.slack = target.slack * 1.10
+        print("wait time is {}, Channel {} Setpoint is {} < {} < {}, waiting {} seconds".format(target.wait, target.name, \
+        (target.sp - target.slack), target.position, (target.sp + target.slack), target.wait ))
+        time.sleep(0.5)
 
-            if lastTime1 > 3600:
-                df1 = pd.DataFrame({ 'time' : ct1,
-                        'Positions' : pos1,
-                        'Current' : cur1,
-                        'Temperature' : temp1,
-                        'Set Point' : a1,
-                        'Cycles' : t1})
-                df1.to_csv('act1Data.csv', sep = ',')
-                stamp1 = time.time()
-            else:
-                pass
-            '''
-            if posRead in range(int(target.sp - target.slack), int(target.sp + target.slack)):
-                '''
-                If the current position reading on the actuator is within 2% of the position setpoint, change the setpoint
-                '''
-                time.sleep(1)
-                target.sp = modulate(target.pinOut)
-                target.wt = time.time()
-                print("Channel {} cycle number is {}, current draw is {}, temperature is {}".format(target.name, taret.cts, curRead, tempRead))
-                target.cycles += 1
-                target.wait = 1.5
-                target.slack = 2
-            else:
-                target.wait = target.wait * 1.5
-                target.slack = target.slack * 1.10
-                print("wait time is {}, Channel {} Setpoint is {} < {} < {}, Current = {}, Temp = {}".format(target.wait, target.name, \
-                    target.setpoint - target.slack, target.position, target.setpoint + target.slack, curRead, tempRead) )
-                time.sleep(0.5)
-        else:
-            target.active = False
+def logCheck(target):
+    '''
+    Check if it's been longer than an hour since the last time data was written to a csv
+    If it has been longer, write target data to a csv file and update the timestamp
+    '''
+    if target.lastTime > 3600:
+        df = pd.DataFrame({ 'time' : target.cts,
+                             'Positions' : target.positions,
+                             'Current' : target.current,
+                             'Temperature' : target.temperature,
+                             'Set Point' : target.setpoints})
+        df.to_csv("act{}.csv".format(target.name), sep = ',')
+        target.stamp = time.time()
+    else:
+        pass
