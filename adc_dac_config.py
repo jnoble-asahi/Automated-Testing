@@ -91,6 +91,7 @@ class modSample():
     that's later defined
     '''
     def __init__(self):
+        self.position = 0
         self.stamp = time.time() # Timestamp for the last datalog recording
         self.positions = [] # List of positions the actuator has been in
         self.currents = [] # List of current readings from the current sensor assigned
@@ -200,7 +201,8 @@ def modMeasure(target):
     if target.cycles < 1000000:
         posRead = int(positionConvert(single_measurement(target.pinsIn[0]),1))
         curRead = single_measurement(target.pinsIn[1])
-        tempRead = single_measurement(target.pinsIn[2]) 
+        tempRead = single_measurement(target.pinsIn[2])
+        target.position = posRead
         target.positions.append(posRead)
         target.currents.append(curRead)
         target.temps.append(tempRead)

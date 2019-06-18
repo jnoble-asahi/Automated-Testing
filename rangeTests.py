@@ -66,7 +66,7 @@ while True: # If either t1 or t2 still have cycles left, continue the test
         an.logCheck(tests[i])
         state = False
         for i, value in enumerate(tests):
-            state = state | tests[i]
+            state = state | tests[i].active
         if state == False:
             False
 
