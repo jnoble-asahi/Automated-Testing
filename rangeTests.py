@@ -50,7 +50,7 @@ i = 0
 while i < len(chan):
     tests.append(an.modSample()) # Create a new instance of modSample
     tests[i].newTest(chan[i]) # Create a new test instance under modSample
-    prompt = input("Activate test on channel {}? (Y/N)".format(chan[i])) # Prompt the user to select whether this test channel should be active
+    prompt = raw_input("Activate test on channel {}? (Y/N)".format(chan[i])) # Prompt the user to select whether this test channel should be active
     if prompt == "Y":
         i += 1 # If Y, do nothing as the test instance is defaulted to be active
     elif prompt == "N":
