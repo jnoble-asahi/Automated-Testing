@@ -221,18 +221,18 @@ def posCheck(target, position):
     '''
     if (time.time() - target.wt > target.wait):
         if position in range(int(target.sp - target.slack), int(target.sp + target.slack)):
-            print("setpoint reached on {0:5d}".format(target.name))
+            print("setpoint reached on {0}".format(target.name))
             time.sleep(3)
             target.sp = modulate(target.pinOut)
             target.wt = time.time()
             target.cycles += 1
             target.wait = 1.5
             target.slack = 2
-            print("Channel {0:5d} cycle number is {1:6d}, waiting {2:7.1f} seconds".format(target.name, target.cycles, target.wait))
+            print("Channel {0} cycle number is {1}, waiting {2:1.1f} seconds".format(target.name, target.cycles, target.wait))
         else:
             target.wait = target.wait * 1.5
             target.slack = target.slack * 1.10
-            print("wait time is {0:7.1d}, Channel {1:5d} Setpoint is {2:7.1f} < {3:7.1f} < {4:7.1f}, waiting {5:7.1f} seconds".format(target.wait, target.name, \
+            print("wait time is {0:0.1f}, Channel {1} Setpoint is {2:0.1f} < {3:0.1f} < {4:0.1f}, waiting {5:1.1f} seconds".format(target.wait, target.name, \
             (target.sp - target.slack), target.position, (target.sp + target.slack), target.wait ))
             time.sleep(0.5)
     else:
