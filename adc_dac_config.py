@@ -217,21 +217,24 @@ def posCheck(target, position):
     If it's not, open the tolerance slightly, and increase the wait time a little bit
     Print a status message
     '''
-    if position in range(int(target.sp - target.slack), int(target.sp + target.slack)):
-        print("setpoint reached on {}".format(target.name))
-        time.sleep(3)
-        target.sp = modulate(target.pinOut)
-        target.wt = time.time()
-        target.cycles += 1
-        target.wait = 1.5
-        target.slack = 2
-        print("Channel {} cycle number is {}, waiting {} seconds".format(target.name, target.cts, target.wait))
+    if (time.time() - target.wt > target.wait):
+        if position in range(int(target.sp - target.slack), int(target.sp + target.slack)):
+            print("setpoint reached on {0:5d}".format(target.name))
+            time.sleep(3)
+            target.sp = modulate(target.pinOut)
+            target.wt = time.time()
+            target.cycles += 1
+            target.wait = 1.5
+            target.slack = 2
+            print("Channel {0:5d} cycle number is {1:6d}, waiting {2:7.1f} seconds".format(target.name, target.cycles, target.wait))
+        else:
+            target.wait = target.wait * 1.5
+            target.slack = target.slack * 1.10
+            print("wait time is {0:7.1d}, Channel {1:5d} Setpoint is {2:7.1f} < {3:7.1f} < {4:7.1f}, waiting {5:7.1f} seconds".format(target.wait, target.name, \
+            (target.sp - target.slack), target.position, (target.sp + target.slack), target.wait ))
+            time.sleep(0.5)
     else:
-        target.wait = target.wait * 1.5
-        target.slack = target.slack * 1.10
-        print("wait time is {}, Channel {} Setpoint is {} < {} < {}, waiting {} seconds".format(target.wait, target.name, \
-        (target.sp - target.slack), target.position, (target.sp + target.slack), target.wait ))
-        time.sleep(0.5)
+        pass
 
 def logCheck(target):
     '''
@@ -239,12 +242,15 @@ def logCheck(target):
     If it has been longer, write target data to a csv file and update the timestamp
     '''
     if target.lastTime > 3600:
-        df = pd.DataFrame({ 'time' : target.cts,
-                             'Positions' : target.positions,
-                             'Current' : target.current,
-                             'Temperature' : target.temperature,
-                             'Set Point' : target.setpoints})
-        df.to_csv("act{}.csv".format(target.name), sep = ',')
+        logData(target)
         target.stamp = time.time()
     else:
         pass
+
+def logData(target):
+    df = pd.DataFrame({'time' : target.cts,
+                        'Positions' : target.positions,
+                        'Current' : target.current,
+                        'Temperature' : target.temperature,
+                        'Set Point' : target.setpoints})
+    df.to_csv("act{}.csv".format(target.name), sep = ',')

@@ -44,7 +44,6 @@ print('DAC_B to HIGH')
 
 chan = ('1', '2')
 tests = []
-badInput = False
 
 i = 0
 while i < len(chan):
@@ -61,16 +60,22 @@ while i < len(chan):
 
 while True: # If either t1 or t2 still have cycles left, continue the test
     for i, value in enumerate(tests):
-        pos = an.modMeasure(tests[i])
-        an.posCheck(tests[i], pos)
-        an.logCheck(tests[i])
-        state = False
-        for i, value in enumerate(tests):
-            state = state | tests[i]
-        if state == False:
-            False
+        if tests[i].active == True: # Check to see if the current test channel should be active, if it is then run through the tests
+            pos = an.modMeasure(tests[i]) # Read inputs from the ADC
+            an.posCheck(tests[i], pos) # Check input states against the setpoints
+            an.logCheck(tests[i]) # See if it's time to log data to a csv
+        else:
+            pass
+    state = False # Create a variable initialized to False
+    for i, value in enumerate(tests):
+        state = state | tests[i].active # Do a piecewise OR with each test.active state
+    if state == False: # If all tests are inactive, it's time to shut it down
+        False # Should exit the main while loop
+    else:
+        pass
 
-# Log all data after test is completed
+for i, value in enumerate(tests): # Log all data after test is completed
+    an.logData(tests[i])
 
 print('sacrificing IO daemons')
 
