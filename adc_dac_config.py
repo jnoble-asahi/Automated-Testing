@@ -202,8 +202,8 @@ def modMeasure(target):
         curRead = single_measurement(target.pinsIn[1])
         tempRead = single_measurement(target.pinsIn[2]) 
         target.positions.append(posRead)
-        target.current.append(curRead)
-        target.temp.append(tempRead)
+        target.currents.append(curRead)
+        target.temps.append(tempRead)
         target.cts.append(time.time())
         target.setpoints.append(target.sp)
         target.lastTime = time.time() - target.stamp
