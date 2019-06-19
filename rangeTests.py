@@ -1,3 +1,6 @@
+# The Pi is running Python 2.x, need to update to Python 3. Then I can get rid of the raw_input() statements
+
+
 '''
 Notes on the differences in GPIO pin numbering schemes:
 - For a variety of reasons, there's different pin numbering schemes across the GPIO physical header position (the 40 pin connector on the pi)
