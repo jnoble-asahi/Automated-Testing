@@ -4,8 +4,54 @@ import sys
 import math as mt
 import numpy as np
 import wiringpi as wp
+from ADS1256_definitions import * #Configuration file for the ADC settings
+import adc_dac_config as an
+from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
+import gpiozero as gz #Library for using the GPIO with python
 import pandas as pd
 import subprocess
+
+print('summoning IO daemons')
+bash = "sudo pigpiod" 
+process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
+
+ads = ADS1256()
+ads.cal_self() 
+######################## Original Code and Function Definitions from the pipyadc library ################################################
+EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
+EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
+
+INPUTS_ADDRESS = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7, EXT8)
+
+wp.wiringPiSetupPhys()
+
+CH1_Loc = {'pos' : INPUTS_ADDRESS[0],
+           'cur' : INPUTS_ADDRESS[2],
+           'temp' : INPUTS_ADDRESS[5]}
+
+CH2_Loc = {'pos' : INPUTS_ADDRESS[1],
+           'cur' : INPUTS_ADDRESS[3],
+           'temp' : INPUTS_ADDRESS[6]}
+
+CH3_Loc = {'pos' : INPUTS_ADDRESS[0],
+           'cur' : INPUTS_ADDRESS[4],
+           'temp' : INPUTS_ADDRESS[7]}
+
+CH_Out = {'1' : DAC_A ,
+          '2' : DAC_B}
+
+CH1_SEQUENCE = (CH1_Loc['pos'], CH1_Loc['cur'], CH1_Loc['temp']) #Position, Current, Temperature channels
+
+CH2_SEQUENCE =  (CH2_Loc['pos'], CH2_Loc['cur'], CH2_Loc['temp']) #Position, Current, Temperature channels
+
+CH3_SEQUENCE =  (CH3_Loc['pos'], CH3_Loc['cur'], CH3_Loc['temp']) #Position, Current, Temperature channels
+
+inputSequence = {1 : CH1_SEQUENCE,
+                 2 : CH2_SEQUENCE,
+                 3 : CH3_SEQUENCE} 
+
+tests = ('1', '2', '3')
 
 binary = {'INPUT' : 0,
           'OUTPUT': 1,
@@ -17,15 +63,15 @@ INPUT = binary['INPUT']
 LOW = binary['LOW']
 HIGH = binary['HIGH']
 
-relayChannels = {1: 37,
-                 2: 38,
-                 3: 40}
+relayChannels = {1 : 37,
+                 2 : 38,
+                 3 : 40}
 
 chans = list(relayChannels.keys())
 
 actInputs = {1 : 31,
-             2: 33,
-             3: 35}
+             2 : 33,
+             3 : 35}
 
 voltages = {'120VAC': 120,
             '220VAC': 220,
@@ -37,7 +83,6 @@ volts = list(voltages.keys())
 Relay_Ch1 = 37
 Relay_Ch2 = 38
 Relay_Ch3 = 40
-ch1_in = 31
 
 # Define the on/off test as a class
 class on_off:
@@ -50,10 +95,31 @@ class on_off:
         self.no_cycles = []
         self.channel = []
         self.duty_cycle = []
-        self.inputs = []
+        self.input = []
         self.torque_req = []
         self.in_voltage = []
-    
+
+        self.temps = []
+        self.currents = []
+        self.cycleTrack = []
+        self.cycleCounts = []
+        self.cycleBounces = []
+        self.time = []
+
+        self.cycleTimeNow = float(0)
+        self.cycles = int(0)
+        self.active = True
+        self.cycleStart = time.time()
+        self.tempTime = time.time()
+        self.currTime = time.time()
+        self.lastLog = time.time()
+        self.print_rate = 900
+        self.pv = 0
+        self.shotCount = 0
+        self.bounces = 0
+        self.lastState = HIGH
+        self.chanState = HIGH
+
     def setCycleTime(self, cycleTime):
         '''
         Read the cycleTime from the test parameters sheet and check that it's in the proper range. If not raise a warning. Cast it as 
@@ -75,7 +141,8 @@ class on_off:
             raise ValueError('Test channel must be either 1, 2, or 3')
         else:
             self.channel.append(relayChannels[chanNumber])
-            self.inputs.append(actInputs[chanNumber])
+            self.input.append(actInputs[chanNumber])
+            self.inputSequence = inputSequence[chanNumber]
             tuple(self.channel)
             tuple(self.inputs)
             print('Test channel and input pin fixed ')
@@ -140,55 +207,123 @@ def restCalc(length, dCycle):
     rest = float(length / (float(dCycle)/100))
     return(rest)
 
-def switchCheck(ls, pin):
-    '''
-    Check the state of the input and compare it against the previous state
-    If the state has changed, debounce it and then do something
-    '''
-    state = wp.digitalRead(pin)
-    status = 0
-    if ((ls == 1) & (state == 0)):
-        status = 1
-    elif ((ls == 0) & (state == 1)):
-        status = 2
-    elif ((ls == 1) & (state == 1)):
-        status = 3
-    elif ((ls == 0) & (state == LOW)):
-        status = 3
-    else:
-        Warning('Error with switch check, did you catch all the possible cases?')
-    return(status)
-
 print('collecting test parameters from THE CLOUD')
 # Set test parameters from a .csv file shared in the cloud
 testUrl = 'https://tufts.box.com/shared/static/kpsnw7ozeytd04wyge1h2oly5pqbrb3k.csv'
 paras = pd.read_csv(testUrl)
-paras.head()
 
-one = on_off()
-two = on_off()
-three = on_off()
+onOffTests = []
 
-one.setChannel(paras['channel'][0])
-two.setChannel(paras['channel'][1])
-three.setChannel(paras['channel'][2])
+def createTest():
+    i = 0
+    while i < len(paras.columns):
+        onOffTests.append(on_off())
+        onOffTests[i].setChannel(paras['channel'][i])
+        onOffTests[i].setCycleTimes(paras['cycle time'][i])
+        onOffTests[i].setCycles(paras['target'][i])
+        onOffTests[i].setTime()
+        onOffTests[i].setDuty(paras['duty cycle'][i])
+        onOffTests[i].setTorque(paras['torque'][i])
+        onOffTests[i].setInputs(paras['channel'][i])
+    
+        prompt = raw_input("Activate test on channel {}? (Y/N)".format(onOffTests[i].channel))
+        if prompt == "Y":
+            wp.pinMode(onOffTests[i].channel, OUTPUT) # Declare the pins connected to relays as digital outputs
+            wp.pinMode(onOffTests[i].inputs, INPUT) # Decalre the pins connected to limit switches as digital inputs
+            wp.pullUpDnControl(onOffTests[i].inputs, 2) # Set the input pins for pull up control
+            wp.digitalWrite(onOffTests[i].channel, HIGH) # Write HIGH to the relay pins to start the test
+            print("Channel {} set HIGH".format(onOffTests[i].channel))
+            i += 1 # Increment the loop if reading the prompt was successful
+        elif prompt == "N":
+            onOffTests[i].active == False # De-activate the test channel if it's not being used
+            print("Channel {} set inactive".format(onOffTests[i].channel))
+            i += 1
+        else:
+            print("Input must be either Y or N") # Don't increment the loop if a bad input was entered
 
-one.setCycleTime(paras['cycle time'][0])
-two.setCycleTime(paras['cycle time'][1])
-three.setCycleTime(paras['cycle time'][2])
+def switchCheck(testChannel, switchInput):
+    '''
+    Read the state of the actuator limit switch input
+    If it's changed, do some stuff, if it hasn't changed, then do nothing
+    '''
+    state = wp.digitalRead(switchInput) # Reads the current switch state
+    lastState = testChannel.lastState # Store the last switch state in a temp variable
+    if (lastState == HIGH) & (state == LOW): # Check if the switch changed from HIGH to LOW
+        print("Switch {} confirmed".format(testChannel.name)) 
+        testChannel.pv += 1 # Increment the pv counter if the switch changed
+        testChannel.lastState = LOW #Reset the "last state" of the switch
+        length = time.time() - testChannel.cycleStart # Calculate the length of the last cycle
+        testChannel.cycleTime.append(float("{0:.2f}".format(length))) # Append the cycle time to the cycleTime list
+        testChannel.cycleTimeNow = float("{0:.2f}".format(length)) # Store the last cycle time for use in datalogging
+        '''
+        Reserved block to later add duty cycle calc functions
+        '''
+    elif (lastState == LOW) & (state == HIGH): 
+        print("Switch {} changed".format(testChannel.name))
+        testChannel.lastState = 1
+    else:
+        pass
 
-one.setCycles(paras['target'][0])
-two.setCycles(paras['target'][1])
-three.setCycles(paras['target'][2])
+def cycleCheck(testChannel):
+    '''
+    Run a series of checks against the current time, the relay states, and actuator information
+    Do something based on the results of those checks
 
-one.setTime()
-two.setTime()
-three.setTime()
+    Sensor measurments are taken on the close -> open cycle since that's the point where actuator loads are the highest
+    '''
+    if (testChannel.pv < testChannel.no_cycles): # Check to see if the current cycle count is less than the target
+        if (time.time() - testChannel.cycleStart): # Check to see if the current cycle has gone past the cycle time
+            if testChannel.chanState == HIGH: # If both are yes, change the relay state, and update cycle parameters
+                wp.digitalWrite(testChannel.channel, LOW)
+                testChannel.chanState = LOW
+                testChannel.cycleStart = time.time()
+                print("actuator {} closing".format(testChannel.name))
+                time.sleep(0.1)
+            elif testChannel.chanState == LOW: #If the actuator recently closed, change the relay state, then take some measurements
+                wp.digitalWrite(testChannel.channel, HIGH) 
+                testChannel.chanState = HIGH
+                testChannel.cycleStart = time.time()
+                testChannel.shotCount += 1
+                print("Actuator {} opening".format(testChannel.name))
+                x = an.onOff_measurement(testChannel.inputSequence)
+                testChannel.currents.append(x[0])
+                testChannel.temps.append(x[1])
+                testChannel.time.append(time.time())
+                testChannel.cycleTrack.append(testChannel.cycleTimeNow)
+                testChannel.cycleCounts.append(testChannel.cycles)
+                testChannel.cycleBounces.append(testChannel.bounces)
+            else:
+                print("Something's done messed up") # If the switch states don't match the top two conditions, somehow it went wrong
+                testChannel.chanState = LOW
+                testChannel.cycleStart = time.time()
+                time.sleep(0.1)
+        else:
+            pass
+    else:
+        testChannel.active = False
 
-one.setDuty(paras['duty cycle'][0])
-two.setDuty(paras['duty cycle'][1])
-three.setDuty(paras['duty cycle'][2])
+def logCheck(testChannel):
+    if (time.time() - testChannel.lastLog) > (testChannel.print_rate):
+        logData(testChannel)
+        testChannel.lastLog = time.time()
+    else:
+        pass
 
-one.setTorque(paras['duty cycle'][0])
-two.setTorque(paras['duty cycle'][1])
-three.setTorque(paras['duty cycle'][2])
+def logData(testChannel):
+    df = pd.DataFrame({
+    'Time' : testChannel.time,
+    'Cycle' : testChannel.cycleCounts,
+    'Cycle_Times' : testChannel.cycleTrack,
+    'Temps' : testChannel.temps,
+    'Current' : testChannel.currents,
+    'Bounces' : testChannel.cycleBounces})
+    df.to_csv("onOffAct{}.csv".format(testChannel.name), sep = ',')
+    
+
+
+
+
+
+
+
+

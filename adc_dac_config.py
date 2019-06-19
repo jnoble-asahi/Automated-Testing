@@ -187,6 +187,16 @@ def do_measurement(inputs, chan):
     temp = tempConvert(raw_channels[2])
     return(pos_channel, curr, temp, time.time())
 
+def onOff_measurement(inputs):
+    '''
+    Read the input voltages from the current and temperature inputs on the ADC. 
+    Voltages are convereted from raw integer inputs using convert functions in this library
+    '''
+    raw_channels = ads.read_seqeuence(inputs)
+    curr = raw_channels[1]
+    temp = raw_channels[2]
+    return(curr, temp)
+
 def curTempRead(inputs):
     '''Read the input voltages from ADC inputs specifically for temperature and current
     '''
