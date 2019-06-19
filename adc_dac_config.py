@@ -252,7 +252,7 @@ def logCheck(target):
 def logData(target):
     df = pd.DataFrame({'time' : target.cts,
                         'Positions' : target.positions,
-                        'Current' : target.current,
-                        'Temperature' : target.temperature,
+                        'Current' : target.currents,
+                        'Temperature' : target.temps,
                         'Set Point' : target.setpoints})
     df.to_csv("act{}.csv".format(target.name), sep = ',')
