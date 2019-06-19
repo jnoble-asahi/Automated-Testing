@@ -192,7 +192,7 @@ def onOff_measurement(inputs):
     Read the input voltages from the current and temperature inputs on the ADC. 
     Voltages are convereted from raw integer inputs using convert functions in this library
     '''
-    raw_channels = ads.read_seqeuence(inputs)
+    raw_channels = ads.read_sequence(inputs)
     curr = raw_channels[1]
     temp = raw_channels[2]
     return(curr, temp)

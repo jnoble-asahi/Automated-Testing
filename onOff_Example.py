@@ -43,7 +43,7 @@ while True: # Start a loop to run the on/off tests
         else:
             pass # If the state of that test is inactive, do nothing
     state = False
-    for i, value in enumerate(onf.onOffTests[i]): # Loop through each test class and see if they're all inactive
+    for i, value in enumerate(onf.onOffTests): # Loop through each test class and see if they're all inactive
         state = (state | onf.onOffTests[i].active)
 
     if state == False: # If all the test states are inactive, exit the loop

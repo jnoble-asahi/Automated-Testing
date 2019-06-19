@@ -38,9 +38,6 @@ CH3_Loc = {'pos' : INPUTS_ADDRESS[0],
            'cur' : INPUTS_ADDRESS[4],
            'temp' : INPUTS_ADDRESS[7]}
 
-CH_Out = {'1' : DAC_A ,
-          '2' : DAC_B}
-
 CH1_SEQUENCE = (CH1_Loc['pos'], CH1_Loc['cur'], CH1_Loc['temp']) #Position, Current, Temperature channels
 
 CH2_SEQUENCE =  (CH2_Loc['pos'], CH2_Loc['cur'], CH2_Loc['temp']) #Position, Current, Temperature channels
@@ -91,10 +88,6 @@ class on_off:
     '''
     def __init__(self):
         self.time = []
-        self.cycleTime = []
-        self.no_cycles = []
-        self.channel = []
-        self.duty_cycle = []
         self.input = []
         self.torque_req = []
         self.in_voltage = []
@@ -128,8 +121,7 @@ class on_off:
         if cycleTime not in range(1, 100, 1):
             raise ValueError('Cycle times must be whole number between 1 and 60')
         else:
-            self.cycleTime.append(cycleTime)
-            list(self.cycleTime)
+            self.cycleTime = (cycleTime)
             print('Test cycle time created')
 
     def setChannel(self, chanNumber):
@@ -140,11 +132,10 @@ class on_off:
         if chanNumber not in range(1, 4, 1):
             raise ValueError('Test channel must be either 1, 2, or 3')
         else:
-            self.channel.append(relayChannels[chanNumber])
-            self.input.append(actInputs[chanNumber])
+            self.channel = (relayChannels[chanNumber])
+            self.name = chanNumber
+            self.input = (actInputs[chanNumber])
             self.inputSequence = inputSequence[chanNumber]
-            tuple(self.channel)
-            tuple(self.inputs)
             print('Test channel and input pin fixed ')
 
     def setTime(self):
@@ -159,8 +150,7 @@ class on_off:
         if cycleTarget not in range(1, 1000000, 1):
             raise ValueError('Number of cycles must be a whole number, between 1 and 1,000,000')
         else:
-            self.no_cycles.append(int(cycleTarget))
-            tuple(self.no_cycles)
+            self.no_cycles = (int(cycleTarget))
             print('Test cycles set point created')
     
     def setDuty(self, dutyCycle):
@@ -171,8 +161,7 @@ class on_off:
         if dutyCycle not in range(0, 100, 1):
             raise ValueError('Duty cycle must be a whole number between 1 and 100')
         else:
-            self.duty_cycle.append(int(dutyCycle))
-            tuple(self.duty_cycle)
+            self.duty_cycle = (int(dutyCycle))
             print('Test duty cycle created')
 
     def setTorque(self, torqueRating):
@@ -216,21 +205,20 @@ onOffTests = []
 
 def createTest():
     i = 0
-    while i < len(paras.columns):
+    while i < 3:
         onOffTests.append(on_off())
         onOffTests[i].setChannel(paras['channel'][i])
-        onOffTests[i].setCycleTimes(paras['cycle time'][i])
+        onOffTests[i].setCycleTime(paras['cycle time'][i])
         onOffTests[i].setCycles(paras['target'][i])
         onOffTests[i].setTime()
         onOffTests[i].setDuty(paras['duty cycle'][i])
         onOffTests[i].setTorque(paras['torque'][i])
-        onOffTests[i].setInputs(paras['channel'][i])
     
         prompt = raw_input("Activate test on channel {}? (Y/N)".format(onOffTests[i].channel))
         if prompt == "Y":
             wp.pinMode(onOffTests[i].channel, OUTPUT) # Declare the pins connected to relays as digital outputs
-            wp.pinMode(onOffTests[i].inputs, INPUT) # Decalre the pins connected to limit switches as digital inputs
-            wp.pullUpDnControl(onOffTests[i].inputs, 2) # Set the input pins for pull up control
+            wp.pinMode(onOffTests[i].input, INPUT) # Decalre the pins connected to limit switches as digital inputs
+            wp.pullUpDnControl(onOffTests[i].input, 2) # Set the input pins for pull up control
             wp.digitalWrite(onOffTests[i].channel, HIGH) # Write HIGH to the relay pins to start the test
             print("Channel {} set HIGH".format(onOffTests[i].channel))
             i += 1 # Increment the loop if reading the prompt was successful
@@ -253,7 +241,6 @@ def switchCheck(testChannel, switchInput):
         testChannel.pv += 1 # Increment the pv counter if the switch changed
         testChannel.lastState = LOW #Reset the "last state" of the switch
         length = time.time() - testChannel.cycleStart # Calculate the length of the last cycle
-        testChannel.cycleTime.append(float("{0:.2f}".format(length))) # Append the cycle time to the cycleTime list
         testChannel.cycleTimeNow = float("{0:.2f}".format(length)) # Store the last cycle time for use in datalogging
         '''
         Reserved block to later add duty cycle calc functions
