@@ -217,7 +217,7 @@ def createTest():
         if prompt == "Y":
             wp.pinMode(onOffTests[i].channel, OUTPUT) # Declare the pins connected to relays as digital outputs
             wp.pinMode(onOffTests[i].input, INPUT) # Decalre the pins connected to limit switches as digital inputs
-            wp.pullUpDnControl(onOffTests[i].input, 2) # Set the input pins for pull up control
+            wp.pullUpDnControl(onOffTests[i].input, 1) # Set the input pins for pull up control
             wp.digitalWrite(onOffTests[i].channel, HIGH) # Write HIGH to the relay pins to start the test
             print("Channel {} set HIGH".format(onOffTests[i].name))
             i += 1 # Increment the loop if reading the prompt was successful
