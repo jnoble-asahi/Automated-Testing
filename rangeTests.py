@@ -62,34 +62,11 @@ while i < len(chan):
         print("Prompt only accepts Y or N") # If unknown input is entered, clear up the prompt, and re-start the loop with no increment
 
 while True: # If either t1 or t2 still have cycles left, continue the test
-<<<<<<< HEAD
     for i, value in enumerate(tests):
         if tests[i].active == True: # Check to see if the current test channel should be active, if it is then run through the tests
             pos = an.modMeasure(tests[i]) # Read inputs from the ADC
             an.posCheck(tests[i], pos) # Check input states against the setpoints
             an.logCheck(tests[i]) # See if it's time to log data to a csv
-=======
-    if (t1 < 1000000) & ((time.time() - wt1) > w1):
-        pos1Read = int(an.positionConvert(an.single_measurement(CH1_SEQUENCE[0]),1))
-        cur1Read = an.single_measurement(CH1_SEQUENCE[1])
-        temp1Read = an.single_measurement(CH1_SEQUENCE[2]) 
-        #an.do_measurement(CH1_SEQUENCE, 0) # Measure a sequence of inputs outline in CH1_Sequence
-        pos1.append(pos1Read)
-        cur1.append(cur1Read)
-        temp1.append(temp1Read)
-        ct1.append(time.time())
-        a1.append(apC1)
-        lastTime1 = time.time() - stamp1
-        if lastTime1 > 3600:
-            df1 = pd.DataFrame({ 'time' : ct1,
-                        'Positions' : pos1,
-                        'Current' : cur1,
-                        'Temperature' : temp1,
-                        'Set Point' : a1
-                            })
-            df1.to_csv('act1Data.csv', sep = ',')
-            stamp1 = time.time()
->>>>>>> upstream/master
         else:
             pass
     state = False # Create a variable initialized to False
@@ -98,66 +75,7 @@ while True: # If either t1 or t2 still have cycles left, continue the test
     if state == False: # If all tests are inactive, it's time to shut it down
         False # Should exit the main while loop
     else:
-<<<<<<< HEAD
         pass
-=======
-        t1State = False
-    if (t2 < 1000000) & ((time.time() - wt2) > w2):
-        #read = an.do_measurement(CH2_SEQUENCE, 1) # Measure a sequence of inputs outline in CH1_Sequence
-        pos2Read = int(an.positionConvert(an.single_measurement(CH2_SEQUENCE[0]), 2))
-        cur2Read = an.single_measurement(CH2_SEQUENCE[1])
-        temp2Read = an.single_measurement(CH2_SEQUENCE[2]) 
-        #an.do_measurement(CH1_SEQUENCE, 0) # Measure a sequence of inputs outline in CH1_Sequence
-        pos2.append(pos2Read)
-        cur2.append(cur2Read)
-        temp2.append(temp2Read)
-        ct2.append(time.time())
-        a2.append(apC2)
-        lastTime2 = time.time() - stamp2
-        if lastTime2 > 3600:
-            df2 = pd.DataFrame({ 'time' : ct2,
-                        'Positions' : pos2,
-                        'Current' : cur2,
-                        'Temperature' : temp2,
-                        'Set Point' : a2
-                        })
-            df2.to_csv('act2Data.csv', sep = ',')
-            stamp2 = time.time()
-        else:
-            pass
-        if pos2Read in range(int(apC2 - slack2), int(apC2 + slack2)):
-            '''
-            If the current position reading on the actuator is within 2% of the position setpoint, change the setpoint
-            '''
-            time.sleep(1)
-            apC2 = an.modulate(DAC_B)
-            ct2.append(time.time() - wt2)
-            wt2 = time.time()
-            print('Act2 Cycle Number is ', t2, 'Actuator Current Draw', cur2Read, 'Actuator Temperature ', temp2Read)
-            t2 += 1
-            w2 = 1.5
-            slack2 = 2
-        else:
-            w2 = w2 * 1.5
-            slack2 = slack2*1.10
-            print('wait time is: ', w2, 'Act2 Set Point', int(apC2 - slack2), pos2Read, int(apC2 + slack2), 'Current Draw ', cur2Read, 'Actuator Temperature ', temp2Read)
-            time.sleep(0.5)
-    else:
-        t2State = False
-df1 = pd.DataFrame({ 'time' : ct1,
-                    'Positions' : pos1,
-                    'Current' : cur1,
-                    'Temperature' : temp1,
-                    'Set Point' : a1})
-
-df1.to_csv('act2Data.csv', sep = ',')
-
-df2 = pd.DataFrame({ 'time' : ct2,
-                    'Positions' : pos2,
-                    'Current' : cur2,
-                    'Temperature' : temp2,
-                    'Set Point' : a2})
->>>>>>> upstream/master
 
 for i, value in enumerate(tests): # Log all data after test is completed
     an.logData(tests[i])
