@@ -257,43 +257,45 @@ def cycleCheck(testChannel):
 
     Sensor measurments are taken on the close -> open cycle since that's the point where actuator loads are the highest
     '''
-    if (testChannel.pv < testChannel.no_cycles): # Check to see if the current cycle count is less than the target
-        if (time.time() - testChannel.cycleStart) > (testChannel.cycleTime): # Check to see if the current cycle has gone past the cycle time
-            if testChannel.chanState == HIGH: # If both are yes, change the relay state, and update cycle parameters
-                wp.digitalWrite(testChannel.channel, LOW)
-                testChannel.chanState = LOW
-                testChannel.cycleStart = time.time()
-                print("actuator {} closing".format(testChannel.name))
-                time.sleep(0.1)
-            elif testChannel.chanState == LOW: #If the actuator recently closed, change the relay state, then take some measurements
-                wp.digitalWrite(testChannel.channel, HIGH) 
-                testChannel.chanState = HIGH
-                testChannel.cycleStart = time.time()
-                testChannel.shotCount += 1
-                print("Actuator {} opening".format(testChannel.name))
-                x = an.onOff_measurement(testChannel.inputSequence)
-                testChannel.currents.append(x[0])
-                testChannel.temps.append(x[1])
-                testChannel.time.append(time.time())
-                testChannel.cycleTrack.append(testChannel.cycleTimeNow)
-                testChannel.cycleCounts.append(testChannel.cycles)
-                testChannel.cycleBounces.append(testChannel.bounces)
+    if testChannel.active == True:
+        if (testChannel.pv < testChannel.no_cycles): # Check to see if the current cycle count is less than the target
+            if (time.time() - testChannel.cycleStart) > (testChannel.cycleTime): # Check to see if the current cycle has gone past the cycle time
+                if testChannel.chanState == HIGH: # If both are yes, change the relay state, and update cycle parameters
+                    wp.digitalWrite(testChannel.channel, LOW)
+                    testChannel.chanState = LOW
+                    testChannel.cycleStart = time.time()
+                    print("actuator {} closing".format(testChannel.name))
+                    time.sleep(0.1)
+                elif testChannel.chanState == LOW: #If the actuator recently closed, change the relay state, then take some measurements
+                    wp.digitalWrite(testChannel.channel, HIGH) 
+                    testChannel.chanState = HIGH
+                    testChannel.cycleStart = time.time()
+                    testChannel.shotCount += 1
+                    print("Actuator {} opening".format(testChannel.name))
+                    x = an.onOff_measurement(testChannel.inputSequence)
+                    testChannel.currents.append(x[0])
+                    testChannel.temps.append(x[1])
+                    testChannel.time.append(time.time())
+                    testChannel.cycleTrack.append(testChannel.cycleTimeNow)
+                    testChannel.cycleCounts.append(testChannel.cycles)
+                    testChannel.cycleBounces.append(testChannel.bounces)
+                else:
+                    print("Something's done messed up") # If the switch states don't match the top two conditions, somehow it went wrong
+                    testChannel.chanState = LOW
+                    testChannel.cycleStart = time.time()
+                    time.sleep(0.1)
             else:
-                print("Something's done messed up") # If the switch states don't match the top two conditions, somehow it went wrong
-                testChannel.chanState = LOW
-                testChannel.cycleStart = time.time()
-                time.sleep(0.1)
+                pass
         else:
-            pass
-    else:
-        testChannel.active = False
+            testChannel.active = False
 
 def logCheck(testChannel):
-    if (time.time() - testChannel.lastLog) > (testChannel.print_rate):
-        logData(testChannel)
-        testChannel.lastLog = time.time()
-    else:
-        pass
+    if testChannel.active == True:
+        if (time.time() - testChannel.lastLog) > (testChannel.print_rate):
+            logData(testChannel)
+            testChannel.lastLog = time.time()
+        else:
+            pass
 
 def logData(testChannel):
     df = pd.DataFrame({
