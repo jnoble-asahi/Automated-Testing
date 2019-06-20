@@ -214,17 +214,17 @@ def createTest():
         onOffTests[i].setDuty(paras['duty cycle'][i])
         onOffTests[i].setTorque(paras['torque'][i])
     
-        prompt = raw_input("Activate test on channel {}? (Y/N)".format(onOffTests[i].channel))
+        prompt = raw_input("Activate test on channel {}? (Y/N)".format(onOffTests[i].name))
         if prompt == "Y":
             wp.pinMode(onOffTests[i].channel, OUTPUT) # Declare the pins connected to relays as digital outputs
             wp.pinMode(onOffTests[i].input, INPUT) # Decalre the pins connected to limit switches as digital inputs
             wp.pullUpDnControl(onOffTests[i].input, 2) # Set the input pins for pull up control
             wp.digitalWrite(onOffTests[i].channel, HIGH) # Write HIGH to the relay pins to start the test
-            print("Channel {} set HIGH".format(onOffTests[i].channel))
+            print("Channel {} set HIGH".format(onOffTests[i].name))
             i += 1 # Increment the loop if reading the prompt was successful
         elif prompt == "N":
             onOffTests[i].active == False # De-activate the test channel if it's not being used
-            print("Channel {} set inactive".format(onOffTests[i].channel))
+            print("Channel {} set inactive".format(onOffTests[i].name))
             i += 1
         else:
             print("Input must be either Y or N") # Don't increment the loop if a bad input was entered
@@ -259,7 +259,7 @@ def cycleCheck(testChannel):
     Sensor measurments are taken on the close -> open cycle since that's the point where actuator loads are the highest
     '''
     if (testChannel.pv < testChannel.no_cycles): # Check to see if the current cycle count is less than the target
-        if (time.time() - testChannel.cycleStart): # Check to see if the current cycle has gone past the cycle time
+        if (time.time() - testChannel.cycleStart) > (testChannel.cycleTime): # Check to see if the current cycle has gone past the cycle time
             if testChannel.chanState == HIGH: # If both are yes, change the relay state, and update cycle parameters
                 wp.digitalWrite(testChannel.channel, LOW)
                 testChannel.chanState = LOW
