@@ -87,7 +87,6 @@ class on_off:
     A class used for on/off actuator tests. Tests parameters are fed line by line through text prompts in the command line
     '''
     def __init__(self):
-        self.time = []
         self.input = []
         self.torque_req = []
         self.in_voltage = []
@@ -139,7 +138,7 @@ class on_off:
             print('Test channel and input pin fixed ')
 
     def setTime(self):
-        self.time.append(time.time())
+        self.cycleStart = (time.time())
         print('Test start time logged')
     
     def setCycles(self, cycleTarget):
