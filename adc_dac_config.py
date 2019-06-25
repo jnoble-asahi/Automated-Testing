@@ -92,7 +92,8 @@ class modSample():
     '''
     def __init__(self):
         self.position = 0
-        self.stamp = time.time() # Timestamp for the last datalog recording
+        self.stamp = time.time()
+        self.lastTime = time.time() - self.stamp # Timestamp for the last datalog recording
         self.positions = [] # List of positions the actuator has been in
         self.currents = [] # List of current readings from the current sensor assigned
         self.temps = [] # List of temperature readings from temp sensor assigned
@@ -230,9 +231,9 @@ def posCheck(target):
     If it's not, open the tolerance slightly, and increase the wait time a little bit
     Print a status message
     '''
-    position = int(positionConvert(single_measurement(target.pinsIn[0]),1))
+    target.position = int(positionConvert(single_measurement(target.pinsIn[0]),1))
     if (time.time() - target.wt > target.wait):
-        if position in range(int(target.sp - target.slack), int(target.sp + target.slack)):
+        if target.position in range(int(target.sp - target.slack), int(target.sp + target.slack)):
             print("setpoint reached on {0}".format(target.name))
             time.sleep(5)
             target.sp = modulate(target.pinOut)
