@@ -31,12 +31,18 @@ print('configuring test parameters')
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
 # Since the wiringpi module communicates through the GPIO, there shouldn't be a need to initiate the SPI bus connection
 
+print('collecting test parameters from THE CLOUD')
+# Set test parameters from a .csv file shared in the cloud
+testUrl = 'https://tufts.box.com/shared/static/kpsnw7ozeytd04wyge1h2oly5pqbrb3k.csv'
+paras = pd.read_csv(testUrl)
+
 chan = ('1', '2', '3')
 tests = []
 
 for i, value in enumerate(chan):
     tests.append(onf.on_off())
-    onf.createTest(tests[i], chan[i])
+    num = int(chan[i]) - 1
+    tests[i].createTest(chan[i], paras['channel'][num], paras['cycle time'][num], paras['target'][num], int(paras['duty cycle'][num], paras['torque'][num]))
 
 while True: # Start a loop to run the on/off tests
     for i, value in enumerate(tests): # Loop through each test class one by one
