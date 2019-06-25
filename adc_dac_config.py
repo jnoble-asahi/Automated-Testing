@@ -103,6 +103,8 @@ class modSample():
         self.cycles = int(0) # Number of cycles completed
         self.wt = time.time() # A timestamp of when the current cycle started
         self.sp = 100
+        self.measureRate = 60
+        self.lastMeasure = time.time()
 
     def newTest(self, chan):
         self.pinsIn = channels[chan]
@@ -219,16 +221,16 @@ def modMeasure(target):
         target.cts.append(time.time())
         target.setpoints.append(target.sp)
         target.lastTime = time.time() - target.stamp
-        return(posRead)
     else:
         target.active = False
 
-def posCheck(target, position):
+def posCheck(target):
     '''
     Check the current position of the actuator. If it's within +/- 2% of the setpoint, change the setpoint
     If it's not, open the tolerance slightly, and increase the wait time a little bit
     Print a status message
     '''
+    position = int(positionConvert(single_measurement(target.pinsIn[0]),1))
     if (time.time() - target.wt > target.wait):
         if position in range(int(target.sp - target.slack), int(target.sp + target.slack)):
             print("setpoint reached on {0}".format(target.name))

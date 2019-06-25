@@ -64,9 +64,13 @@ while i < len(chan):
 while True: # If either t1 or t2 still have cycles left, continue the test
     for i, value in enumerate(tests):
         if tests[i].active == True: # Check to see if the current test channel should be active, if it is then run through the tests
-            pos = an.modMeasure(tests[i]) # Read inputs from the ADC
-            an.posCheck(tests[i], pos) # Check input states against the setpoints
+            an.posCheck(tests[i]) # Check input states against the setpoints
             an.logCheck(tests[i]) # See if it's time to log data to a csv
+        else:
+            pass
+        if (time.time() - tests[i].lastMeasure) > tests[i].measureRate:
+            an.modMeasure(tests[i]) # Read inputs from the ADC
+            tests[i].lastMeasure = time.time()
         else:
             pass
     state = False # Create a variable initialized to False
