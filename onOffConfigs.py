@@ -200,30 +200,27 @@ print('collecting test parameters from THE CLOUD')
 testUrl = 'https://tufts.box.com/shared/static/kpsnw7ozeytd04wyge1h2oly5pqbrb3k.csv'
 paras = pd.read_csv(testUrl)
 
-onOffTests = []
-
-def createTest():
-    i = 0
-    while i < 3:
-        onOffTests.append(on_off())
-        onOffTests[i].setChannel(paras['channel'][i])
-        onOffTests[i].setCycleTime(paras['cycle time'][i])
-        onOffTests[i].setCycles(paras['target'][i])
-        onOffTests[i].setTime()
-        onOffTests[i].setDuty(int(paras['duty cycle'][i]))
-        onOffTests[i].setTorque(paras['torque'][i])
+def createTest(target, channel):
+    target.setChannel(paras['channel'][channel])
+    target.setCycleTime(paras['cycle time'][channel])
+    target.setCycles(paras['target'][channel])
+    target.setTime()
+    target.setDuty(int(paras['duty cycle'][channel]))
+    target.setTorque(paras['torque'][channel])
     
-        prompt = raw_input("Activate test on channel {}? (Y/N)".format(onOffTests[i].name))
+    prompt = raw_input("Activate test on channel {}? (Y/N)".format(target.name))
+    i = 0
+    while i < 1:
         if prompt == "Y":
-            wp.pinMode(onOffTests[i].channel, OUTPUT) # Declare the pins connected to relays as digital outputs
-            wp.pinMode(onOffTests[i].input, INPUT) # Decalre the pins connected to limit switches as digital inputs
-            wp.pullUpDnControl(onOffTests[i].input, 1) # Set the input pins for pull up control
-            wp.digitalWrite(onOffTests[i].channel, HIGH) # Write HIGH to the relay pins to start the test
-            print("Channel {} set HIGH".format(onOffTests[i].name))
+            wp.pinMode(target.channel, OUTPUT) # Declare the pins connected to relays as digital outputs
+            wp.pinMode(target.input, INPUT) # Decalre the pins connected to limit switches as digital inputs
+            wp.pullUpDnControl(target.input, 1) # Set the input pins for pull up control
+            wp.digitalWrite(target.channel, HIGH) # Write HIGH to the relay pins to start the test
+            print("Channel {} set HIGH".format(target.name))
             i += 1 # Increment the loop if reading the prompt was successful
         elif prompt == "N":
-            onOffTests[i].active == False # De-activate the test channel if it's not being used
-            print("Channel {} set inactive".format(onOffTests[i].name))
+            target.active == False # De-activate the test channel if it's not being used
+            print("Channel {} set inactive".format(target.name))
             i += 1
         else:
             print("Input must be either Y or N") # Don't increment the loop if a bad input was entered
