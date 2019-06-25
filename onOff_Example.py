@@ -42,7 +42,7 @@ tests = []
 for i, value in enumerate(chan):
     tests.append(onf.on_off())
     num = int(chan[i]) - 1
-    tests[i].createTest(chan[i], paras['channel'][num], paras['cycle time'][num], paras['target'][num], int(paras['duty cycle'][num], paras['torque'][num]))
+    tests[i].createTest(int(chan[i]), paras['cycle time'][num], paras['target'][num], int(paras['duty cycle'][num]), paras['torque'][num])
 
 while True: # Start a loop to run the on/off tests
     for i, value in enumerate(tests): # Loop through each test class one by one
