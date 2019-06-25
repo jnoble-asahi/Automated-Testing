@@ -99,7 +99,6 @@ class on_off:
         self.time = []
 
         self.cycleTimeNow = float(0)
-        self.cycles = int(0)
         self.active = True
         self.cycleStart = time.time()
         self.tempTime = time.time()
@@ -108,6 +107,7 @@ class on_off:
         self.print_rate = 900
         self.pv = 0
         self.shotCount = 0
+        self.shots = []
         self.bounces = 0
         self.lastState = HIGH
         self.chanState = HIGH
@@ -235,12 +235,16 @@ def switchCheck(testChannel, switchInput):
     '''
     state = wp.digitalRead(switchInput) # Reads the current switch state
     lastState = testChannel.lastState # Store the last switch state in a temp variable
-    if (lastState == HIGH) & (state == LOW): # Check if the switch changed from HIGH to LOW
-        print("Switch {} confirmed".format(testChannel.name)) 
-        testChannel.pv += 1 # Increment the pv counter if the switch changed
+    if (lastState == HIGH) & (state == LOW): # Check if the switch changed from HIGH to LOW 
         testChannel.lastState = LOW #Reset the "last state" of the switch
         length = time.time() - testChannel.cycleStart # Calculate the length of the last cycle
         testChannel.cycleTimeNow = float("{0:.2f}".format(length)) # Store the last cycle time for use in datalogging
+        if (length > (testChannel.cycleTime*.25)):
+            testChannel.pv = testChannel.pv + 1 # Increment the pv counter if the switch changed
+            print("Switch {} confirmed".format(testChannel.name))
+        else:
+            testChannel.bounces = testChannel.bounces + 1
+            print("Switch {} bounced".format(testChannel.name))
         '''
         Reserved block to later add duty cycle calc functions
         '''
@@ -270,15 +274,16 @@ def cycleCheck(testChannel):
                     wp.digitalWrite(testChannel.channel, HIGH) 
                     testChannel.chanState = HIGH
                     testChannel.cycleStart = time.time()
-                    testChannel.shotCount += 1
+                    testChannel.shotCount = testChannel.shotCount + 1
                     print("Actuator {} opening".format(testChannel.name))
                     x = an.onOff_measurement(testChannel.inputSequence)
                     testChannel.currents.append(x[0])
                     testChannel.temps.append(x[1])
                     testChannel.time.append(time.time())
                     testChannel.cycleTrack.append(testChannel.cycleTimeNow)
-                    testChannel.cycleCounts.append(testChannel.cycles)
+                    testChannel.cycleCounts.append(testChannel.pv)
                     testChannel.cycleBounces.append(testChannel.bounces)
+                    testChannel.shots.append(testChannel.shotCount)
                 else:
                     print("Something's done messed up") # If the switch states don't match the top two conditions, somehow it went wrong
                     testChannel.chanState = LOW
