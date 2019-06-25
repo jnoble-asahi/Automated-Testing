@@ -210,7 +210,7 @@ def createTest():
         onOffTests[i].setCycleTime(paras['cycle time'][i])
         onOffTests[i].setCycles(paras['target'][i])
         onOffTests[i].setTime()
-        onOffTests[i].setDuty(paras['duty cycle'][i])
+        onOffTests[i].setDuty(int(paras['duty cycle'][i]))
         onOffTests[i].setTorque(paras['torque'][i])
     
         prompt = raw_input("Activate test on channel {}? (Y/N)".format(onOffTests[i].name))
