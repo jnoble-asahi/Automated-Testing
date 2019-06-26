@@ -44,14 +44,17 @@ for i, value in enumerate(chan):
     num = int(chan[i]) - 1
     tests[i].createTest(int(chan[i]), paras['cycle time'][num], paras['target'][num], int(paras['duty cycle'][num]), paras['torque'][num])
 
+wait = 0.5 # A small waiting period is necessary, otherwise the switch input reads each cycle multiple times
+stamp = time.time()
 while True: # Start a loop to run the on/off tests
     for i, value in enumerate(tests): # Loop through each test class one by one
-        if tests[i].active == True: # Check to see if the test is still active
-            onf.switchCheck(tests[i], tests[i].input) # Run a check of the current switch state
-            onf.cycleCheck(tests[i]) # Run a check on the cycle state, do stuff based on the this function
-            onf.logCheck(tests[i]) # Check to see if it's time to log data
-        else:
-            pass # If the state of that test is inactive, do nothing
+        if ((time.time - stamp) > (wait)): 
+            if tests[i].active == True: # Check to see if the test is still active
+                onf.switchCheck(tests[i], tests[i].input) # Run a check of the current switch state
+                onf.cycleCheck(tests[i]) # Run a check on the cycle state, do stuff based on the this function
+                onf.logCheck(tests[i]) # Check to see if it's time to log data
+            else:
+                pass # If the state of that test is inactive, do nothing
     state = False
     for i, value in enumerate(tests): # Loop through each test class and see if they're all inactive
         state = (state | tests[i].active)

@@ -99,7 +99,7 @@ class on_off:
         self.time = []
 
         self.cycleTimeNow = float(0)
-        self.active = True
+        self.active = False
         self.cycleStart = time.time()
         self.tempTime = time.time()
         self.currTime = time.time()
@@ -135,14 +135,15 @@ class on_off:
         i = 0
         while i < 1:
             if prompt == "Y":
+                self.active = True
                 wp.pinMode(self.channel, OUTPUT) # Declare the pins connected to relays as digital outputs
                 wp.pinMode(self.input, INPUT) # Decalre the pins connected to limit switches as digital inputs
-                wp.pullUpDnControl(self.input, 1) # Set the input pins for pull up control
+                wp.pullUpDnControl(self.input, 2) # Set the input pins for pull up control
                 wp.digitalWrite(self.channel, HIGH) # Write HIGH to the relay pins to start the test
                 print("Channel {} set HIGH".format(self.name))
                 i += 1 # Increment the loop if reading the prompt was successful
             elif prompt == "N":
-                self.active == False # De-activate the test channel if it's not being used
+                self.active = False # De-activate the test channel if it's not being used
                 print("Channel {} set inactive".format(self.name))
                 i += 1
             else:
