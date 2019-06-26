@@ -53,6 +53,7 @@ while True: # Start a loop to run the on/off tests
                 onf.switchCheck(tests[i], tests[i].input) # Run a check of the current switch state
                 onf.cycleCheck(tests[i]) # Run a check on the cycle state, do stuff based on the this function
                 onf.logCheck(tests[i]) # Check to see if it's time to log data
+                stamp = time.time()
             else:
                 pass # If the state of that test is inactive, do nothing
     state = False
