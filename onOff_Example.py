@@ -48,7 +48,7 @@ wait = 0.5 # A small waiting period is necessary, otherwise the switch input rea
 stamp = time.time()
 while True: # Start a loop to run the on/off tests
     for i, value in enumerate(tests): # Loop through each test class one by one
-        if ((time.time - stamp) > (wait)): 
+        if ((time.time() - stamp) > (wait)): 
             if tests[i].active == True: # Check to see if the test is still active
                 onf.switchCheck(tests[i], tests[i].input) # Run a check of the current switch state
                 onf.cycleCheck(tests[i]) # Run a check on the cycle state, do stuff based on the this function
