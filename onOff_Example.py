@@ -26,133 +26,52 @@ process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()
 
 print('configuring test parameters')
-channels = [onf.one.channel[0], onf.two.channel[0], onf.three.channel[0]]
-inputs = [onf.one.inputs[0], onf.two.inputs[0], onf.three.inputs[0]]
-cycleTimes = [onf.one.cycleTime[0], onf.two.cycleTime[0], onf.three.cycleTime[0]]
-testTime = [onf.one.time[0], onf.two.time[0], onf.three.time[0]]
-cycles = [onf.one.no_cycles[0], onf.two.no_cycles[0], onf.three.no_cycles[0]]
-duty = [onf.one.duty_cycle[0], onf.two.duty_cycle[0], onf.three.duty_cycle[0]]
-torque = [onf.one.torque_req[0], onf.two.torque_req[0], onf.three.torque_req[0]]
 
 # Set pin numbers for the relay channels and the limit switch inputs
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
 # Since the wiringpi module communicates through the GPIO, there shouldn't be a need to initiate the SPI bus connection
-wp.wiringPiSetupPhys()
-HIGH = onf.HIGH
-LOW = onf.LOW
 
-print('setting IO channels')
-for i in range(len(channels)):
-    wp.pinMode(channels[i], onf.OUTPUT) # Declare pins to be used as outputs
-    wp.pinMode(inputs[i], onf.INPUT) # Declare pins to be used as inputs
-    wp.pullUpDnControl(inputs[i], 2) # Set the input pins for pull up control
-    wp.digitalWrite(channels[i], HIGH) # Set the output pins HIGH to start the test
-    print('Channel ', i, 'set HIGH')
-print("Relay Module Set-up")
+print('collecting test parameters from THE CLOUD')
+# Set test parameters from a .csv file shared in the cloud
+testUrl = 'https://tufts.box.com/shared/static/kpsnw7ozeytd04wyge1h2oly5pqbrb3k.csv'
+paras = pd.read_csv(testUrl)
 
-# Log times to set a baseline for when to take measurements/cycle the actuators
-cycleStart = [time.time(), time.time(), time.time()]
-tempTime = [time.time(), time.time(), time.time()]
-currTime = [time.time(), time.time(), time.time()]
-last_print = time.time()
-print_rate = 900
+chan = ('1', '2', '3')
+tests = []
 
-# Set initial states for cycle pv, shot counts, relay state, and switch position
-pv = [0, 0, 0]
-cnt = [0, 0, 0]
-ls = [HIGH, HIGH, HIGH]
-sw = [HIGH, HIGH, HIGH]
-bounces = [0,0,0]
+for i, value in enumerate(chan):
+    tests.append(onf.on_off())
+    num = int(chan[i]) - 1
+    tests[i].createTest(int(chan[i]), paras['cycle time'][num], paras['target'][num], int(paras['duty cycle'][num]), paras['torque'][num])
 
-# Create tuples for the ADC addresses for current, temperature, and position inputs
-address = an.INPUTS_ADDRESS
-posIn = (address[0], address[1])
-curIn = (address[2], address[3], address[4])
-tempIn = (address[5], address[6], address[7])
-
-# Create empty dataframes for the test channels. Since the tests aren't necessarily synchronous, the datalogging should be kept separate
-test1 = pd.DataFrame()
-test2 = pd.DataFrame()
-test3 = pd.DataFrame()
-active = True
-
-while active == True:
- # Flagging this to change later, should be changed to while True or another statement
-    # Switch inputs use external pull-up resistors to prevent floating. Debounce provided via an RC circuit
-    currentTime = time.time()
-    for i in range(len(channels)):
-        if cycles[i] > pv[i]:
-            state = wp.digitalRead(inputs[i])
-            swWas = sw[i]
-            if (swWas == 1) & (state == 0):
-                print('Switch ', i, ' confirmed')
-                pv[i] += 1
-                sw[i] = LOW
-                length = time.time() - cycleStart[i]
-                # Change the new rest calc to be a minimum of 1 sec, if it's less set it to the default, or the previous
-                if pv[i] > 2:
-                    temp = onf.restCalc(length, duty[i])
-                    if abs(cycleTimes[i] - temp) > (cycleTimes[i]/2):
-                        print('switch ', i, ' bounced')
-                        bounces[i] += 1
-                    else: 
-                        pass
-            elif (swWas == 0) & (state == 1):
-                print('Switch ', i, ' changed')
-                sw[i] = HIGH
+wait = 0.5 # A small waiting period is necessary, otherwise the switch input reads each cycle multiple times
+stamp = time.time()
+while True: # Start a loop to run the on/off tests
+    for i, value in enumerate(tests): # Loop through each test class one by one
+        if ((time.time() - stamp) > (wait)): 
+            if tests[i].active == True: # Check to see if the test is still active
+                onf.switchCheck(tests[i], tests[i].input) # Run a check of the current switch state
+                onf.cycleCheck(tests[i]) # Run a check on the cycle state, do stuff based on the this function
+                onf.logCheck(tests[i]) # Check to see if it's time to log data
+                stamp = time.time()
             else:
-                pass
-        else:
-            active = False
-    for pin in range(len(channels)):
-        if cycles[i] > pv[i]:
-            if currentTime - cycleStart[pin] > cycleTimes[pin]:
-                if ls[pin] == HIGH:
-                    wp.digitalWrite(channels[pin], onf.LOW)
-                    ls[pin] = LOW
-                    cycleStart[pin] = time.time()
-                    print('Actuator Closing')
-                    time.sleep(0.1)
-                elif ls[pin] == LOW:
-                    wp.digitalWrite(channels[pin], onf.HIGH)
-                    ls[pin] = HIGH
-                    cycleStart[pin] = time.time()
-                    cnt[pin] += 1
-                    print('Actuator Opening')
-                    time.sleep(0.25)
-                    t = an.tempMeasurement(tempIn[i])
-                    c = an.currentMeasurement(curIn[i])
-                    data_list = list([currentTime, t, c, pv[i], cnt[i]])
-                    df = pd.DataFrame(data = [data_list], columns = ['time', 'temp', 'current', 'present_value', 'shot_count'])
-                    if pin == 0:
-                        test1 = test1.append(df, ignore_index = True)
-                    elif pin == 1:
-                        test2 = test2.append(df, ignore_index = True)
-                    elif pin == 2:
-                        test3 = test3.append(df, ignore_index = True)
-                    else:
-                        Warning('Test index out of range, check setup')
-                else:
-                    Warning('Open the pod bay doors Hal')
-                    ls[pin] = HIGH
-                    cycleStart[pin] = time.time()
-                    time.sleep(0.1)
-        else:
-            active = False
-    if currentTime - last_print > print_rate:
-        test1.to_csv("test1_logs.csv")
-        test2.to_csv("test2_logs.csv")
-        test3.to_csv("test3_logs.csv")
-        last_print = time.time()
+                pass # If the state of that test is inactive, do nothing
+    state = False
+    for i, value in enumerate(tests): # Loop through each test class and see if they're all inactive
+        state = (state | tests[i].active)
 
-test1.to_csv("test1_logs.csv")
-test2.to_csv("test2_logs.csv")
-test3.to_csv("test3_logs.csv")
+    if state == False: # If all the test states are inactive, exit the loop
+        False
+    else:
+        pass
 
-print('sacrificing IO daemons')
+for i, value in enumerate(tests): # Log each test data one by one
+    onf.logData(tests[i])
+
+print('sacrificing IO daemons') # Kill the IO daemon process
 
 bash = "sudo killall pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()
 
-print("except")
+print("test exited with a clean status")

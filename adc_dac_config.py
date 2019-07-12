@@ -41,7 +41,6 @@ import subprocess
 
 # Start the pigpio daemon 
 print('summoning IO daemons')
-# Start the pigpio daemon 
 bash = "sudo pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()
@@ -54,10 +53,65 @@ ads.cal_self()
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
 EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
 EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
+
 INPUTS_ADDRESS = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7, EXT8)
+
 dac = DAC8552()
+
 dac.v_ref = int(5 * dac.digit_per_v) # Start with the dac output set to vRef
 
+
+
+CH1_Loc = {'pos' : INPUTS_ADDRESS[0],
+           'cur' : INPUTS_ADDRESS[2],
+           'temp' : INPUTS_ADDRESS[5]}
+
+CH2_Loc = {'pos' : INPUTS_ADDRESS[1],
+           'cur' : INPUTS_ADDRESS[3],
+           'temp' : INPUTS_ADDRESS[6]}
+
+CH_Out = {'1' : DAC_A ,
+          '2' : DAC_B}
+
+CH1_SEQUENCE = (CH1_Loc['pos'], CH1_Loc['cur'], CH1_Loc['temp']) #Position, Current, Temperature channels
+
+CH2_SEQUENCE =  (CH2_Loc['pos'], CH2_Loc['cur'], CH2_Loc['temp']) #Position, Current, Temperature channels
+
+channels = {'1' : CH1_SEQUENCE,
+            '2' : CH2_SEQUENCE}
+
+tests = ('1', '2')
+
+class modSample():
+    '''
+    A class used for modulating actuator tests. Test parameters are read from a .csv file stored locally. Later I'll get updated and these
+    parameters will be read remotely. 
+    
+    In addition to the parameters needed to define the test, this class stores a bunch of variables needed to run the test function
+    that's later defined
+    '''
+    def __init__(self):
+        self.position = 0
+        self.stamp = time.time()
+        self.lastTime = time.time() - self.stamp # Timestamp for the last datalog recording
+        self.positions = [] # List of positions the actuator has been in
+        self.currents = [] # List of current readings from the current sensor assigned
+        self.temps = [] # List of temperature readings from temp sensor assigned
+        self.cts = [] # List containing the length of each cycle, in seconds
+        self.setpoints = [] # List containing the setpoints the actuator went to
+        self.slack = 2 # Allowable position offset from the setpoint
+        self.wait = 1.5 # Wait time between position readings
+        self.cycles = int(0) # Number of cycles completed
+        self.wt = time.time() # A timestamp of when the current cycle started
+        self.sp = 100
+        self.measureRate = 60
+        self.lastMeasure = time.time()
+
+    def newTest(self, chan):
+        self.pinsIn = channels[chan]
+        self.pinOut = CH_Out[chan]
+        self.active = True
+        self.name = chan
 
 def positionMeasurement(chanIn):
     '''
@@ -136,8 +190,82 @@ def do_measurement(inputs, chan):
     temp = tempConvert(raw_channels[2])
     return(pos_channel, curr, temp, time.time())
 
+def onOff_measurement(inputs):
+    '''
+    Read the input voltages from the current and temperature inputs on the ADC. 
+    Voltages are convereted from raw integer inputs using convert functions in this library
+    '''
+    raw_channels = ads.read_sequence(inputs)
+    curr = raw_channels[1]
+    temp = raw_channels[2]
+    return(curr, temp)
+
 def curTempRead(inputs):
     '''Read the input voltages from ADC inputs specifically for temperature and current
     '''
     raw_channels = ads.read_sequence(inputs) #Read the raw integer input on the channels defined in read_sequence
     return(raw_channels)
+
+def modMeasure(target):
+    '''
+    Measures position, current draw, temperature from the target, and appends them to a list in target.parameter
+    Calculates the difference in time between now and the last time the data was written to csv
+    '''
+    if target.cycles < 1000000:
+        posRead = int(positionConvert(single_measurement(target.pinsIn[0]),1))
+        curRead = single_measurement(target.pinsIn[1])
+        tempRead = single_measurement(target.pinsIn[2])
+        target.position = posRead
+        target.positions.append(posRead)
+        target.currents.append(curRead)
+        target.temps.append(tempRead)
+        target.cts.append(time.time())
+        target.setpoints.append(target.sp)
+        target.lastTime = time.time() - target.stamp
+    else:
+        target.active = False
+
+def posCheck(target):
+    '''
+    Check the current position of the actuator. If it's within +/- 2% of the setpoint, change the setpoint
+    If it's not, open the tolerance slightly, and increase the wait time a little bit
+    Print a status message
+    '''
+    target.position = int(positionConvert(single_measurement(target.pinsIn[0]),1))
+    if (time.time() - target.wt > target.wait):
+        if target.position in range(int(target.sp - target.slack), int(target.sp + target.slack)):
+            print("setpoint reached on {0}".format(target.name))
+            time.sleep(5)
+            target.sp = modulate(target.pinOut)
+            target.wt = time.time()
+            target.cycles += 1
+            target.wait = 1.5
+            target.slack = 2
+            print("Channel {0} cycle number is {1}, waiting {2:1.1f} seconds".format(target.name, target.cycles, target.wait))
+        else:
+            target.wait = target.wait * 1.75
+            target.slack = target.slack * 1.10
+            print("wait time is {0:0.1f}, Channel {1} Setpoint is {2:0.1f} < {3:0.1f} < {4:0.1f}, waiting {5:1.1f} seconds".format(target.wait, target.name, \
+            (target.sp - target.slack), target.position, (target.sp + target.slack), target.wait ))
+            time.sleep(1)
+    else:
+        pass
+
+def logCheck(target):
+    '''
+    Check if it's been longer than an hour since the last time data was written to a csv
+    If it has been longer, write target data to a csv file and update the timestamp
+    '''
+    if target.lastTime > 3600:
+        logData(target)
+        target.stamp = time.time()
+    else:
+        pass
+
+def logData(target):
+    df = pd.DataFrame({'time' : target.cts,
+                        'Positions' : target.positions,
+                        'Current' : target.currents,
+                        'Temperature' : target.temps,
+                        'Set Point' : target.setpoints})
+    df.to_csv("act{}.csv".format(target.name), sep = ',')
