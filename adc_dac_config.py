@@ -92,7 +92,8 @@ class modSample():
     '''
     def __init__(self):
         self.position = 0
-        self.stamp = time.time() # Timestamp for the last datalog recording
+        self.stamp = time.time()
+        self.lastTime = time.time() - self.stamp # Timestamp for the last datalog recording
         self.positions = [] # List of positions the actuator has been in
         self.currents = [] # List of current readings from the current sensor assigned
         self.temps = [] # List of temperature readings from temp sensor assigned
@@ -103,6 +104,8 @@ class modSample():
         self.cycles = int(0) # Number of cycles completed
         self.wt = time.time() # A timestamp of when the current cycle started
         self.sp = 100
+        self.measureRate = 60
+        self.lastMeasure = time.time()
 
     def newTest(self, chan):
         self.pinsIn = channels[chan]
@@ -219,20 +222,20 @@ def modMeasure(target):
         target.cts.append(time.time())
         target.setpoints.append(target.sp)
         target.lastTime = time.time() - target.stamp
-        return(posRead)
     else:
         target.active = False
 
-def posCheck(target, position):
+def posCheck(target):
     '''
     Check the current position of the actuator. If it's within +/- 2% of the setpoint, change the setpoint
     If it's not, open the tolerance slightly, and increase the wait time a little bit
     Print a status message
     '''
+    target.position = int(positionConvert(single_measurement(target.pinsIn[0]),1))
     if (time.time() - target.wt > target.wait):
-        if position in range(int(target.sp - target.slack), int(target.sp + target.slack)):
+        if target.position in range(int(target.sp - target.slack), int(target.sp + target.slack)):
             print("setpoint reached on {0}".format(target.name))
-            time.sleep(3)
+            time.sleep(5)
             target.sp = modulate(target.pinOut)
             target.wt = time.time()
             target.cycles += 1
@@ -240,11 +243,11 @@ def posCheck(target, position):
             target.slack = 2
             print("Channel {0} cycle number is {1}, waiting {2:1.1f} seconds".format(target.name, target.cycles, target.wait))
         else:
-            target.wait = target.wait * 1.5
+            target.wait = target.wait * 1.75
             target.slack = target.slack * 1.10
             print("wait time is {0:0.1f}, Channel {1} Setpoint is {2:0.1f} < {3:0.1f} < {4:0.1f}, waiting {5:1.1f} seconds".format(target.wait, target.name, \
             (target.sp - target.slack), target.position, (target.sp + target.slack), target.wait ))
-            time.sleep(0.5)
+            time.sleep(1)
     else:
         pass
 
