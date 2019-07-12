@@ -24,7 +24,7 @@ An automated test center with a web interface for electric actuators, sensors, a
   - Run "sudo wget https://www.airspayce.com/mikem/bcm2835/bcm2835-1.58.tar.gz "
 - Run "sudo tar zxvf bcm2835-1.58.tar.gz" (replace .xx. with the version number if there's been a rev)
 - Run "cd bcm2835-1.58"
-- Run "./configure"
+- Run "sudo ./configure"
 - Run "make"
 - Run "sudo make check"
 - Run "sudo make install"
