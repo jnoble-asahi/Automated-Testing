@@ -6,7 +6,8 @@ import adc_dac_config as adcon
 
 new = ('New', 'new', 'n')
 cont = ('Cont', 'cont', 'Continue', 'continue', 'c')
-mod = ('mod', 'Modulating', 'modulating', )
+mod = ('mod', 'Modulating', 'modulating', 'modu')
+onf = ('on/off, on off, onoff, onf, on, On/Off, On/off, on/Off, ON/OFF')
 
 
 cred = credentials.Certificate(r'C:\Users\cmay\Desktop\testcenterstorage-5808b82edc86.json')
@@ -17,22 +18,32 @@ collections = db.collections()
 
 list(collections)
 
-
-validInput = (new, cont, mod, )
+validInput = (new, cont, mod, onf )
 class testDefined():
     '''
     Builds a class that's later used to pass data back and forth to Google Firestore
     '''
     @staticmethod
-    def test_centerID(self, id):
+    def test_centerID(self):
+        '''
+        Request the test center id from the user
+        Make a request to Firestore with that test center ID
+        Query the docs that are included with the collection from the test center ID results
+        If the docs query returns an empty list, have the user double check their ID input
+        '''
         i = 0
         while i < 1:
             x = input('Please enter test center ID ')
-            if x not in collections:
-                print('Please enter an id from the following list: ')
-                print(collections)
+            y = db.collection(x)
+            docs = y.stream()
+            z = []
+            for doc in docs:
+                z.append(doc.id)
+            if len(z) != 0:
+                self.test_center = x
+                i += 1
             else:
-                self.collectionID = x
+                print('No test center found with that name, double check the ID on the housing ')
 
     @staticmethod
     def old_or_new(self):
@@ -54,13 +65,17 @@ class testDefined():
         while i < 1 :
             x = input('Modulating or on/off test?')
             if y not in validInput:
-                pass
+                print('Please enter either modulating or on/off ')
             else:
                 i += 1
         if x in mod:
             self.mod = True
-        else:
+            self.onf = False
+        elif x in onf:
             self.mod = False
+            self.onf = True
+        else:
+
 
     @staticmethod
     def get_doc_list(self, target):
