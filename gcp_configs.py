@@ -8,18 +8,39 @@ new = ('New', 'new', 'n')
 cont = ('Cont', 'cont', 'Continue', 'continue', 'c')
 mod = ('mod', 'Modulating', 'modulating', )
 
+
+cred = credentials.Certificate(r'C:\Users\cmay\Desktop\testcenterstorage-5808b82edc86.json')
+firebase_admin.initialize_app(cred)
+db = firestore.client()
+
+collections = db.collections()
+
+list(collections)
+
+
 validInput = (new, cont, mod, )
 class testDefined():
     '''
     Builds a class that's later used to pass data back and forth to Google Firestore
     '''
     @staticmethod
+    def test_centerID(self, id):
+        i = 0
+        while i < 1:
+            x = input('Please enter test center ID ')
+            if x not in collections:
+                print('Please enter an id from the following list: ')
+                print(collections)
+            else:
+                self.collectionID = x
+
+    @staticmethod
     def old_or_new(self):
         i = 0
         while i < 1 :
             y = input('New Test or Continue?(new / continue)')
             if y not in validInput:
-                pass
+                print('Please type either new or continue')
             else:
                 i += 1
         if y in cont:
@@ -44,7 +65,7 @@ class testDefined():
     @staticmethod
     def get_doc_list(self, target):
         x = []
-        docs = target.get()
+        docs = self.test_centerID.stream()
         for doc in docs:
             x.append(doc.id)
         self.docs = x
@@ -61,10 +82,18 @@ class testDefined():
     @staticmethod
     def get_parameters(self, test):
         '''
-        Read data from the specified test remotely. Pull test parameters from this data set and store them locally
+        Read data from the specified test remotely. Pull test parameters from the response and store them locally, use these parameters to
+        create a new instance of the desired test class with the given parameters
         '''
-        x = self.testID
-        y = 
+        y = self.testID.to_dict()
+        self.description = y['Description']
+        self.torque = y['Torque']
+        self.pv = y['PV']
+        self.type = y['Type']
+        self.duty_cycle = y['DutyCycle']
+        self.target = y['Target']
+        self.cycletime = y['CycleTime']
+
 
     @staticmethod
     def set_test_parameters(self, params):
