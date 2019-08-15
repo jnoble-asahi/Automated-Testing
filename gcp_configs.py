@@ -11,7 +11,7 @@ onf = ('on/off, on off, onoff, onf, on, On/Off, On/off, on/Off, ON/OFF')
 
 
 cred = credentials.Certificate(r'C:\Users\cmay\Desktop\testcenterstorage-5808b82edc86.json')
-firebase_admin.initialize_app(cred)
+fa.initialize_app(cred)
 db = firestore.client()
 
 collections = db.collections()
@@ -64,7 +64,7 @@ class testDefined():
         i = 0
         while i < 1 :
             x = input('Modulating or on/off test?')
-            if y not in validInput:
+            if x not in validInput:
                 print('Please enter either modulating or on/off ')
             else:
                 i += 1
@@ -75,7 +75,7 @@ class testDefined():
             self.mod = False
             self.onf = True
         else:
-
+            pass
 
     @staticmethod
     def get_doc_list(self, target):
@@ -118,7 +118,7 @@ class testDefined():
         '''
 
     @staticmethod
-    def update_database(self, test, more?):
+    def update_database(self, test):
         '''
         A function for sending parameters from the local test to the remote database
         '''
