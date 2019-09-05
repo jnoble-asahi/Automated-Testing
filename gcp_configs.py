@@ -1,14 +1,10 @@
 import firebase_admin as fa 
+from google.cloud import firestore as fs
 from firebase_admin import credentials
 from firebase_admin import firestore
 import onOffConfigs as oncon
 import adc_dac_config as adcon
-
-new = ('New', 'new', 'n')
-cont = ('Cont', 'cont', 'Continue', 'continue', 'c')
-mod = ('mod', 'Modulating', 'modulating', 'modu')
-onf = ('on/off, on off, onoff, onf, on, On/Off, On/off, on/Off, ON/OFF')
-
+import time
 
 cred = credentials.Certificate(r'C:\Users\cmay\Desktop\testcenterstorage-5808b82edc86.json')
 fa.initialize_app(cred)
@@ -18,7 +14,6 @@ collections = db.collections()
 
 list(collections)
 
-validInput = (new, cont, mod, onf )
 class define_test():
     '''
     Builds a class that's later used to pass data back and forth to Google Firestore
@@ -31,7 +26,7 @@ class define_test():
         If the docs query returns an empty list, have the user double check their ID input
         '''
         while True:
-            x = input('Please enter test center ID ')
+            x = raw_input('Please enter test center ID ')
             y = db.collection(x)
             docs = y.stream()
             z = []
@@ -44,35 +39,9 @@ class define_test():
             else:
                 print('No test center found with that name, double check the ID on the housing ')
 
-    def old_or_new(self):
-        while True :
-            y = input('New Test or Continue?(new / continue)')
-            if y not in validInput:
-                print('Please type either new or continue')
-            else:
-                False
-        if y in cont:
-            self.cont = True
-        else:
-            self.cont = False
-   
-    def test_type(self):
-        while True :
-            x = input('Modulating or on/off test?')
-            if x not in validInput:
-                print('Please enter either modulating or on/off ')
-            else:
-                break
-        if x in mod:
-            self.mod = True
-            self.onf = False
-        else:
-            self.mod = False
-            self.onf = True
-
-    def test_check(self, test):
+    def test_check(self):
         while True:
-            x = input('Please enter test ID')
+            x = raw_input('Please enter test ID')
             if x not in self.docs:
                 print('Invalid test id, please select from this list:')
                 print(self.docs)
@@ -93,17 +62,81 @@ class define_test():
         self.type = y['Type']
         self.duty_cycle = y['DutyCycle']
         self.target = y['Target']
-        self.cycletime = y['CycleTime']
+        self.cycle_time = y['CycleTime']
         self.bounces = y['Bounces']
         self.currents = y['Currents']
         self.temps = y['Temps']
-        self.shotCount = y['Shots']
-
-    def get_mod_parameters(self):
+        self.shot_count = y['Shots']
+        self.input = []
+        self.time = []
+        self.active = False
+        self.cycle_start = time.time()
+        self.temp_time = time.time()
+        self.curr_time = time.time()
+        self.last_log = time.time()
+        self.print_rate = 900
+        self.last_state = HIGH
+        self.chan_state = HIGH
+    
+    def setCycleTime(self):
         '''
+        Read the cycleTime from the test parameters sheet and check that it's in the proper range. If not raise a warning. Cast it as 
+        a list for security.
+        '''
+        if self.cycle_time not in range(1, 100, 1):
+            raise ValueError('Cycle times must be whole number between 1 and 60')
+        else:
+            print('Test cycle time created')
+
+    def setCycles(self):
+        '''
+        Read the cycle target from the test parameters sheet and check that it's in the proper range. If not raise a warning. Cast it as 
+        a tuple to make it immutable
+        '''
+        if self.target not in range(1, 1000000, 1):
+            raise ValueError('Number of cycles must be a whole number, between 1 and 1,000,000')
+        else:
+            print('Test cycles set point created')
+
+    def setDuty(self):
+        '''
+        Read the duty cycle from the test parameters sheet and check that it's in the proper range. If not raise a warning. Cast it as 
+        a tuple to make it immutable
+        '''
+        if self.duty_cycle not in range(0, 100, 1):
+            raise ValueError('Duty cycle must be a whole number between 1 and 100')
+        else:
+            print('Test duty cycle created')
+
+    def setTime(self):
+        self.cycleStart = (time.time())
+        print('Test start time logged')
+
+    def create_on_off_test(self):
+        self.test_centerID()
+        self.test_check()
+        self.get_onoff_parameters()
+
+    def parameter_check(self):
+        self.setCycleTime()
+        self.setCycles()
+        self.setDuty()
+        self.setTime()
+
+    def update_db(self):
+        ref = db.collection(self.test_center).document(self.testID)
+        ref.update({u'temps': fs.ArrayUnion([self.temps])})
+        ref.update({u'currents': fs.ArrayUnion([self.currents])})
+        ref.update({u'PV' : self.pv})
+        ref.update({u'Bounces' : self.bounces})
+        ref.update({u'Shots' : self.shot_count})
+
+'''
+    def get_mod_parameters(self):
+        
         Read data from the specified test remotely. Pull test parameters from the response and store them locally. Use these parameters
         later to create a new instance of the desired test class with the given parameters
-        '''
+        
         y = self.testID.to_dict()
         self.description = y['Description']
         self.torque = y['Torque']
@@ -112,28 +145,7 @@ class define_test():
         self.duty_cycle = y['DutyCycle']
         self.temps = y['Temps']
         self.currents = y['Currents']
+'''
 
-    def set_test_parameters(self, params):
-        '''
-        Take the parameters from params and store them in a new test class
-        The process will differ slightly depending on whether it's a modulating or on/off test
-        '''
-
-    def update_database(self, test):
-        '''
-        A function for sending parameters from the local test to the remote database
-        '''
-        
-
-
-    '''
-    If it's a modulating test, set the class instance variables accordingly
-
-    If it's an on/Off test do the same
-
-    If it's continuing an existing test, pull the parameters from firestore
-
-    If it's a new test, create a new document in the test center collection with the test parameters
-    '''
         
         

@@ -82,47 +82,6 @@ Relay_Ch2 = 38
 Relay_Ch3 = 40
 
 # Define the on/off test as a class
-class on_off:
-    '''
-    A class used for on/off actuator tests. Tests parameters are fed line by line through text prompts in the command line
-    '''
-    def __init__(self):
-        self.input = []
-        self.torque_req = []
-        self.in_voltage = []
-
-        self.temps = []
-        self.currents = []
-        self.cycleTrack = []
-        self.cycleCounts = []
-        self.cycleBounces = []
-        self.time = []
-
-        self.cycleTimeNow = float(0)
-        self.active = False
-        self.cycleStart = time.time()
-        self.tempTime = time.time()
-        self.currTime = time.time()
-        self.lastLog = time.time()
-        self.print_rate = 900
-        self.pv = 0
-        self.shotCount = 0
-        self.shots = []
-        self.bounces = 0
-        self.lastState = HIGH
-        self.chanState = HIGH
-
-    def setCycleTime(self, cycleTime):
-        '''
-        Read the cycleTime from the test parameters sheet and check that it's in the proper range. If not raise a warning. Cast it as 
-        a list for security.
-        '''
-        if cycleTime not in range(1, 100, 1):
-            raise ValueError('Cycle times must be whole number between 1 and 60')
-        else:
-            self.cycleTime = (cycleTime)
-            print('Test cycle time created')
-
     def createTest(self, channel, cycleTime, cycles, dutyCycle, torque):
         self.setChannel(channel)
         self.setCycleTime(cycleTime)
@@ -162,57 +121,6 @@ class on_off:
             self.input = (actInputs[chanNumber])
             self.inputSequence = inputSequence[chanNumber]
             print('Test channel and input pin fixed ')
-
-    def setTime(self):
-        self.cycleStart = (time.time())
-        print('Test start time logged')
-    
-    def setCycles(self, cycleTarget):
-        '''
-        Read the cycle target from the test parameters sheet and check that it's in the proper range. If not raise a warning. Cast it as 
-        a tuple to make it immutable
-        '''
-        if cycleTarget not in range(1, 1000000, 1):
-            raise ValueError('Number of cycles must be a whole number, between 1 and 1,000,000')
-        else:
-            self.no_cycles = (int(cycleTarget))
-            print('Test cycles set point created')
-    
-    def setDuty(self, dutyCycle):
-        '''
-        Read the duty cycle from the test parameters sheet and check that it's in the proper range. If not raise a warning. Cast it as 
-        a tuple to make it immutable
-        '''
-        if dutyCycle not in range(0, 100, 1):
-            raise ValueError('Duty cycle must be a whole number between 1 and 100')
-        else:
-            self.duty_cycle = (int(dutyCycle))
-            print('Test duty cycle created')
-
-    def setTorque(self, torqueRating):
-        '''
-        Read the cycle target from the test parameters sheet and check that it's in the proper range. If not raise a warning. Cast it as 
-        a tuple to make it immutable. This isn't used right now, but will be important when we tie the test center in with an electro-mechanical
-        load
-        '''
-        #if torqueRating not in range(20, 5000, 1):
-        #    raise ValueError('Test torques must be a whole number between 20 - 5000')
-        #else:
-        self.torque_req.append(int(torqueRating))
-        tuple(self.torque_req)
-        #    print('Torque range created')
-
-    def setVoltage(self, voltageInput):
-        '''
-        Read the input voltage from the test paramters sheet. This portion is only logged right now, but will
-        be important later when we abstract away setting operating voltages through terminal connections
-        '''
-        if voltageInput not in volts:
-            raise ValueError('Voltage not in the correct range, please enter one of the following: 120VAC, 220VAC, 24VDC, 12VDC')
-        else:
-            self.in_voltage.append(str(voltageInput))
-            tuple(self.in_voltage)
-            print('Working voltage fixed')
 
 def restCalc(length, dCycle):
     '''
