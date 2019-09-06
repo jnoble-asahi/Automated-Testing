@@ -6,6 +6,7 @@ import test_configs as tcf
 import adc_dac_config as adcon
 import time
 
+print('opening database connection')
 cred = credentials.Certificate(r'C:\Users\cmay\Desktop\testcenterstorage-5808b82edc86.json')
 fa.initialize_app(cred)
 db = firestore.client()
