@@ -2,7 +2,7 @@ import firebase_admin as fa
 from google.cloud import firestore as fs
 from firebase_admin import credentials
 from firebase_admin import firestore
-import onOffConfigs as oncon
+import test_configs as tcf
 import adc_dac_config as adcon
 import time
 
@@ -13,6 +13,16 @@ db = firestore.client()
 collections = db.collections()
 
 list(collections)
+
+binary = {'INPUT' : 0,
+          'OUTPUT': 1,
+          'LOW' : 0,
+          'HIGH' : 1}
+
+OUTPUT = binary['OUTPUT']
+INPUT = binary['INPUT']
+LOW = binary['LOW']
+HIGH = binary['HIGH']
 
 class define_test():
     '''
