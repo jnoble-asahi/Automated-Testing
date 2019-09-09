@@ -30,7 +30,7 @@ while True:
     if (i >= len(chan)): # exit the loop if the test channels are full
         break
 
-    prompt = input('Add new test on {}? (yes/no) '.format(chan[i])) # prompt the user to see if they want to add a new test
+    prompt = sys.stdin.readline('Add new test on {}? (yes/no) '.format(chan[i])) # prompt the user to see if they want to add a new test
 
     if prompt not in yes_no: # If the input isn't recognized, try again
         print(' Input error, please enter yes or no ')

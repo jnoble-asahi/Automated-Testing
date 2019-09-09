@@ -5,6 +5,7 @@ from firebase_admin import firestore
 from firebase_admin import credentials
 import test_configs as tcf
 import adc_dac_config as adcon
+import sys
 import time
 
 print('opening database connection')
@@ -37,7 +38,7 @@ class define_test():
         If the docs query returns an empty list, have the user double check their ID input
         '''
         while True:
-            x = raw_input('Please enter test center ID ')
+            x = sys.stdin.readline('Please enter test center ID ')
             y = db.collection(x)
             docs = y.stream()
             z = []
@@ -52,7 +53,7 @@ class define_test():
 
     def test_check(self):
         while True:
-            x = raw_input('Please enter test ID')
+            x = sys.stdin.readline('Please enter test ID')
             if x not in self.docs:
                 print('Invalid test id, please select from this list:')
                 print(self.docs)
