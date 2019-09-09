@@ -12,7 +12,7 @@ print('opening database connection')
 cred = credentials.Certificate(r'/home/pi/Downloads/testcenterstorage-3b7a292e37ae.json')
 fa.initialize_app(cred)
 db = firestore.client()
-print('database reqeust approved')
+print('database request approved')
 
 collections = db.collection(u'testCenter1')
 
@@ -38,14 +38,14 @@ class define_test():
         If the docs query returns an empty list, have the user double check their ID input
         '''
         while True:
-            x = sys.stdin.readline('Please enter test center ID ')
-            y = db.collection(x)
+            #x = sys.stdin.readline('Please enter test center ID ')
+            y = db.collection(u'testCenter1')
             docs = y.stream()
             z = []
             for doc in docs:
                 z.append(doc.id)
             if len(z) != 0:
-                self.test_center = x
+                self.test_center = u'testCenter1'
                 self.docs = z
                 break
             else:
@@ -53,7 +53,8 @@ class define_test():
 
     def test_check(self):
         while True:
-            x = sys.stdin.readline('Please enter test ID')
+            print(' Please enter test ID ')
+            x = raw_input()
             if x not in self.docs:
                 print('Invalid test id, please select from this list:')
                 print(self.docs)
@@ -67,7 +68,12 @@ class define_test():
         Read data from the specified test remotely. Pull test parameters from the response and store them locally, use these parameters to
         create a new instance of the desired test class with the given parameters
         '''
-        y = self.testID.to_dict()
+        try:
+            a = db.collection(u'testCenter1').document(self.testID).get()
+            y = a.to_dict()
+        except:
+            raise ValueError('Document name not found!')
+        
         self.description = y['Description']
         self.torque = y['Torque']
         self.pv = y['PV']

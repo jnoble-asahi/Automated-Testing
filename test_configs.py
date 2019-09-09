@@ -102,7 +102,7 @@ def switchCheck(test, switchInput):
         test.last_state = LOW #Reset the "last state" of the switch
         length = time.time() - test.cycle_start # Calculate the length of the last cycle
         
-        if (length > (test.cycleTime*.25)):
+        if (length > (test.cycle_time*.25)):
             test.pv = test.pv + 1 # Increment the pv counter if the switch changed
             print("Switch {} confirmed".format(test.name))
         

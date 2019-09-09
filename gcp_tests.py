@@ -20,29 +20,32 @@ output, error = process.communicate()
 chan = ('1', '2', '3')
 tests = []
 i = 0
+nos = 0
 yes = ('YES', 'yes', 'y', 'Ye', 'Y')
 no = ('NO','no', 'n', 'N', 'n')
-yes_no = (tuple(yes), tuple(no))
+yes_no = ('YES', 'yes', 'y', 'Ye', 'Y', 'NO','no', 'n', 'N', 'n')
 
 print('starting test set-ups')
 
 while True:
     if (i >= len(chan)): # exit the loop if the test channels are full
         break
-
-    prompt = sys.stdin.readline('Add new test on {}? (yes/no) '.format(chan[i])) # prompt the user to see if they want to add a new test
+    
+    print('Add new test on {}? (yes/no) '.format(chan[i]))
+    prompt = raw_input() # prompt the user to see if they want to add a new test
 
     if prompt not in yes_no: # If the input isn't recognized, try again
         print(' Input error, please enter yes or no ')
 
     elif prompt in no: # If they enter no, exit the loop
-        break
+        i += 1
+        nos += 1
 
     elif prompt in yes: # If they answer yes, run the test creation functions
         tests.append(gcpf.define_test()) # creates a new gcp test class
-        tests[i].create_on_off_test() # Loads the test parameters
-        tests[i].parameter_check() # Checks that the parameters are within normal working ranges
-        tcf.set_on_off(tests[i], (i + 1)) # Sets up the IO pins to work for on/off tests
+        tests[i-nos].create_on_off_test() # Loads the test parameters
+        tests[i-nos].parameter_check() # Checks that the parameters are within normal working ranges
+        tcf.set_on_off(tests[i-nos], (i + nos)) # Sets up the IO pins to work for on/off tests
         i += 1 # Increment the test channel counter to track the number of active tests
 
     else:
