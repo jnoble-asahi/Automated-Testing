@@ -1,13 +1,14 @@
-import firebase_admin as fa 
+#import firebase_admin as fa 
 from google.cloud import firestore as fs
-from firebase_admin import credentials
+import firebase_admin as fa
 from firebase_admin import firestore
+from firebase_admin import credentials
 import test_configs as tcf
 import adc_dac_config as adcon
 import time
 
 print('opening database connection')
-cred = credentials.Certificate(r'C:\Users\cmay\Desktop\testcenterstorage-5808b82edc86.json')
+cred = credentials.Certificate(r'/home/pi/Downloads/testcenterstorage-3b7a292e37ae.json')
 fa.initialize_app(cred)
 db = firestore.client()
 print('database reqeust approved')
