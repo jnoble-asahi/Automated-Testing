@@ -10,6 +10,7 @@ print('opening database connection')
 cred = credentials.Certificate(r'C:\Users\cmay\Desktop\testcenterstorage-5808b82edc86.json')
 fa.initialize_app(cred)
 db = firestore.client()
+print('database reqeust approved')
 
 collections = db.collections()
 
