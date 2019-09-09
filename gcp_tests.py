@@ -22,7 +22,7 @@ tests = []
 i = 0
 yes = ('YES', 'yes', 'y', 'Ye', 'Y')
 no = ('NO','no', 'n', 'N', 'n')
-yes_no = (yes, no)
+yes_no = (tuple(yes), tuple(no))
 
 print('starting test set-ups')
 

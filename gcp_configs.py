@@ -1,5 +1,5 @@
 #import firebase_admin as fa 
-from google.cloud import firestore as fs
+import google.cloud
 import firebase_admin as fa
 from firebase_admin import firestore
 from firebase_admin import credentials
@@ -13,9 +13,7 @@ fa.initialize_app(cred)
 db = firestore.client()
 print('database reqeust approved')
 
-collections = db.collections()
-
-list(collections)
+collections = db.collection(u'testCenter1')
 
 binary = {'INPUT' : 0,
           'OUTPUT': 1,
