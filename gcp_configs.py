@@ -143,8 +143,8 @@ class define_test():
 
     def update_db(self):
         ref = db.collection(self.test_center).document(self.testID)
-        ref.update({u'temps': fs.ArrayUnion([self.temps])})
-        ref.update({u'currents': fs.ArrayUnion([self.currents])})
+        ref.update({u'temps': self.temps})
+        ref.update({u'currents': self.currents})
         ref.update({u'PV' : self.pv})
         ref.update({u'Bounces' : self.bounces})
         ref.update({u'Shots' : self.shot_count})
