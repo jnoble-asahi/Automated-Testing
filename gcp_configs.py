@@ -143,6 +143,7 @@ class define_test():
 
     def update_db(self):
         ref = db.collection(self.test_center).document(self.testID)
+        ref.update({u'timestamp' : self.last_log})
         ref.update({u'temps': self.temps})
         ref.update({u'currents': self.currents})
         ref.update({u'PV' : self.pv})
