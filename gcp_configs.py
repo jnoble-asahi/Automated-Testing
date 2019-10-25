@@ -163,12 +163,14 @@ class define_test():
             ref.update({u'PV' : self.pv})
             ref.update({u'Bounces' : self.bounces})
             ref.update({u'Shots' : self.shot_count})
+            print('updates written to gcp')
         except:
             jDict = {u'timestamp' : self.last_log, u'temps': self.temps, u'currents': self.currents, u'PV' : self.pv,
              u'Bounces' : self.bounces, u'Shots' : self.shot_count  }
             name = self.testID + '.txt'
             with open(name, 'w') as json_file:
                 json.dumps(jDict, json_file)
+            print('updates dumped to local JSON file')
 
 
 '''
