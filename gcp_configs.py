@@ -107,7 +107,7 @@ class define_test():
             else:
                 set_parameters(y) #If the gcp values are newer, just use those
         except:
-            set_parameters(y) #If the JSON file doesn't exist, then use the gcp ones
+            global(set_parameters(y)) #If the JSON file doesn't exist, then use the gcp ones
 
     def setCycleTime(self):
         '''
