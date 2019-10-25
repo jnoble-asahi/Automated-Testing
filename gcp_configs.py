@@ -9,6 +9,7 @@ import sys
 import time
 import json
 import os
+import warnings
 
 print('opening database connection')
 cred = credentials.Certificate(r'/home/pi/Downloads/testcenterstorage-3b7a292e37ae.json')
@@ -66,48 +67,84 @@ class define_test():
                 break
 
     def set_parameters(self, y):
-            self.description = y['Description']
-            self.torque = y['Torque']
-            self.pv = y['PV']
-            self.type = y['Type']
-            self.duty_cycle = y['DutyCycle']
-            self.target = y['Target']
-            self.cycle_time = y['CycleTime']
-            self.bounces = y['Bounces']
-            self.currents = y['currents']
-            self.temps = y['temps']
-            self.shot_count = y['Shots']
-            self.input = []
-            self.time = []
-            self.active = False
-            self.cycle_start = time.time()
-            self.temp_time = time.time()
-            self.curr_time = time.time()
-            self.last_log = time.time()
-            self.print_rate = 900
-            self.last_state = HIGH
-            self.chan_state = HIGH
+        '''
+        Sets the test parameters in the class as defined by the inputs
+        '''
+        self.description = y['Description']
+        self.torque = y['Torque']
+        self.pv = y['PV']
+        self.type = y['Type']
+        self.duty_cycle = y['DutyCycle']
+        self.target = y['Target']
+        self.cycle_time = y['CycleTime']
+        self.bounces = y['Bounces']
+        self.currents = y['currents']
+        self.temps = y['temps']
+        self.shot_count = y['Shots']
+        self.input = []
+        self.time = []
+        self.active = False
+        self.cycle_start = time.time()
+        self.temp_time = time.time()
+        self.curr_time = time.time()
+        self.last_log = time.time()
+        self.print_rate = 900
+        self.last_state = HIGH
+        self.chan_state = HIGH
+
+    def json_read(self):
+        cwd = os.getcwd()
+        name = self.testID + '.txt'
+        if name not in cwd:
+            raise Warning('No gcp data or local data files found, check test ID')
+        else:
+            with open(name, 'r') as json_file: 
+                jClass = json.loads(json_file)
+        return jClass
+
+    def gcp_check(self):
+        try:
+            a = db.collection(u'testCenter1').document(self.testID).get()
+            y = a.to_dict()
+            return y
+        except:
+            raise ValueError('Document name not found!')
 
     def get_onoff_parameters(self):
         '''
         Read data from the specified test remotely. Check if there's a newer local copy, and use those parameters instead
         '''
-        try:
-            a = db.collection(u'testCenter1').document(self.testID).get()
-            y = a.to_dict()
-        except:
-            raise ValueError('Document name not found!')
-        name = self.testID + '.txt'
-        try: #Try to open a json file with the same testID
-            with open(name, 'r') as json_file: 
-                jClass = json.load(json_file)
-            if jClass['timestamp'] > y['timestamp']: #If the json file is newer, use those values instead of the gcp ones
-                set_parameters(jClass)
-                update_db() #Update the gcp values using the JSON information
-            else:
-                set_parameters(y) #If the gcp values are newer, just use those
-        except:
-            set_parameters(y) #If the JSON file doesn't exist, then use the gcp ones
+        localJSON = self.json_read()
+        jTime = localJSON['timestamp']
+        gcpDATA = self.gcp_check()
+        gcpTime = gcpDATA['timestamp']
+        if jTime > gcpTime:
+            print('Loading JSON data')
+            y = localJSON
+        else:
+            y = gcpDATA
+        self.description = y['Description']
+        self.torque = y['Torque']
+        self.pv = y['PV']
+        self.type = y['Type']
+        self.duty_cycle = y['DutyCycle']
+        self.target = y['Target']
+        self.cycle_time = y['CycleTime']
+        self.bounces = y['Bounces']
+        self.currents = y['currents']
+        self.temps = y['temps']
+        self.shot_count = y['Shots']
+        self.input = []
+        self.time = []
+        self.active = False
+        self.cycle_start = time.time()
+        self.temp_time = time.time()
+        self.curr_time = time.time()
+        self.last_log = time.time()
+        self.print_rate = 900
+        self.last_state = HIGH
+        self.chan_state = HIGH
+        self.update_db()
 
     def setCycleTime(self):
         '''
@@ -164,12 +201,15 @@ class define_test():
             ref.update({u'Bounces' : self.bounces})
             ref.update({u'Shots' : self.shot_count})
         except:
-            jDict = {u'timestamp' : self.last_log, u'temps': self.temps, u'currents': self.currents, u'PV' : self.pv,
-             u'Bounces' : self.bounces, u'Shots' : self.shot_count  }
+            warnings.warn('GCP connectivity error, dumping to JSON')
+            jDict = {u'testID' : self.testID, u'timestamp' : self.last_log, u'temps': self.temps, u'currents': self.currents, 
+            u'PV' : self.pv, u'Bounces' : self.bounces, u'Shots' : self.shot_count, u'Description' : self.description,
+            u'Torque': self.torque, u'Type' : self.type, u'DutyCycle' : self.duty_cycle, u'Target' : self.target,
+            u'CycleTime' : self.cycle_time  }
+
             name = self.testID + '.txt'
             with open(name, 'w') as json_file:
-                json.dumps(jDict, json_file)
-
+                json.dump(jDict, json_file)
 
 '''
     def get_mod_parameters(self):
