@@ -200,6 +200,7 @@ class define_test():
             ref.update({u'PV' : self.pv})
             ref.update({u'Bounces' : self.bounces})
             ref.update({u'Shots' : self.shot_count})
+            print('updates written to gcp')
         except:
             warnings.warn('GCP connectivity error, dumping to JSON')
             jDict = {u'testID' : self.testID, u'timestamp' : self.last_log, u'temps': self.temps, u'currents': self.currents, 
