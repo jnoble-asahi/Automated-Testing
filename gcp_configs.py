@@ -7,6 +7,8 @@ import test_configs as tcf
 import adc_dac_config as adcon
 import sys
 import time
+import json
+import os
 
 print('opening database connection')
 cred = credentials.Certificate(r'/home/pi/Downloads/testcenterstorage-3b7a292e37ae.json')
@@ -63,39 +65,50 @@ class define_test():
                 self.testID = self.docs[y]
                 break
 
+    def set_parameters(self, y):
+            self.description = y['Description']
+            self.torque = y['Torque']
+            self.pv = y['PV']
+            self.type = y['Type']
+            self.duty_cycle = y['DutyCycle']
+            self.target = y['Target']
+            self.cycle_time = y['CycleTime']
+            self.bounces = y['Bounces']
+            self.currents = y['currents']
+            self.temps = y['temps']
+            self.shot_count = y['Shots']
+            self.input = []
+            self.time = []
+            self.active = False
+            self.cycle_start = time.time()
+            self.temp_time = time.time()
+            self.curr_time = time.time()
+            self.last_log = time.time()
+            self.print_rate = 900
+            self.last_state = HIGH
+            self.chan_state = HIGH
+
     def get_onoff_parameters(self):
         '''
-        Read data from the specified test remotely. Pull test parameters from the response and store them locally, use these parameters to
-        create a new instance of the desired test class with the given parameters
+        Read data from the specified test remotely. Check if there's a newer local copy, and use those parameters instead
         '''
         try:
             a = db.collection(u'testCenter1').document(self.testID).get()
             y = a.to_dict()
         except:
             raise ValueError('Document name not found!')
-        
-        self.description = y['Description']
-        self.torque = y['Torque']
-        self.pv = y['PV']
-        self.type = y['Type']
-        self.duty_cycle = y['DutyCycle']
-        self.target = y['Target']
-        self.cycle_time = y['CycleTime']
-        self.bounces = y['Bounces']
-        self.currents = y['Currents']
-        self.temps = y['Temps']
-        self.shot_count = y['Shots']
-        self.input = []
-        self.time = []
-        self.active = False
-        self.cycle_start = time.time()
-        self.temp_time = time.time()
-        self.curr_time = time.time()
-        self.last_log = time.time()
-        self.print_rate = 900
-        self.last_state = HIGH
-        self.chan_state = HIGH
-    
+        name = self.testID + '.txt'
+        try: #Try to open a json file with the same testID
+            with open(name, 'r') as json_file: 
+                jClass = json.load(json_file)
+            if jClass['timestamp'] > y['timestamp']: #If the json file is newer, use those values instead of the gcp ones
+                set_parameters(jClass)
+                update_db() #Update the gcp values using the JSON information
+            else:
+                set_parameters(y) #If the gcp values are newer, just use those
+        except:
+            set_parameters(y) #If the JSON file doesn't exist, then use the gcp ones
+
     def setCycleTime(self):
         '''
         Read the cycleTime from the test parameters sheet and check that it's in the proper range. If not raise a warning. Cast it as 
@@ -142,13 +155,21 @@ class define_test():
         self.setTime()
 
     def update_db(self):
-        ref = db.collection(self.test_center).document(self.testID)
-        ref.update({u'timestamp' : self.last_log})
-        ref.update({u'temps': self.temps})
-        ref.update({u'currents': self.currents})
-        ref.update({u'PV' : self.pv})
-        ref.update({u'Bounces' : self.bounces})
-        ref.update({u'Shots' : self.shot_count})
+        try:
+            ref = db.collection(self.test_center).document(self.testID)
+            ref.update({u'timestamp' : self.last_log})
+            ref.update({u'temps': self.temps})
+            ref.update({u'currents': self.currents})
+            ref.update({u'PV' : self.pv})
+            ref.update({u'Bounces' : self.bounces})
+            ref.update({u'Shots' : self.shot_count})
+        except:
+            jDict = {u'timestamp' : self.last_log, u'temps': self.temps, u'currents': self.currents, u'PV' : self.pv,
+             u'Bounces' : self.bounces, u'Shots' : self.shot_count  }
+            name = self.testID + '.txt'
+            with open(name, 'w') as json_file:
+                json.dumps(jDict, json_file)
+
 
 '''
     def get_mod_parameters(self):
