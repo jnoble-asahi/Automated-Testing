@@ -96,7 +96,11 @@ class define_test():
         cwd = os.getcwd()
         name = self.testID + '.txt'
         if name not in cwd:
-            raise Warning('No gcp data or local data files found, check test ID')
+            warnings.warn('No Local JSON file to read')
+            jClass = {u'timestamp' : 0, u'testID' : self.testID}
+            name = self.testID + '.txt'
+            with open(name, 'w') as json_file:
+                json.dump(jClass, json_file)
         else:
             with open(name, 'r') as json_file: 
                 jClass = json.loads(json_file)
