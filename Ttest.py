@@ -4,31 +4,18 @@ import wiringpi as wp
 import pigpio as io # pigpio daemon
 import sys
 import subprocess
-<<<<<<< Updated upstream
 import Tconfigs as tcf 
 import adc_dac_config as an 
 import gcpConfigs as gcpc
-=======
-import Tfunctions as Tfun
-
 from ADS1256_definitions import * #Configuration file for the ADC settings
-import adc_dac_config as an
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python
-
-# Initialise Pi connection
-#pi = io.pi()
-#if not pi.connected: # exit script if no connection
-    #print('Unnable to connect to pi')
-    #exit()
->>>>>>> Stashed changes
 
 # Start the pigpio daemon 
 bash = "sudo pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()
 
-<<<<<<< Updated upstream
 # Set pin numbers for the relay channels and the limit switch inputs
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
 # Since the wiringpi module communicates through the GPIO, there shouldn't be a need to initiate the SPI bus connection
@@ -51,22 +38,6 @@ tcf.running_off()
 
 while True:
     if (i >= len(chan)): # exit the loop if the test channels are full
-=======
-# Declare pin outputs and inputs
-wp.pinmode(25, OUTPUT) # Blue test running LED
-wp.pinmode(38, OUTPUT) # Red fault LED
-wp.pinmode(3, OUTPUT) # Brake control setpoint
-wp.pinmode(4, INPUT) # Transducer signal
-
-# Set Test setpoints
-# Brake setpoint (VDC)
-print('Enter brake VDC setpoint (0-10VDC)')
-setpoint = -1
-while True:
-    setpoint = raw_input() # prompt user for 0-10 VDC brake setpoint
-    # check if setpoint is valid
-    if setpoint >= 0 & <= 10:
->>>>>>> Stashed changes
         break
     
     print('Add new test on {}? (yes/no) '.format(chan[i]))
@@ -119,7 +90,6 @@ while True: # Start a loop to run the torque tests
 
     if state == False: # If all the test states are inactive, exit the loop
         break
-<<<<<<< Updated upstream
         
     else:
         pass
@@ -141,33 +111,3 @@ print("Test exited with a clean status")
   
 
 
-=======
-    else
-        print('Invalid entry. Enter number greater than 0.')
-
-# Start Test
-wp.digitalWrite (25, HIGH) # Turn on test running light (blue)
-wp.analogWrite(3, setpoint) # turn on brake
-# turn on actuator
-t = timegm() #test run start time
-
-# Run and Record data
-cycles = int(0) # number of completed actuator cycles
- data = [] #declare array for point data averages
-# count cycles and end program once amount of cycles reached
-while testLength > cycles:
-   
-    dataSample = [] # declare array for sample of data
-    for x in range(10)
-        p = wp.analogRead (4)
-        dataSample.append(p)
-    # Remove highest and lowest data points and average
-    dataSample.remove(max(dataSample))
-    dataSample.remove(min(dataSample))
-    dataPoint = Tfun.Average(dataSample)
-    data.append(dataPoint)
-    time.sleep(0.1)
-
-    # *actuator controls - add 1 to cycles once 1 cycle is complete* For now, cycles = amount of data points
-    cycles += 1
->>>>>>> Stashed changes
