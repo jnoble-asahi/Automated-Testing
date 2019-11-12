@@ -98,6 +98,7 @@ class modSample():
         self.currents = [] # List of current readings from the current sensor assigned
         self.temps = [] # List of temperature readings from temp sensor assigned
         self.cts = [] # List containing the length of each cycle, in seconds
+        self.torSensor = [] # List containing the torque readings
         self.setpoints = [] # List containing the setpoints the actuator went to
         self.slack = 2 # Allowable position offset from the setpoint
         self.wait = 1.5 # Wait time between position readings
@@ -165,6 +166,16 @@ def tempConvert(temp):
     x = float(temp * ads.v_per_digit)
     y = (x- 1.25)/ 0.005
     return(y)
+    
+def torqueMeasurement(inputs):
+    raw_channels = ads.read_sequence(inputs)
+    torSens = raw_channels[0]
+    tor = torqueConvert(torSens)
+    return(tor)
+
+def torqueConvert(tor)
+    torqueVal = (tor - 4)*6000/16 #convert 4-20 mA indicator signal to torque reading in in-lbs
+    return(torqueVal)
 
 def single_measurement(chanIn):
     '''Read the input voltages from the ADC inputs, returns as a raw integer value
@@ -197,8 +208,8 @@ def onOff_measurement(inputs):
     '''
     raw_channels = ads.read_sequence(inputs)
     curr = raw_channels[1]
-    temp = raw_channels[2]
-    return(curr, temp)
+    #temp = raw_channels[2]
+    return(curr)
 
 def curTempRead(inputs):
     '''Read the input voltages from ADC inputs specifically for temperature and current
