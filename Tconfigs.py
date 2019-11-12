@@ -97,7 +97,7 @@ def set_on_off(test, channelID):
         wp.pullUpDnControl(test.input_channel, 2) # Set the input pins for pull up control
 
 def brakeOn(test, setpnt):
-        if setpnt is not in range (0, 5):
+        if setpnt not in range (0, 5):
             raise ValueError('Brake control signal outside 0-5vdc')
             warning_on()
         else:
@@ -146,12 +146,13 @@ def switchCheck(test, switchInput):
         if (length > (test.cycle_time*.25)):
             test.pv = test.pv + 1 # Increment the pv counter if the switch changed
             print("Switch {} confirmed".format(test.name))
-             test.torque.append(torr) # store torque reading measurement taken before if statement
+            test.torque.append(torr) # store torque reading measurement taken before if statement
 
             # collect (cycle_points - 1) more points in cycle
             for y in range (test.cycle_points - 1):
                 while True:
-                    if (time.time()-test.cycle_start) > ((y+1)/test.cycle_points) # wait 1/3 of cycle time or 1/cyclepoints
+                    # wait 1/3 of cycle time or 1/cyclepoints
+                    if (time.time() - test.cycle_start) > ((y+1)/test.cycle_points)
                         tor = torqueMeasurement(test.input_sequence)
                         test_channel.torque.append(tor) # store torque reading measurement
                         break

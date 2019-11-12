@@ -39,7 +39,7 @@ class define_test():
         '''
         while True:
             #x = sys.stdin.readline('Please enter test center ID ')
-            y = db.collection(u 'testCenter2')
+            y = db.collection(u'testCenter2')
             docs = y.stream()
             z = []
             for doc in docs:
@@ -167,9 +167,9 @@ class define_test():
         self.get_onoff_parameters()
 
     def setTorque(self):
-         if self.control not in range(0, 6373):
+        if self.control not in range(0, 6373):
             raise ValueError('Torque setpoints must be between 0 and 6372 in-lbs')
-             tcf.warning_on()
+            tcf.warning_on()
         else:
             print('Torque setpoint created')
 
@@ -219,7 +219,7 @@ class define_test():
             jDict = {u'testID' : self.testID, u'timestamp' : self.last_log,
             u'PV' : self.pv, u'Bounces' : self.bounces, u'Shots' : self.shot_count, u'Description' : self.description,
             u'Torque': self.torque, u'Type' : self.type, u'DutyCycle' : self.duty_cycle, u'Target' : self.target,
-            u'CycleTime' : self.cycle_time, u'torque' : self.torque } '''u'temps': self.temps, u'currents': self.currents, '''
+            u'CycleTime' : self.cycle_time, u'torque' : self.torque } #u'temps': self.temps, u'currents': self.currents,
 
             name = self.testID + '.txt'
             with open(name, 'w') as json_file:
