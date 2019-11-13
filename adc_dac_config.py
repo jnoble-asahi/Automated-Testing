@@ -173,7 +173,7 @@ def torqueMeasurement(inputs):
     tor = torqueConvert(torSens)
     return(tor)
 
-def torqueConvert(tor)
+def torqueConvert(tor):
     torqueVal = (tor - 4)*6000/16 #convert 4-20 mA indicator signal to torque reading in in-lbs
     return(torqueVal)
 
