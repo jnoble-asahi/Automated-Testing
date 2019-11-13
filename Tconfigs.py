@@ -64,17 +64,13 @@ HIGH = binary['HIGH']
 #LED pins
 LED_F = 37
 LED_T = 38
-
-test.cntrl_channel = test_channels[channelID]['cntrl']
-test.input_channel = test_channels[channelID]['input']
-test.output_channel = test_channels[channelID]['torq']
     
 def set_LEDs():
     # Decalre pins connected to relays as digital outputs
     wp.pinMode(LED_F, OUTPUT)
     wp.pinMode(LED_T, OUTPUT)
 
-def warning_on():
+def warning_on(self):
     wp.digitalWrite(LED_F, HIGH)
 
 def warning_off():
@@ -89,6 +85,9 @@ def running_off():
 def set_on_off(test, channelID):
         test.name = channelID
         test.active = True
+        test.cntrl_channel = test_channels[channelID]['cntrl']
+        test.input_channel = test_channels[channelID]['input']
+        test.output_channel = test_channels[channelID]['torq']
         #test.input_sequence = input_sequence[channelID]
         dac.write_dac(test.cntrl_channel, int(0 * dac.digit_per_v)) # Set brake to 0
         print('Brake set to 0')
@@ -96,10 +95,10 @@ def set_on_off(test, channelID):
         wp.pinMode(test.torq_channel, INPUT) # Declare the pin connected to torque transducer signal as an input
         wp.pullUpDnControl(test.input_channel, 2) # Set the input pins for pull up control
 
-def brakeOn(test, setpnt):
+def brakeOn(self, test, channelID, setpnt):
         if setpnt not in range (0, 5):
             raise ValueError('Brake control signal outside 0-5vdc')
-            warning_on()
+            self.warning_on()
         else:
             test.cntrl_channel = test_channels[channelID]['cntrl']
             dac.write_dac(test.cntrl_channel, int(setpnt * dac.digit_per_v)) # Set brake to desired value
@@ -152,9 +151,9 @@ def switchCheck(test, switchInput):
             for y in range (test.cycle_points - 1):
                 while True:
                     # wait 1/3 of cycle time or 1/cyclepoints
-                    if (time.time() - test.cycle_start) > ((y+1)/test.cycle_points)
+                    if (time.time() - test.cycle_start) > ((y+1)/test.cycle_points):
                         tor = torqueMeasurement(test.input_sequence)
-                        test_channel.torque.append(tor) # store torque reading measurement
+                        test.torque.append(tor) # store torque reading measurement
                         break
         else:
             test.bounces = test.bounces + 1 # If the switch went LOW really quickly it's likely just a bounce. Increment the bounce counter
@@ -183,7 +182,7 @@ def onOff_measurement(inputs):
     return(contrl, curr)
  '''   
 
-def logCheck(testChannel):
+def logCheck(self, testChannel):
     if (time.time() - testChannel.last_log) < (testChannel.print_rate):
         pass
     
@@ -195,7 +194,7 @@ def logCheck(testChannel):
         testChannel.last_log = time.time()
     
     else:
-        warning_on()
+        self.warning_on()
         raise Warning("You didn't catch all of the cases")
 
 
