@@ -9,7 +9,7 @@ import firebase_admin as fa
 from firebase_admin import firestore
 from firebase_admin import credentials
 
-import Tconfigs as tcf
+#import Tconfigs as tcf
 import adc_dac_config as adcon
 
 
@@ -59,11 +59,11 @@ class define_test():
             print(' Please enter test ID ')
             x = input()
             if x not in self.docs:
-                tcf.warning_on(self)
+                #tcf.warning_on(self)
                 print('Invalid test id, please select from this list:')
                 print(self.docs)
             else:
-                tcf.warning_off()
+                #tcf.warning_off()
                 y = self.docs.index(x)
                 self.testID = self.docs[y]
                 break
@@ -125,8 +125,8 @@ class define_test():
         self.last_state = HIGH
         self.chan_state = HIGH
         self.update_db()
-        self.cycle_points = 3
-        self.torque = []
+        self.cycle_points = y['CyclePoints']
+        self.torque = y['Torque']
 
     def setCycleTime(self):
         '''
@@ -135,7 +135,7 @@ class define_test():
         '''
         if self.cycle_time not in range(1, 101, 1):
             raise ValueError('Cycle times must be whole number between 1 and 100')
-            tcf.warning_on()
+            #tcf.warning_on()
         else:
             print('Test cycle time created')
 
@@ -146,7 +146,7 @@ class define_test():
         '''
         if self.target not in range(1, 1000000, 1):
             raise ValueError('Number of cycles must be a whole number, between 1 and 1,000,000')
-            tcf.warning_on()
+            #tcf.warning_on()
         else:
             print('Test cycles set point created')
 
@@ -215,14 +215,14 @@ class define_test():
             ref.update({u'PV' : self.pv})
             ref.update({u'Bounces' : self.bounces})
             ref.update({u'Shots' : self.shot_count})
-            ref.update({u'torque' : self.torque})
+            ref.update({u'Torque' : self.torque})
             print('updates written to gcp')
         except:
             warnings.warn('GCP connectivity error, dumping to JSON')
             jDict = {u'testID' : self.testID, u'timestamp' : self.last_log,
             u'PV' : self.pv, u'Bounces' : self.bounces, u'Shots' : self.shot_count, u'Description' : self.description,
             u'Torque': self.torque, u'Type' : self.type, u'DutyCycle' : self.duty_cycle, u'Target' : self.target,
-            u'CycleTime' : self.cycle_time, u'torque' : self.torque } #u'temps': self.temps, u'currents': self.currents,
+            u'CycleTime' : self.cycle_time, u'Torque' : self.torque } #u'temps': self.temps, u'currents': self.currents,
 
             name = self.testID + '.txt'
             with open(name, 'w') as json_file:
