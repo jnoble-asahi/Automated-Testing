@@ -39,13 +39,13 @@ class define_test():
         '''
         while True:
             #x = sys.stdin.readline('Please enter test center ID ')
-            y = db.collection(u'testCenter2')
+            y = db.collection(u'testCenter1')
             docs = y.stream()
             z = []
             for doc in docs:
                 z.append(doc.id)
             if len(z) != 0:
-                self.test_center = u'testCenter2'
+                self.test_center = u'testCenter1'
                 self.docs = z
                 break
             else:
