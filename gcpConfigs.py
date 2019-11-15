@@ -84,7 +84,7 @@ class define_test():
 
     def gcp_check(self):
         try:
-            a = db.collection(u'testCenter2').document(self.testID).get()
+            a = db.collection(u'testCenter1').document(self.testID).get()
             y = a.to_dict()
             return y
         except:
