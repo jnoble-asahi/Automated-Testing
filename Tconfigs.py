@@ -3,13 +3,15 @@ import time
 import sys
 import math as mt
 import numpy as np
+import subprocess
+
 import wiringpi as wp
-from ADS1256_definitions import * #Configuration file for the ADC settings
-import adc_dac_config as an
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python
 import pandas as pd
-import subprocess
+
+from ADS1256_definitions import * #Configuration file for the ADC settings
+import adc_dac_config as an
 import dac8552.dac8552 as dac1
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 

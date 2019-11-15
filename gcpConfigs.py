@@ -1,14 +1,17 @@
-import google.cloud
-import firebase_admin as fa
-from firebase_admin import firestore
-from firebase_admin import credentials
-import Tconfigs as tcf
-import adc_dac_config as adcon
 import sys
 import time
 import json
 import os
 import warnings
+
+import google.cloud
+import firebase_admin as fa
+from firebase_admin import firestore
+from firebase_admin import credentials
+
+import Tconfigs as tcf
+import adc_dac_config as adcon
+
 
 print('opening database connection')
 cred = credentials.Certificate(r'/home/pi/Downloads/testcenterstorage-3b7a292e37ae.json')
@@ -54,7 +57,7 @@ class define_test():
     def test_check(self):
         while True:
             print(' Please enter test ID ')
-            x = raw_input()
+            x = input()
             if x not in self.docs:
                 tcf.warning_on()
                 print('Invalid test id, please select from this list:')
