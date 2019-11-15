@@ -1,15 +1,18 @@
 import os
 import time
-import wiringpi as wp
-import pigpio as io # pigpio daemon
 import sys
 import subprocess
+
+import wiringpi as wp
+import pigpio as io # pigpio daemon
+from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
+import gpiozero as gz #Library for using the GPIO with python
+
 import Tconfigs as tcf 
 import adc_dac_config as an 
 import gcpConfigs as gcpc
 from ADS1256_definitions import * #Configuration file for the ADC settings
-from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
-import gpiozero as gz #Library for using the GPIO with python
+
 
 # Start the pigpio daemon 
 bash = "sudo pigpiod" 
@@ -41,7 +44,7 @@ while True:
         break
     
     print('Add new test on {}? (yes/no) '.format(chan[i]))
-    prompt = raw_input() # prompt the user to see if they want to add a new test
+    prompt = input() # prompt the user to see if they want to add a new test
 
     if prompt not in yes_no: # If the input isn't recognized, try again
         print('Input error, please enter yes or no ')
