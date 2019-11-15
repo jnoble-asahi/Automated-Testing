@@ -59,7 +59,7 @@ class define_test():
             print(' Please enter test ID ')
             x = input()
             if x not in self.docs:
-                tcf.warning_on()
+                tcf.warning_on(self)
                 print('Invalid test id, please select from this list:')
                 print(self.docs)
             else:
