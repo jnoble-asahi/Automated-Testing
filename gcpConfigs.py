@@ -33,6 +33,8 @@ class define_test():
     '''
     Builds a class that's later used to pass data back and forth to Google Firestore
     '''
+    self.torque = ['Torque'] #Put in while debugging
+
     def test_centerID(self):
         '''
         Request the test center id from the user
