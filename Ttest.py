@@ -62,8 +62,8 @@ while True:
         tests[i-nos].parameter_check() # Checks that the parameters are within normal working ranges
         tcf.set_on_off(tests[i-nos], (i + nos)) # Sets up the IO pins to work for torque tests
         setpoint = tests[i-nos].convertSig() # Convert torque value (in-lbs) to 0-5vdc signal for pi
-        print(setpoint) # Debugging
-        tcf.brakeOn(tests[i-nos], (i-nos), setpoint) # Turn brake on to setpoint value
+        print('setpoint:', setpoint) # Debugging
+        tcf.brakeOn(tests[i-nos], (i-nos), setpoint, setpoint) # Turn brake on to setpoint value
         i += 1 # Increment the test channel counter to track the number of active tests
 
     else:
