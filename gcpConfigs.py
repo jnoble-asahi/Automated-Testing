@@ -177,7 +177,7 @@ class define_test():
             print('Torque setpoint created')
 
     def setGain(self):
-        choices = [200, 100, 50, 40, 25, 20] #mA/V
+        global choices = [200, 100, 50, 40, 25, 20] #mA/V
         if self.gain not in choices:
             tcf.warning_on()
             raise ValueError('Gain value not valid. Choose from:')
@@ -220,8 +220,8 @@ class define_test():
         except:
             warnings.warn('GCP connectivity error, dumping to JSON')
             jDict = {u'testID' : self.testID, u'timestamp' : self.last_log,
-            u'PV' : self.pv, u'Bounces' : self.bounces, u'Shots' : self.shot_count, u'Description' : self.description,
-            u'Torque': self.torque, u'Type' : self.type, u'DutyCycle' : self.duty_cycle, u'Target' : self.target,
+            u'PV' : self.pv, u'Bounces' : self.bounces, u'Shots' : self.shot_count, u'Description' : self.description, 
+            u'Type' : self.type, u'DutyCycle' : self.duty_cycle, u'Target' : self.target,
             u'CycleTime' : self.cycle_time, u'Torque' : self.torque } #u'temps': self.temps, u'currents': self.currents,
 
             name = self.testID + '.txt'

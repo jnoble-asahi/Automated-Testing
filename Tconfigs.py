@@ -72,7 +72,7 @@ def set_LEDs():
     wp.pinMode(LED_F, OUTPUT)
     wp.pinMode(LED_T, OUTPUT)
 
-def warning_on(self):
+def warning_on():
     wp.digitalWrite(LED_F, HIGH)
 
 def warning_off():
