@@ -184,7 +184,7 @@ def onOff_measurement(inputs):
     return(contrl, curr)
  '''   
 
-def logCheck(self, testChannel):
+def logCheck(testChannel):
     if (time.time() - testChannel.last_log) < (testChannel.print_rate):
         pass
     
@@ -196,7 +196,7 @@ def logCheck(self, testChannel):
         testChannel.last_log = time.time()
     
     else:
-        self.warning_on()
+        warning_on()
         raise Warning("You didn't catch all of the cases")
 
 
