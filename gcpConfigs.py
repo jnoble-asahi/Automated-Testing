@@ -177,11 +177,12 @@ class define_test():
             print('Torque setpoint created')
 
     def setGain(self):
-        global choices = [200, 100, 50, 40, 25, 20] #mA/V
+        choices = [200, 100, 50, 40, 25, 20] #mA/V
         if self.gain not in choices:
             tcf.warning_on()
-            raise ValueError('Gain value not valid. Choose from:')
+            print('Gain value not valid. Choose from:')
             print(choices)
+            raise ValueError('Gain value not valid.')
         else:
             print('Gain set')
 
