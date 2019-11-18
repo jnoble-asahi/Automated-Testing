@@ -97,13 +97,13 @@ def set_on_off(test, channelID):
         wp.pinMode(test.output_channel, OUTPUT) # Declare the pin connected to torque transducer signal as an output
         wp.pullUpDnControl(test.input_channel, 2) # Set the input pins for pull up control
 
-def brakeOn(self, test, channelID, setpnt):
+def brakeOn(channelID, setpnt):
         if setpnt not in range (0, 5):
+            warning_on()
             raise ValueError('Brake control signal outside 0-5vdc')
-            self.warning_on()
         else:
-            test.cntrl_channel = test_channels[channelID]['cntrl']
-            dac.write_dac(test.cntrl_channel, int(setpnt * dac.digit_per_v)) # Set brake to desired value
+            cntrl_channel = test_channels[channelID]['cntrl']
+            dac.write_dac(cntrl_channel, int(setpnt * dac.digit_per_v)) # Set brake to desired value
             print('Brake set to', setpnt, 'V')
 
 def restCalc(length, dCycle):
