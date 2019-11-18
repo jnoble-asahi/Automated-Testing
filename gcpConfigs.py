@@ -125,8 +125,9 @@ class define_test():
             self.print_rate = 900
             self.last_state = HIGH
             self.chan_state = HIGH
-            self.update_db()
             self.cycle_points = y['CyclePoints']
+            self.update_db()
+            
         
 
     def setCycleTime(self):
