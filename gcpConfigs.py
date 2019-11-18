@@ -33,8 +33,6 @@ class define_test():
     '''
     Builds a class that's later used to pass data back and forth to Google Firestore
     '''
-    self.torque = ['Torque'] #Put in while debugging
-
     def test_centerID(self):
         '''
         Request the test center id from the user
@@ -105,30 +103,31 @@ class define_test():
             y = localJSON
         else:
             y = gcpDATA
-        self.description = y['Description']
-        self.control = y['Control']
-        self.gain = y['GainFactor']
-        self.pv = y['PV']
-        self.target = y['Target']
-        self.type = y['Type']
-        self.duty_cycle = y['DutyCycle']
-        self.cycle_time = y['CycleTime']
-        self.bounces = y['Bounces']
-        #self.currents = y['currents']
-        self.shot_count = y['Shots']
-        self.input = []
-        self.time = []
-        self.active = False
-        self.cycle_start = time.time()
-        #self.temp_time = time.time()
-        #self.curr_time = time.time()
-        self.last_log = time.time()
-        self.print_rate = 900
-        self.last_state = HIGH
-        self.chan_state = HIGH
-        self.update_db()
-        self.cycle_points = y['CyclePoints']
-        self.torque = y['Torque']
+            self.torque = y['Torque']
+            self.description = y['Description']
+            self.control = y['Control']
+            self.gain = y['GainFactor']
+            self.pv = y['PV']
+            self.target = y['Target']
+            self.type = y['Type']
+            self.duty_cycle = y['DutyCycle']
+            self.cycle_time = y['CycleTime']
+            self.bounces = y['Bounces']
+            #self.currents = y['currents']
+            self.shot_count = y['Shots']
+            self.input = []
+            self.time = []
+            self.active = False
+            self.cycle_start = time.time()
+            #self.temp_time = time.time()
+            #self.curr_time = time.time()
+            self.last_log = time.time()
+            self.print_rate = 900
+            self.last_state = HIGH
+            self.chan_state = HIGH
+            self.update_db()
+            self.cycle_points = y['CyclePoints']
+        
 
     def setCycleTime(self):
         '''
