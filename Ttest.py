@@ -13,11 +13,16 @@ import adc_dac_config as an
 import gcpConfigs as gcpc
 from ADS1256_definitions import * #Configuration file for the ADC settings
 
-# Start the pigpio daemon 
+from gpiozero import LED
+
+# Start the pigpio daemon
+print('Summoning IO daemons') 
 bash = "sudo pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()
 
+red = LED(17)
+red.on
 # Set pin numbers for the relay channels and the limit switch inputs
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
 # Since the wiringpi module communicates through the GPIO, there shouldn't be a need to initiate the SPI bus connection
