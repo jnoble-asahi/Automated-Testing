@@ -137,7 +137,7 @@ def switchCheck(test, switchInput):
     If it's changed, do some stuff, if it hasn't changed, then do nothing '''
 
     if test.active == True:
-        if (testChannel.pv < testChannel.target): # Check to see if the current cycle count is less than the target
+        if (test.pv < test.target): # Check to see if the current cycle count is less than the target
             pv = test.pv # set pv variable equal to current number of cycles completed
             torr = torqueMeasurement(test.output_channel) # collect torque data and average
             state = wp.digitalRead(switchInput) # Reads the current switch state
