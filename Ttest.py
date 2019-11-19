@@ -23,6 +23,9 @@ output, error = process.communicate()'''
 
 red = LED(17)
 red.on
+blue = LED(14)
+blue.on
+
 # Set pin numbers for the relay channels and the limit switch inputs
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
 # Since the wiringpi module communicates through the GPIO, there shouldn't be a need to initiate the SPI bus connection
