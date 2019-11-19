@@ -138,24 +138,21 @@ def switchCheck(test, switchInput):
 
     if test.active == True:
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
-            pv = test.pv # set pv variable equal to current number of cycles completed
             torr = torqueMeasurement(test.output_channel) # collect torque data and average
             state = wp.digitalRead(switchInput) # Reads the current switch state
             last_state = test.last_state # Store the last switch state in a temp variable
             # Store other values
             test.time.append(time.time()) 
-            test.pv.append(pv)
 
             if (last_state == HIGH) & (state == LOW): # Check if the switch changed from HIGH to LOW 
                 test.last_state = LOW #Reset the "last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last cycle
         
                 if (length > (test.cycle_time*.25)):
-                    pv+= 1 # Increment the pv counter if the switch changed
+                    test.pv+= 1 # Increment the pv counter if the switch changed
                     print("Switch {} confirmed".format(test.name))
                     test.torque.append(torr) # store torque reading measurement taken before if statement
                     test.time.append(time.time()) 
-                    test.pv.append(pv)
 
                     # collect (cycle_points - 1) more points in cycle
                     for y in range (test.cycle_points - 1):
@@ -166,7 +163,6 @@ def switchCheck(test, switchInput):
                                 test.torque.append(tor) # store torque reading measurement
                                 # store other values
                                 test.time.append(time.time()) 
-                                test.pv.append(pv)
                                 break
                 else:
                     test.bounces = test.bounces + 1 # If the switch went LOW really quickly it's likely just a bounce. Increment the bounce counter
