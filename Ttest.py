@@ -21,7 +21,7 @@ bash = "sudo pigpiod"
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()
 
-red = LED(40)
+red = LED(24)
 red.on
 # Set pin numbers for the relay channels and the limit switch inputs
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
