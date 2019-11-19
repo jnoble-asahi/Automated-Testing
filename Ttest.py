@@ -7,26 +7,16 @@ import wiringpi as wp
 import pigpio as io # pigpio daemon
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python
-print ('hi 1.3')
 
 import Tconfigs as tcf 
-print('hi 1.38')
 import adc_dac_config as an
-print('hi 1.39') 
 import gcpConfigs as gcpc
-print('hi 1.4')
 from ADS1256_definitions import * #Configuration file for the ADC settings
 
-
-''' already in Tconfigs - dont want to summon daemons twice 
 # Start the pigpio daemon 
 bash = "sudo pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-print('hi 3') # debugging
 output, error = process.communicate()
-time.sleep(3) # debugging
-print('hi 4') #debugging'''
-
 
 # Set pin numbers for the relay channels and the limit switch inputs
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
