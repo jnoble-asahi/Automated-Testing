@@ -16,10 +16,10 @@ from ADS1256_definitions import * #Configuration file for the ADC settings
 from gpiozero import LED
 
 # Start the pigpio daemon
-print('Summoning IO daemons') 
+'''print('Summoning IO daemons') 
 bash = "sudo pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()
+output, error = process.communicate()'''
 
 red = LED(4)
 red.on
@@ -40,8 +40,8 @@ print('Starting test set-up')
 tcf.set_LEDs() # Declare pins connected to relays as digital outputs
 
 # Make sure LEDs are off to start
-tcf.warning_off() 
-tcf.running_off()
+'''tcf.warning_off() 
+tcf.running_off()'''
 
 while True:
     if (i >= len(chan)): # exit the loop if the test channels are full
