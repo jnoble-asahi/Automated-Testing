@@ -120,7 +120,7 @@ bash = "sudo killall pigpiod"
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()'''
 
-pause(20)
+time.sleep(10)
 print("Test exited with a clean status")
 
   
