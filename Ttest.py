@@ -106,8 +106,11 @@ while True: # Start a loop to run the torque tests
     else:
         pass
 
-for i, value in enumerate(tests[i]): # Log each test data one by one
-    tests[i].update_db()
+if len(tests) > 0:
+    for i, value in enumerate(tests[i]): # Log each test data one by one
+        tests[i].update_db()
+else:
+    pass
     
 tcf.running_off() # Turn off test running LED
 
