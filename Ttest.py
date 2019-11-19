@@ -42,6 +42,8 @@ tcf.set_LEDs() # Declare pins connected to relays as digital outputs
 # Make sure LEDs are off to start
 '''tcf.warning_off() 
 tcf.running_off()'''
+tcf.warning_on()
+tcf.running() #test LEDS
 
 while True:
     if (i >= len(chan)): # exit the loop if the test channels are full
