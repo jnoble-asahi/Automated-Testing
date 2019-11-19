@@ -10,15 +10,20 @@ from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python
 import pandas as pd
 
+print('tcf 1')
 from ADS1256_definitions import * #Configuration file for the ADC settings
 import adc_dac_config as an
 import dac8552.dac8552 as dac1
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 
+print('tcf 2')
 print('summoning IO daemons')
+print('tcf 3')
 bash = "sudo pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+print ('tcf 4')
 output, error = process.communicate()
+print ('tcf 5')
 
 ads = ADS1256()
 ads.cal_self() 
