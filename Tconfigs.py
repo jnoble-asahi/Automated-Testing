@@ -143,7 +143,7 @@ def switchCheck(test, switchInput):
             state = wp.digitalRead(switchInput) # Reads the current switch state
             last_state = test.last_state # Store the last switch state in a temp variable
             # Store other values
-            test.cycleBounces.append(test.bounces)
+            test.bounces.append(test.bounces)
             test.time.append(time.time()) 
             test.pv.append(pv)
 

@@ -10,10 +10,12 @@ print('hi 1.1')
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 print ('hi 1.2')
 import gpiozero as gz #Library for using the GPIO with python
+print ('hi 1.3')
 
 import Tconfigs as tcf 
 import adc_dac_config as an 
 import gcpConfigs as gcpc
+print('hi 1.4')
 from ADS1256_definitions import * #Configuration file for the ADC settings
 
 
