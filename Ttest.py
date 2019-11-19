@@ -17,7 +17,11 @@ from ADS1256_definitions import * #Configuration file for the ADC settings
 # Start the pigpio daemon 
 bash = "sudo pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+print('hi') # debugging
 output, error = process.communicate()
+time.sleep(3) # debugging
+print('hi') #debugging
+
 
 # Set pin numbers for the relay channels and the limit switch inputs
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
@@ -62,13 +66,12 @@ while True:
         tests[i-nos].parameter_check() # Checks that the parameters are within normal working ranges
         tcf.set_on_off(tests[i-nos], (i + nos)) # Sets up the IO pins to work for torque tests
         setpoint = tests[i-nos].convertSig() # Convert torque value (in-lbs) to 0-5vdc signal for pi
-        print('setpoint:', setpoint) # Debugging
         tcf.brakeOn((i-nos), setpoint) # Turn brake on to setpoint value
         i += 1 # Increment the test channel counter to track the number of active tests
 
     else:
-        raise Warning('Something went wrong, check your work ') # If the test case isn't caught by the above, something's wrong
         tcf.warning_on()
+        raise Warning('Something went wrong, check your work ') # If the test case isn't caught by the above, something's wrong
 
 wait = 0.5 # A small waiting period is necessary, otherwise the switch input reads each cycle multiple times
 tcf.running_on() # Turn on test running LED
