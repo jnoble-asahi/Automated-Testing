@@ -4,23 +4,21 @@ import sys
 import subprocess
 
 import wiringpi as wp
-print ('hi 1')
 import pigpio as io # pigpio daemon
-print('hi 1.1')
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
-print ('hi 1.2')
 import gpiozero as gz #Library for using the GPIO with python
 print ('hi 1.3')
 
 import Tconfigs as tcf 
-import adc_dac_config as an 
+print('hi 1.38')
+import adc_dac_config as an
+print('hi 1.39') 
 import gcpConfigs as gcpc
 print('hi 1.4')
 from ADS1256_definitions import * #Configuration file for the ADC settings
 
 
 # Start the pigpio daemon 
-print ('hi 2')
 bash = "sudo pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 print('hi 3') # debugging

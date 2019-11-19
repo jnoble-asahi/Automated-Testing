@@ -143,7 +143,6 @@ def switchCheck(test, switchInput):
             state = wp.digitalRead(switchInput) # Reads the current switch state
             last_state = test.last_state # Store the last switch state in a temp variable
             # Store other values
-            test.bounces.append(test.bounces)
             test.time.append(time.time()) 
             test.pv.append(pv)
 
@@ -155,7 +154,6 @@ def switchCheck(test, switchInput):
                     pv+= 1 # Increment the pv counter if the switch changed
                     print("Switch {} confirmed".format(test.name))
                     test.torque.append(torr) # store torque reading measurement taken before if statement
-                    test.bounces.append(test.bounces)
                     test.time.append(time.time()) 
                     test.pv.append(pv)
 
@@ -167,7 +165,6 @@ def switchCheck(test, switchInput):
                                 tor = torqueMeasurement(test.input_sequence)
                                 test.torque.append(tor) # store torque reading measurement
                                 # store other values
-                                test.bounces.append(test.bounces)
                                 test.time.append(time.time()) 
                                 test.pv.append(pv)
                                 break
