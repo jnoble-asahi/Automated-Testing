@@ -163,7 +163,7 @@ def switchCheck(test, switchInput):
                     for y in range (test.cycle_points - 1):
                         while True:
                             # wait 1/3 of cycle time or 1/cyclepoints
-                        if (time.time() - test.cycle_start) > ((y+1)/test.cycle_points):
+                            if (time.time() - test.cycle_start) > ((y+1)/test.cycle_points):
                                 tor = torqueMeasurement(test.input_sequence)
                                 test.torque.append(tor) # store torque reading measurement
                                 # store other values
