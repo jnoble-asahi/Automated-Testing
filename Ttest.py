@@ -48,7 +48,7 @@ tcf.running_off()'''
 tcf.warning_on()
 tcf.running_on() #test LEDS
 
-while True:
+'''while True:
     if (i >= len(chan)): # exit the loop if the test channels are full
         break
     
@@ -118,9 +118,9 @@ print('sacrificing IO daemons') # Kill the IO daemon process
 
 bash = "sudo killall pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()
+output, error = process.communicate()'''
 
-
+pause(20)
 print("Test exited with a clean status")
 
   
