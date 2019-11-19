@@ -12,8 +12,11 @@ import pandas as pd
 
 print('tcf 1')
 from ADS1256_definitions import * #Configuration file for the ADC settings
+print('tcf 1.1')
 import adc_dac_config as an
+print('tcf 1.2')
 import dac8552.dac8552 as dac1
+print('tcf 1.3')
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 
 print('tcf 2')
