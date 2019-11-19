@@ -155,7 +155,7 @@ def switchCheck(test, switchInput):
                     pv+= 1 # Increment the pv counter if the switch changed
                     print("Switch {} confirmed".format(test.name))
                     test.torque.append(torr) # store torque reading measurement taken before if statement
-                    test.cycleBounces.append(test.bounces)
+                    test.bounces.append(test.bounces)
                     test.time.append(time.time()) 
                     test.pv.append(pv)
 
@@ -167,7 +167,7 @@ def switchCheck(test, switchInput):
                                 tor = torqueMeasurement(test.input_sequence)
                                 test.torque.append(tor) # store torque reading measurement
                                 # store other values
-                                test.cycleBounces.append(test.bounces)
+                                test.bounces.append(test.bounces)
                                 test.time.append(time.time()) 
                                 test.pv.append(pv)
                                 break

@@ -6,7 +6,9 @@ import subprocess
 import wiringpi as wp
 print ('hi 1')
 import pigpio as io # pigpio daemon
+print('hi 1.1')
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
+print ('hi 1.2')
 import gpiozero as gz #Library for using the GPIO with python
 
 import Tconfigs as tcf 
