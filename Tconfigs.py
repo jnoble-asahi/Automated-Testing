@@ -76,7 +76,6 @@ def running_on():
     blue.off() # off function because LED is wired NO
 
 def running_off():
-    #wp.digitalWrite(LED_T, LOW) # Write LOW to the Test Running LED for when test is not in progress
     blue.on()
 
 def set_on_off(test, channelID):
@@ -93,13 +92,9 @@ def set_on_off(test, channelID):
         wp.pullUpDnControl(test.input_channel, 2) # Set the input pins for pull up control
 
 def brakeOn(channelID, setpnt):
-        if setpnt not in range (0, 5):
-            warning_on()
-            raise ValueError('Brake control signal outside 0-5vdc')
-        else:
-            cntrl_channel = test_channels[channelID]['cntrl']
-            dac.write_dac(cntrl_channel, int(setpnt * dac.digit_per_v)) # Set brake to desired value
-            print('Brake set to', setpnt, 'V')
+        cntrl_channel = test_channels[channelID]['cntrl']
+        dac.write_dac(cntrl_channel, int(setpnt * dac.digit_per_v)) # Set brake to desired value
+        print('Brake set to', setpnt, 'V')
 
 def restCalc(length, dCycle):
     '''

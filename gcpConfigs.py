@@ -8,6 +8,7 @@ import google.cloud
 import firebase_admin as fa
 from firebase_admin import firestore
 from firebase_admin import credentials
+
 import adc_dac_config as adcon
 import Tconfigs as tcf
 
@@ -171,8 +172,12 @@ class define_test():
 
     def setTorque(self):
         if self.control not in range(0, 6373):
-            raise ValueError('Torque setpoints must be between 0 and 6372 in-lbs')
             tcf.warning_on()
+            print('sacrificing IO daemons') # Kill the IO daemon process
+            bash = "sudo killall pigpiod" 
+            process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+            output, error = process.communicate()
+            raise ValueError('Torque setpoints must be between 0 and 6372 in-lbs')
         else:
             print('Torque setpoint created')
 
