@@ -13,7 +13,7 @@ import adc_dac_config as an
 import gcpConfigs as gcpc
 from ADS1256_definitions import * #Configuration file for the ADC settings
 
-from gpiozero import LED
+#from gpiozero import LED
 
 # Start the pigpio daemon
 '''print('Summoning IO daemons') 
@@ -21,10 +21,10 @@ bash = "sudo pigpiod"
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()'''
 
-red = LED(17)
+'''red = LED(17)
 red.on
 blue = LED(14)
-blue.on
+blue.on'''
 
 # Set pin numbers for the relay channels and the limit switch inputs
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
@@ -48,7 +48,7 @@ tcf.running_off()'''
 tcf.warning_on()
 tcf.running_on() #test LEDS
 
-'''while True:
+while True:
     if (i >= len(chan)): # exit the loop if the test channels are full
         break
     
@@ -118,7 +118,7 @@ print('sacrificing IO daemons') # Kill the IO daemon process
 
 bash = "sudo killall pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()'''
+output, error = process.communicate()
 
 time.sleep(10)
 print("Test exited with a clean status")
