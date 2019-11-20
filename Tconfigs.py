@@ -126,7 +126,6 @@ def switchCheck(test, switchInput):
     Read the state of the actuator limit switch input
     If it's changed, do some stuff, if it hasn't changed, then do nothing '''
 
-    test.output_channel = test_channels[switchInput]['torq']
     checkStart = time.time()
 
     if test.active == True:
@@ -144,9 +143,8 @@ def switchCheck(test, switchInput):
         
                 if (length > (test.cycle_time*.25)):
                     test.pv+= 1 # Increment the pv counter if the switch changed
-                    print("Switch {} confirmed".format(test.name))
-                    test.torque.append(torr) # store torque reading measurement taken before if statement
-                    test.time.append(time.time()) '''
+                    print("Switch {} confirmed".format(test.name))'''
+            test.torque.append(torr) # store torque reading measurement taken before if statement
 
             # collect (cycle_points - 1) more points in cycle
             for y in range (test.cycle_points - 1):
