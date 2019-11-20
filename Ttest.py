@@ -16,7 +16,7 @@ from ADS1256_definitions import * #Configuration file for the ADC settings
 # Set pin numbers for the relay channels and the limit switch inputs
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
 # Since the wiringpi module communicates through the GPIO, there shouldn't be a need to initiate the SPI bus connection
-dac.write_dac(DAC_A, an.dac.v_ref) # set brake
+
 
 chan = ('1', '2')
 tests = []
