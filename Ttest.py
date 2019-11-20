@@ -14,7 +14,11 @@ import gcpConfigs as gcpc
 from ADS1256_definitions import * #Configuration file for the ADC settings
 
 #from gpiozero import LED
+import RPi.GPIO as GPIO
 
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(26, GPIO.OUT)
+GPIO.output(26, True)
 # Start the pigpio daemon
 '''print('Summoning IO daemons') 
 bash = "sudo pigpiod" 
