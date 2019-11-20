@@ -20,7 +20,8 @@ from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library
 bash = "sudo pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()'''
-red = gz.LED(26) # make bcm pin 26 into an output
+
+'''red = gz.LED(26) # make bcm pin 26 into an output
 print('LED bcm pin 26 set to output')
 red.on()
 print('LED on')
@@ -29,7 +30,8 @@ print('still on')
 blue = gz.LED(20)
 blue.on()
 print('blue on')
-red.off()
+time.sleep(5)
+red.off()'''
 
 ads = ADS1256()
 ads.cal_self() 
@@ -80,20 +82,26 @@ LED_T = 38
     
 def set_LEDs():
     # Decalre pins connected to relays as digital outputs
-    wp.pinMode(LED_F, OUTPUT)
-    wp.pinMode(LED_T, OUTPUT)
+    '''wp.pinMode(LED_F, OUTPUT)
+    wp.pinMode(LED_T, OUTPUT)'''
+    red = gz.LED(26)
+    blue = gz.LED(20)
 
 def warning_on():
-    wp.digitalWrite(LED_F, HIGH)
+    #wp.digitalWrite(LED_F, HIGH)
+    red.on()
 
 def warning_off():
-    wp.digitalWrite(LED_F, LOW)
+    #wp.digitalWrite(LED_F, LOW)
+    red.off()
 
 def running_on():
-    wp.digitalWrite(LED_T, HIGH) # Write HIGH to the Test Running LED for starting test
+    #wp.digitalWrite(LED_T, HIGH) # Write HIGH to the Test Running LED for starting test
+    blue.on()
 
 def running_off():
-    wp.digitalWrite(LED_T, LOW) # Write LOW to the Test Running LED for when test is not in progress
+    #wp.digitalWrite(LED_T, LOW) # Write LOW to the Test Running LED for when test is not in progress
+    blue.off()
 
 def set_on_off(test, channelID):
         test.name = channelID
