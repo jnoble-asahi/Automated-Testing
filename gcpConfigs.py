@@ -135,8 +135,12 @@ class define_test():
         a list for security.
         '''
         if self.cycle_time not in range(1, 101, 1):
+            tcf.warning_on()
+            print('sacrificing IO daemons') # Kill the IO daemon process
+            bash = "sudo killall pigpiod" 
+            process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+            output, error = process.communicate()
             raise ValueError('Cycle times must be whole number between 1 and 100')
-            #tcf.warning_on()
         else:
             print('Test cycle time created')
 

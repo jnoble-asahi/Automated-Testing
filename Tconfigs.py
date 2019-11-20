@@ -126,15 +126,19 @@ def switchCheck(test, switchInput):
     Read the state of the actuator limit switch input
     If it's changed, do some stuff, if it hasn't changed, then do nothing '''
 
+    test.output_channel = test_channels[switchInput]['torq']
+    checkStart = time.time()
+
     if test.active == True:
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
-            torr = torqueMeasurement(test.output_channel) # collect torque data and average
-            state = wp.digitalRead(switchInput) # Reads the current switch state
-            last_state = test.last_state # Store the last switch state in a temp variable
+            torr = torqueMeasurement(test_channels[switchInput]['torq']) # collect torque data and average
+            #state = wp.digitalRead(switchInput) # Reads the current switch state
+            #last_state = test.last_state # Store the last switch state in a temp variable
+
             # Store other values
             test.time.append(time.time()) 
 
-            if (last_state == HIGH) & (state == LOW): # Check if the switch changed from HIGH to LOW 
+           ''' if (last_state == HIGH) & (state == LOW): # Check if the switch changed from HIGH to LOW 
                 test.last_state = LOW #Reset the "last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last cycle
         
@@ -142,31 +146,32 @@ def switchCheck(test, switchInput):
                     test.pv+= 1 # Increment the pv counter if the switch changed
                     print("Switch {} confirmed".format(test.name))
                     test.torque.append(torr) # store torque reading measurement taken before if statement
-                    test.time.append(time.time()) 
+                    test.time.append(time.time()) '''
 
-                    # collect (cycle_points - 1) more points in cycle
-                    for y in range (test.cycle_points - 1):
-                        while True:
-                            # wait 1/3 of cycle time or 1/cyclepoints
-                            if (time.time() - test.cycle_start) > ((y+1)/test.cycle_points):
-                                tor = torqueMeasurement(test.input_sequence)
-                                test.torque.append(tor) # store torque reading measurement
-                                # store other values
-                                test.time.append(time.time()) 
-                                break
-                else:
+            # collect (cycle_points - 1) more points in cycle
+            for y in range (test.cycle_points - 1):
+                while True:
+                    # wait 1/3 of cycle time or 1/cyclepoints
+                    if (time.time() - checkStart) > (((y+1)/test.cycle_points)*test.cycle_time):
+                        tor = torqueMeasurement(test_channels[switchInput]['torq'])
+                        test.torque.append(tor) # store torque reading measurement
+                        # store other values
+                        test.time.append(time.time()) 
+                        break
+                '''else:
                     test.bounces = test.bounces + 1 # If the switch went LOW really quickly it's likely just a bounce. Increment the bounce counter
-                    print("Switch {} bounced".format(test.name))
+                    print("Switch {} bounced".format(test.name))'''
+
                 '''
                 Reserved block to later add duty cycle calc functions
                 '''
     
-            elif (last_state == LOW) & (state == HIGH): 
+            '''elif (last_state == LOW) & (state == HIGH): 
                 print("Switch {} changed".format(test.name))
                 test.last_state = HIGH
     
             else:
-                pass
+                pass'''
         else:
             test.active = False
     else:

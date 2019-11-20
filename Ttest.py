@@ -17,10 +17,6 @@ from ADS1256_definitions import * #Configuration file for the ADC settings
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
 # Since the wiringpi module communicates through the GPIO, there shouldn't be a need to initiate the SPI bus connection
 
-# Make sure LEDs are off to start
-tcf.warning_off() 
-tcf.running_off()
-
 chan = ('1', '2')
 tests = []
 i = 0
@@ -59,6 +55,10 @@ while True:
 
     else:
         tcf.warning_on()
+        print('sacrificing IO daemons') # Kill the IO daemon process
+        bash = "sudo killall pigpiod" 
+        process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+        output, error = process.communicate()
         raise Warning('Something went wrong, check your work ') # If the test case isn't caught by the above, something's wrong
 
 wait = 0.5 # A small waiting period is necessary, otherwise the switch input reads each cycle multiple times
@@ -75,7 +75,7 @@ while True: # Start a loop to run the torque tests
             pass
 
         else: 
-            tcf.switchCheck(tests[i], tests[i].input_channel) # Run a check of the current switch state, add 1 to pv if valid
+            tcf.switchCheck(tests[i], i) # Run a check of the current switch state, add 1 to pv if valid
             tcf.logCheck(tests[i]) # Check to see if it's time to log data
             stamp = time.time()
 
