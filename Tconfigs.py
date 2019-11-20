@@ -76,30 +76,18 @@ INPUT = binary['INPUT']
 LOW = binary['LOW']
 HIGH = binary['HIGH']
 
-#LED pins
-#LED_F = 37
-#LED_T = 38
-
-red = gz.LED(26)
-blue = gz.LED(20)
-
-#def set_LEDs():
-    # Decalre pins connected to relays as digital outputs
-    #wp.pinMode(LED_F, OUTPUT)
-    #wp.pinMode(LED_T, OUTPUT)
-
+# LED pins
+red = gz.LED(26) # Using wirinpi pin numbers
+blue = gz.LED(20) # Using wiringpi pin numbers
 
 def warning_on():
-    #wp.digitalWrite(LED_F, HIGH)
-    red.off() #off function because LED is wired NO
+    red.off() # off function because LED is wired NO
 
 def warning_off():
-    #wp.digitalWrite(LED_F, LOW)
     red.on()
 
 def running_on():
-    #wp.digitalWrite(LED_T, HIGH) # Write HIGH to the Test Running LED for starting test
-    blue.off()
+    blue.off() # off function because LED is wired NO
 
 def running_off():
     #wp.digitalWrite(LED_T, LOW) # Write LOW to the Test Running LED for when test is not in progress

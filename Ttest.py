@@ -13,22 +13,13 @@ import adc_dac_config as an
 import gcpConfigs as gcpc
 from ADS1256_definitions import * #Configuration file for the ADC settings
 
-#from gpiozero import LED
-
-
-'''GPIO.setmode(GPIO.BCM)
-GPIO.setup(26, GPIO.OUT)
-GPIO.output(26, True)'''
-# Start the pigpio daemon
-'''print('Summoning IO daemons') 
-bash = "sudo pigpiod" 
-process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()'''
-
-
 # Set pin numbers for the relay channels and the limit switch inputs
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
 # Since the wiringpi module communicates through the GPIO, there shouldn't be a need to initiate the SPI bus connection
+
+# Make sure LEDs are off to start
+tcf.warning_off() 
+tcf.running_off()
 
 chan = ('1', '2')
 tests = []
@@ -39,12 +30,6 @@ no = ('NO','no', 'n', 'N', 'n')
 yes_no = ('YES', 'yes', 'y', 'Ye', 'Y', 'NO','no', 'n', 'N', 'n')
 
 print('Starting test set-up')
-
-#tcf.set_LEDs() # Declare pins connected to relays as digital outputs
-
-# Make sure LEDs are off to start
-tcf.warning_off() 
-tcf.running_off()
 
 while True:
     if (i >= len(chan)): # exit the loop if the test channels are full
