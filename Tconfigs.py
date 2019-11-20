@@ -20,6 +20,13 @@ from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library
 bash = "sudo pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()'''
+red = gz.LED(26) # make bcm pin 26 into an output
+print('LED bcm pin 26 set to output')
+red.on()
+print('LED on')
+time.sleep(10)
+red.off()
+print('LED off')
 
 ads = ADS1256()
 ads.cal_self() 
