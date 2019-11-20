@@ -77,15 +77,17 @@ LOW = binary['LOW']
 HIGH = binary['HIGH']
 
 #LED pins
-LED_F = 37
-LED_T = 38
-    
-def set_LEDs():
+#LED_F = 37
+#LED_T = 38
+
+red = gz.LED(26)
+blue = gz.LED(20)
+
+#def set_LEDs():
     # Decalre pins connected to relays as digital outputs
     '''wp.pinMode(LED_F, OUTPUT)
     wp.pinMode(LED_T, OUTPUT)'''
-    red = gz.LED(26)
-    blue = gz.LED(20)
+
 
 def warning_on():
     #wp.digitalWrite(LED_F, HIGH)
