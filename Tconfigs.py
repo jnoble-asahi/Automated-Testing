@@ -85,8 +85,8 @@ blue = gz.LED(20)
 
 #def set_LEDs():
     # Decalre pins connected to relays as digital outputs
-    '''wp.pinMode(LED_F, OUTPUT)
-    wp.pinMode(LED_T, OUTPUT)'''
+    #wp.pinMode(LED_F, OUTPUT)
+    #wp.pinMode(LED_T, OUTPUT)
 
 
 def warning_on():
