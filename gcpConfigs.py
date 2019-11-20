@@ -9,6 +9,7 @@ import firebase_admin as fa
 from firebase_admin import firestore
 from firebase_admin import credentials
 import adc_dac_config as adcon
+import Tconfigs as tcf
 
 print('opening database connection')
 cred = credentials.Certificate(r'/home/pi/Downloads/testcenterstorage-3b7a292e37ae.json')

@@ -16,22 +16,9 @@ import dac8552.dac8552 as dac1
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 
 
-'''print('summoning IO daemons')
-bash = "sudo pigpiod" 
-process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()'''
-
-'''red = gz.LED(26) # make bcm pin 26 into an output
-print('LED bcm pin 26 set to output')
-red.on()
-print('LED on')
-time.sleep(10)
-print('still on')
-blue = gz.LED(20)
-blue.on()
-print('blue on')
-time.sleep(5)
-red.off()'''
+# Make sure LEDs are off to start
+tcf.warning_off() 
+tcf.running_off()
 
 ads = ADS1256()
 ads.cal_self() 
