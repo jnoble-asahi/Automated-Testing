@@ -8,10 +8,7 @@ import google.cloud
 import firebase_admin as fa
 from firebase_admin import firestore
 from firebase_admin import credentials
-
-#import Tconfigs as tcf
 import adc_dac_config as adcon
-
 
 print('opening database connection')
 cred = credentials.Certificate(r'/home/pi/Downloads/testcenterstorage-3b7a292e37ae.json')
@@ -59,11 +56,11 @@ class define_test():
             print(' Please enter test ID ')
             x = input()
             if x not in self.docs:
-                #tcf.warning_on(self)
+                tcf.warning_on()
                 print('Invalid test id, please select from this list:')
                 print(self.docs)
             else:
-                #tcf.warning_off()
+                tcf.warning_off()
                 y = self.docs.index(x)
                 self.testID = self.docs[y]
                 break
