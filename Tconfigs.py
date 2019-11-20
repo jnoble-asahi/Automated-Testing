@@ -15,10 +15,13 @@ import adc_dac_config as an
 import dac8552.dac8552 as dac1
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 
+# LED pins
+red = gz.LED(26) # Using wirinpi pin numbers
+blue = gz.LED(20) # Using wiringpi pin numbers
 
 # Make sure LEDs are off to start
-tcf.warning_off() 
-tcf.running_off()
+red.on() 
+blue.on()
 
 ads = ADS1256()
 ads.cal_self() 
@@ -62,10 +65,6 @@ OUTPUT = binary['OUTPUT']
 INPUT = binary['INPUT']
 LOW = binary['LOW']
 HIGH = binary['HIGH']
-
-# LED pins
-red = gz.LED(26) # Using wirinpi pin numbers
-blue = gz.LED(20) # Using wiringpi pin numbers
 
 def warning_on():
     red.off() # off function because LED is wired NO
