@@ -138,9 +138,9 @@ def switchCheck(test, switchInput):
             # Store other values
             test.time.append(time.time()) 
 
-           ''' if (last_state == HIGH) & (state == LOW): # Check if the switch changed from HIGH to LOW 
-                test.last_state = LOW #Reset the "last state" of the switch
-                length = time.time() - test.cycle_start # Calculate the length of the last cycle
+            '''if (last_state == HIGH) & (state == LOW): # Check if the switch changed from HIGH to LOW 
+            test.last_state = LOW #Reset the "last state" of the switch
+            length = time.time() - test.cycle_start # Calculate the length of the last cycle
         
                 if (length > (test.cycle_time*.25)):
                     test.pv+= 1 # Increment the pv counter if the switch changed
