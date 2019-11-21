@@ -52,7 +52,8 @@ ads = ADS1256()
 ads.cal_self() 
 
 dac = DAC8552()
-dac.v_ref = int(5 * dac.digit_per_v) # Set v_ref to 5
+print('setting dac')
+dac.v_ref = int(1 * dac.digit_per_v) # Set v_ref to 5
 print(dac.v_ref)
 
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
