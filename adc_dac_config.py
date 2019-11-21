@@ -53,7 +53,7 @@ ads.cal_self()
 
 dac = DAC8552()
 print('setting dac')
-dac.v_ref = 5
+dac.v_ref = 3
 step = dac.digit_per_v
 print(dac.v_ref)
 print(step)
