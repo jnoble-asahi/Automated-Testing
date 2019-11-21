@@ -66,7 +66,7 @@ INPUT = binary['INPUT']
 LOW = binary['LOW']
 HIGH = binary['HIGH']
 
-dac.write_dac(DAC_A, an.dac.v_ref) # set brake
+#dac.write_dac(DAC_A, an.dac.v_ref) # set brake
 
 def warning_on():
     red.off() # off function because LED is wired NO
