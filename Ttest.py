@@ -17,7 +17,6 @@ from ADS1256_definitions import * #Configuration file for the ADC settings
 # Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
 # Since the wiringpi module communicates through the GPIO, there shouldn't be a need to initiate the SPI bus connection
 
-
 chan = ('1', '2')
 tests = []
 i = 0
