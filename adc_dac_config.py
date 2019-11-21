@@ -57,7 +57,8 @@ dac.v_ref = 5
 step = dac.digit_per_v
 print(dac.v_ref)
 print(step)
-dac.write_dac(DAC_A, 2*step)
+dac.write_dac(DAC_A, 0*step)
+print('data:', 0*step)
 print('sleep')
 time.sleep(10)
 print('powering down dac')
