@@ -27,8 +27,6 @@ ads = ADS1256()
 ads.cal_self() 
 dac = DAC8552()
 
-dac.write_dac(DAC_A, an.dac.v_ref)
-
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
 EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
 EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM

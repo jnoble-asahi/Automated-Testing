@@ -53,8 +53,11 @@ ads.cal_self()
 
 dac = DAC8552()
 print('setting dac')
-dac.v_ref = int(1 * dac.digit_per_v) # Set v_ref to 5
+dac.v_ref = 5
+step = int(5 * dac.digit_per_v/10)
 print(dac.v_ref)
+print(step)
+dac.write_dac(DAC_A, 1*step)
 
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
 EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
