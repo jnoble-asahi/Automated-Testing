@@ -57,7 +57,7 @@ dac.v_ref = 5
 step = dac.digit_per_v
 print(dac.v_ref)
 print(step)
-dac.write_dac(DAC_A, 3*step)
+dac.write_dac(DAC_A, 1*step)
 
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
 EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
