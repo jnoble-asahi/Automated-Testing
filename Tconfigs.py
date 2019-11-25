@@ -87,15 +87,16 @@ def set_on_off(test, channelID):
         test.input_channel = test_channels[channelID]['input']
         test.output_channel = test_channels[channelID]['torq']
         #test.input_sequence = input_sequence[channelID]
-        dac.write_dac(test.cntrl_channel, int(0 * dac.digit_per_v)) # Set brake to 0
+        print('setting dac')
+        dac.write_dac(test.cntrl_channel, 0*an.step) # Set brake to 0
         print('Brake set to 0')
         wp.pinMode(test.input_channel, INPUT) # Declare the pins connected to limit swithces as inputs
         wp.pinMode(test.output_channel, OUTPUT) # Declare the pin connected to torque transducer signal as an output
         wp.pullUpDnControl(test.input_channel, 2) # Set the input pins for pull up control
 
-def brakeOn(channelID, setpnt):
-        cntrl_channel = test_channels[channelID]['cntrl']
-        dac.write_dac(cntrl_channel, int(setpnt * dac.digit_per_v)) # Set brake to desired value
+def brakeOn(test, channelID, setpnt):
+        test.cntrl_channel = test_channels[channelID]['cntrl']
+        dac.write_dac(test.cntrl_channel, int(setpnt * an.step)) # Set brake to desired value
         print('Brake set to', setpnt, 'V')
 
 def restCalc(length, dCycle):

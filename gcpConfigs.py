@@ -200,12 +200,12 @@ class define_test():
         ftlbs = self.control/12.0 #desired brake torque in ftlbs
         if ftlbs <= 10:
             fiveV = 0
-            print('Brake set to minimum torque of 120 in-lbs')
+            print('Brake setpoint set to minimum torque of 120 in-lbs')
         else: 
             mA = 8.6652e-11*ftlbs**5 - 1.1637e-7*ftlbs**4 + 5.9406e-5*ftlbs**3 - 0.013952*ftlbs**2 + 1.9321*ftlbs + 46.644 #mA needed for brake
             tenV = mA/self.gain #0-10vdc signal
             fiveV = tenV/2.0 #0-5vdc signal
-            print ('Brake set to', self.control, 'in-lbs')
+            print ('Brake setpoint', self.control, 'in-lbs')
         return fiveV
 
     def parameter_check(self):
