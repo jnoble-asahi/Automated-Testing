@@ -26,6 +26,7 @@ no = ('NO','no', 'n', 'N', 'n')
 yes_no = ('YES', 'yes', 'y', 'Ye', 'Y', 'NO','no', 'n', 'N', 'n')
 
 print('Starting test set-up')
+tcf.running_on()
 
 while True:
     if (i >= len(chan)): # exit the loop if the test channels are full
@@ -45,6 +46,7 @@ while True:
 
     elif prompt in yes: # If they answer yes, run the test creation functions
         tcf.warning_off()
+        tcf.running_off()
         tests.append(gcpc.define_test()) # Creates a new gcp test class
         tests[i-nos].create_on_off_test() # Loads the test parameters
         tests[i-nos].parameter_check() # Checks that the parameters are within normal working ranges
@@ -62,6 +64,7 @@ while True:
         raise Warning('Something went wrong, check your work ') # If the test case isn't caught by the above, something's wrong
 
 wait = 0.5 # A small waiting period is necessary, otherwise the switch input reads each cycle multiple times
+print('Test running')
 tcf.running_on() # Turn on test running LED
 stamp = time.time()
 
