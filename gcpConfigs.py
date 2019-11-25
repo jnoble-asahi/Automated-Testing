@@ -150,8 +150,9 @@ class define_test():
         a tuple to make it immutable
         '''
         if self.target not in range(1, 1000000, 1):
+            tcf.warning_on()
+            time.sleep(1)
             raise ValueError('Number of cycles must be a whole number, between 1 and 1,000,000')
-            #tcf.warning_on()
         else:
             print('Test cycles set point created')
 
