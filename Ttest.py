@@ -26,7 +26,6 @@ no = ('NO','no', 'n', 'N', 'n')
 yes_no = ('YES', 'yes', 'y', 'Ye', 'Y', 'NO','no', 'n', 'N', 'n')
 
 print('Starting test set-up')
-tcf.running_on()
 
 while True:
     if (i >= len(chan)): # exit the loop if the test channels are full
@@ -46,7 +45,6 @@ while True:
 
     elif prompt in yes: # If they answer yes, run the test creation functions
         tcf.warning_off()
-        tcf.running_off()
         tests.append(gcpc.define_test()) # Creates a new gcp test class
         tests[i-nos].create_on_off_test() # Loads the test parameters
         tests[i-nos].parameter_check() # Checks that the parameters are within normal working ranges
