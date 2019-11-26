@@ -139,13 +139,6 @@ print(torr)
 time.sleep(4)
 torrr = torqueMeasurement(test_channels[0]['torq'])
 print(torrr)
-#testing
-print('torqueMeasurement')
-r = torqueMeasurement(CH1_Loc['torq'])
-print(r)
-print('oneshot')
-g = ads.read_oneshot(INPUTS_ADDRESS[0])
-print('oneshot ', g)
 
 
 def switchCheck(test, switchInput):

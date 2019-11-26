@@ -184,14 +184,11 @@ def single_measurement(chanIn):
     return(raw_channels)
 
 #testing
-t = single_measurement(INPUTS_ADDRESS[0])
-print('single measurement: ', t)
-time.sleep(5)
-u = torqueMeasurement(INPUTS_ADDRESS[0])
+u = torqueMeasurement(INPUTS_ADDRESS[0]) # this works - gives voltage
 print('torque measurement: ', u)
-raw = ads.read_sequence(CH1_SEQUENCE)
-print('1 input is torque: ', raw)
-# t
+time.sleep(5)
+s = torqueMeasurement(INPUTS_ADDRESS[0])
+print('s', s)
 
 def modulate(modChan):
     aOut = int(np.random.randint(0, high = dac.v_ref) * dac.digit_per_v) #Default arguments of none for size, and I for dtype (single value, and int for data type)
