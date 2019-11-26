@@ -192,6 +192,13 @@ def single_measurement(chanIn):
     raw_channels = ads.read_oneshot(chanIn) #Read the raw integer input on the channels
     return(raw_channels)
 
+#testing
+t = single_measurement(INPUTS_ADDRESS[0])
+print('torque measurement: ', t)
+time.sleep(5)
+u = single_measurement(INPUTS_ADDRESS[0])
+print('torque measurement: ', u)
+
 def modulate(modChan):
     aOut = int(np.random.randint(0, high = dac.v_ref) * dac.digit_per_v) #Default arguments of none for size, and I for dtype (single value, and int for data type)
     dac.write_dac(modChan, aOut)
@@ -289,3 +296,8 @@ def logData(target):
                         'Temperature' : target.temps,
                         'Set Point' : target.setpoints})
     df.to_csv("act{}.csv".format(target.name), sep = ',')
+
+def power_down()
+    print('powering down dac')
+    dac.power_down(DAC_A, MODE_POWER_DOWN_100K)
+    dac.power_down(DAC_B, MODE_POWER_DOWN_100K)

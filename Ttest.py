@@ -97,6 +97,7 @@ else:
     pass
     
 tcf.running_off() # Turn off test running LED
+an.power_down() # power off dacs
 
 print('sacrificing IO daemons') # Kill the IO daemon process
 

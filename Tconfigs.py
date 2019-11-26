@@ -126,13 +126,21 @@ def torqueMeasurement(inputs):
     torSens = sum(setData)/len(setData) # Average everything else
     torqueVal = (torSens - 4)*6000/16 # Convert 4-20 mA indicator signal to torque reading in in-lbs
     return torqueVal
+
 print('testing')
 #testing AI
 torr = torqueMeasurement(test_channels[0]['torq'])
 print(torr)
-time.sleep(2)
+time.sleep(4)
 torrr = torqueMeasurement(test_channels[0]['torq'])
 print(torrr)
+time.sleep(4)
+torr = torqueMeasurement(test_channels[0]['torq'])
+print(torr)
+time.sleep(4)
+torrr = torqueMeasurement(test_channels[0]['torq'])
+print(torrr)
+
 def switchCheck(test, switchInput):
 
     '''
