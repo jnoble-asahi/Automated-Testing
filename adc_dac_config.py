@@ -176,11 +176,16 @@ def tempConvert(temp):
     y = (x- 1.25)/ 0.005
     return(y)
     
-def torqueMeasurement(inputs):
-    raw_channels = ads.read_sequence(inputs)
+def torqueMeasurement(input):
+    raw_channels = ads.read_oneshot(input)
     torSens = raw_channels[0]
     tor = torqueConvert(torSens)
     return(tor)
+
+#testing
+print('torqueMeasurement')
+r = torqueMeasurment(INPUT_ADRESS[0])
+print(r)
 
 def torqueConvert(tor):
     torqueVal = (tor - 4)*6000/16 #convert 4-20 mA indicator signal to torque reading in in-lbs
@@ -273,7 +278,7 @@ def posCheck(target):
             target.wait = target.wait * 1.75
             target.slack = target.slack * 1.10
             print("wait time is {0:0.1f}, Channel {1} Setpoint is {2:0.1f} < {3:0.1f} < {4:0.1f}, waiting {5:1.1f} seconds".format(target.wait, target.name, \
-            (target.sp - target.slack), target.position, (target.sp + target.slack), target.wait ))
+            (target.sp - target.slack), target.position, (target.sp + target.slack), target.wait))
             time.sleep(1)
     else:
         pass
