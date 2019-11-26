@@ -184,7 +184,7 @@ def torqueMeasurement(input):
 
 #testing
 print('torqueMeasurement')
-r = torqueMeasurment(INPUT_ADRESS[0])
+r = torqueMeasurement(INPUT_ADRESS[0])
 print(r)
 
 def torqueConvert(tor):
