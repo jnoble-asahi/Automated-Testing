@@ -128,10 +128,10 @@ def torqueMeasurement(inputs):
     return torqueVal
 print('testing')
 #testing AI
-torr = torqueMeasurement(test_channels[switchInput]['torq'])
+torr = torqueMeasurement(test_channels[0]['torq'])
 print(torr)
 time.sleep(2)
-torrr = torqueMeasurement(test_channels[switchInput]['torq'])
+torrr = torqueMeasurement(test_channels[0]['torq'])
 print(torrr)
 def switchCheck(test, switchInput):
 
