@@ -90,6 +90,11 @@ def set_on_off(test, channelID):
         print('setting dac')
         dac.write_dac(test.cntrl_channel, 0*an.step) # Set brake to 0
         print('Brake set to 0')
+        #Calibration
+        print('brake set to max')
+        dac.write_dac(test.cntrl_channel, 5*an.step)
+        time.sleep(150)
+        print('done')
         wp.pinMode(test.input_channel, INPUT) # Declare the pins connected to limit swithces as inputs
         wp.pinMode(test.output_channel, OUTPUT) # Declare the pin connected to torque transducer signal as an output
         wp.pullUpDnControl(test.input_channel, 2) # Set the input pins for pull up control

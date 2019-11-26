@@ -62,7 +62,7 @@ while True:
         raise Warning('Something went wrong, check your work ') # If the test case isn't caught by the above, something's wrong
 
 wait = 0.5 # A small waiting period is necessary, otherwise the switch input reads each cycle multiple times
-print('Test running')
+print('Running test(s)')
 tcf.running_on() # Turn on test running LED
 stamp = time.time()
 
