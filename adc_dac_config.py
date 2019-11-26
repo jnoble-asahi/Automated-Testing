@@ -196,9 +196,9 @@ def single_measurement(chanIn):
 
 #testing
 t = single_measurement(INPUTS_ADDRESS[0])
-print('torque measurement: ', t)
+print('single measurement: ', t)
 time.sleep(5)
-u = single_measurement(INPUTS_ADDRESS[0])
+u = torqueMeasurement(INPUTS_ADDRESS[0])
 print('torque measurement: ', u)
 
 def modulate(modChan):
