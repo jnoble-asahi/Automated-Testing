@@ -171,7 +171,7 @@ def torqueMeasurement(input):
     print('ads.v_per_digit: ', ads.v_per_digit)
     y = float(raw_channels * ads.v_per_digit)
     #tor = torqueConvert(y)
-    return(tor)
+    return(y)
 
 def torqueConvert(tor):
     #torqueVal = (tor)*6000/5 #convert reading to torque value in in-lbs
