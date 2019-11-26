@@ -140,6 +140,11 @@ print(torr)
 time.sleep(4)
 torrr = torqueMeasurement(test_channels[0]['torq'])
 print(torrr)
+#testing
+print('torqueMeasurement')
+r = torqueMeasurement(CH1_Loc['torq'])
+print(r)
+
 
 def switchCheck(test, switchInput):
 

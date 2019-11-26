@@ -182,11 +182,6 @@ def torqueMeasurement(input):
     tor = torqueConvert(torSens)
     return(tor)
 
-#testing
-print('torqueMeasurement')
-r = torqueMeasurement(INPUT_ADRESS[0])
-print(r)
-
 def torqueConvert(tor):
     torqueVal = (tor - 4)*6000/16 #convert 4-20 mA indicator signal to torque reading in in-lbs
     return(torqueVal)
