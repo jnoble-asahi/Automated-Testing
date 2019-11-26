@@ -54,16 +54,6 @@ ads.cal_self()
 dac = DAC8552()
 dac.v_ref = 5
 step = dac.digit_per_v
-'''print('data:', 0*step)
-print('sleep')
-time.sleep(10)
-print('dacA 1, dacB 0')
-dac.write_dac(DAC_A, 1*step)
-dac.write_dac(DAC_B, 0*step)
-time.sleep(10)
-print('powering down dac')
-dac.power_down(DAC_A, MODE_POWER_DOWN_100K)
-dac.power_down(DAC_B, MODE_POWER_DOWN_100K)'''
 
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
 EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM

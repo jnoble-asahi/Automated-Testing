@@ -132,7 +132,7 @@ print('testing')
 torr = torqueMeasurement(test_channels[0]['torq'])
 print(torr)
 time.sleep(4)
-torrr = torqueMeasurement(test_channels[0]['torq'])
+torrr = torqueMeasurement(EX1)
 print(torrr)
 time.sleep(4)
 torr = torqueMeasurement(test_channels[0]['torq'])
@@ -144,6 +144,9 @@ print(torrr)
 print('torqueMeasurement')
 r = torqueMeasurement(CH1_Loc['torq'])
 print(r)
+print('oneshot')
+g = ads.read_oneshot(EX1)
+print('oneshot ', g)
 
 
 def switchCheck(test, switchInput):
