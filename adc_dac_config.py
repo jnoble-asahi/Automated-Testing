@@ -297,7 +297,7 @@ def logData(target):
                         'Set Point' : target.setpoints})
     df.to_csv("act{}.csv".format(target.name), sep = ',')
 
-def power_down()
+def power_down():
     print('powering down dac')
     dac.power_down(DAC_A, MODE_POWER_DOWN_100K)
     dac.power_down(DAC_B, MODE_POWER_DOWN_100K)
