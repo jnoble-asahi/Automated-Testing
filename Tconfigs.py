@@ -126,8 +126,15 @@ def torqueMeasurement(inputs):
     torSens = sum(setData)/len(setData) # Average everything else
     torqueVal = (torSens - 4)*6000/16 # Convert 4-20 mA indicator signal to torque reading in in-lbs
     return torqueVal
-
+print('testing')
+#testing AI
+torr = torqueMeasurement(test_channels[switchInput]['torq'])
+print(torr)
+time.sleep(2)
+torrr = torqueMeasurement(test_channels[switchInput]['torq'])
+print(torrr)
 def switchCheck(test, switchInput):
+
     '''
     Read the state of the actuator limit switch input
     If it's changed, do some stuff, if it hasn't changed, then do nothing '''
