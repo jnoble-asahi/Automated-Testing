@@ -123,8 +123,7 @@ def torqueMeasurement(inputs):
     # Remove max and min values
     setData.remove(max(setData)) 
     setData.remove(min(setData))
-    torSens = sum(setData)/len(setData) # Average everything else
-    torqueVal = (torSens - 4)*6000/16 # Convert 4-20 mA indicator signal to torque reading in in-lbs
+    torqueVal = sum(setData)/len(setData) # Average everything else
     return torqueVal
 
 print('testing')

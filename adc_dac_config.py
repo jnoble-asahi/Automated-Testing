@@ -170,11 +170,11 @@ def torqueMeasurement(input):
     raw_channels = ads.read_oneshot(input)
     print('ads.v_per_digit: ', ads.v_per_digit)
     y = float(raw_channels * ads.v_per_digit)
-    tor = torqueConvert(y)
+    #tor = torqueConvert(y)
     return(tor)
 
 def torqueConvert(tor):
-    torqueVal = (tor - 4)*6000/16 #convert 4-20 mA indicator signal to torque reading in in-lbs
+    #torqueVal = (tor)*6000/5 #convert reading to torque value in in-lbs
     return(torqueVal)
 
 def single_measurement(chanIn):
@@ -191,6 +191,7 @@ u = torqueMeasurement(INPUTS_ADDRESS[0])
 print('torque measurement: ', u)
 raw = ads.read_sequence(CH1_SEQUENCE)
 print('1 input is torque: ', raw)
+# t
 
 def modulate(modChan):
     aOut = int(np.random.randint(0, high = dac.v_ref) * dac.digit_per_v) #Default arguments of none for size, and I for dtype (single value, and int for data type)
