@@ -61,20 +61,20 @@ EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_
 
 INPUTS_ADDRESS = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7, EXT8)
 
-CH1_Loc = {'pos' : INPUTS_ADDRESS[0],
+CH1_Loc = {'tor' : INPUTS_ADDRESS[0],
            'cur' : INPUTS_ADDRESS[2],
            'temp' : INPUTS_ADDRESS[5]}
 
-CH2_Loc = {'pos' : INPUTS_ADDRESS[1],
+CH2_Loc = {'tor' : INPUTS_ADDRESS[1],
            'cur' : INPUTS_ADDRESS[3],
            'temp' : INPUTS_ADDRESS[6]}
 
 CH_Out = {'1' : DAC_A ,
           '2' : DAC_B}
 
-CH1_SEQUENCE = (CH1_Loc['pos'], CH1_Loc['cur'], CH1_Loc['temp']) #Position, Current, Temperature channels
+CH1_SEQUENCE = (CH1_Loc['tor'], CH1_Loc['cur'], CH1_Loc['temp']) #Position, Current, Temperature channels
 
-CH2_SEQUENCE =  (CH2_Loc['pos'], CH2_Loc['cur'], CH2_Loc['temp']) #Position, Current, Temperature channels
+CH2_SEQUENCE =  (CH2_Loc['tor'], CH2_Loc['cur'], CH2_Loc['temp']) #Position, Current, Temperature channels
 
 channels = {'1' : CH1_SEQUENCE,
             '2' : CH2_SEQUENCE}
@@ -189,6 +189,8 @@ print('single measurement: ', t)
 time.sleep(5)
 u = torqueMeasurement(INPUTS_ADDRESS[0])
 print('torque measurement: ', u)
+raw = ads.read_sequence(CH1_SEQUENCE)
+print('1 input is torque: ', raw)
 
 def modulate(modChan):
     aOut = int(np.random.randint(0, high = dac.v_ref) * dac.digit_per_v) #Default arguments of none for size, and I for dtype (single value, and int for data type)
