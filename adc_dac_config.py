@@ -170,6 +170,7 @@ def tempConvert(temp):
 def torqueMeasurement(input):
     raw_channels = ads.read_oneshot(input)
     print('ads.v_per_digit: ', ads.v_per_digit)
+    ads.v_ref = 3
     y = float(raw_channels * ads.v_per_digit)
     print('voltage: ', y) # troubleshooting/calibration purposes
     tor = torqueConvert(y)
