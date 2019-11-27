@@ -185,15 +185,8 @@ def single_measurement(chanIn):
     raw_channels = ads.read_oneshot(chanIn) #Read the raw integer input on the channels
     return(raw_channels)
 
-#testing
-u = torqueMeasurement(INPUTS_ADDRESS[0])
-print('torque measurement: ', u)
-time.sleep(5)
-s = torqueMeasurement(INPUTS_ADDRESS[0])
-print('s', s)
-
 def modulate(modChan):
-    aOut = int(np.random.randint(0, high = dac.v_ref) * dac.digit_per_v) #Default arguments of none for size, and I for dtype (single value, and int for data type)
+    aOut = int(np.random.randint(0, high = dac.v_ref) * dac.digit_per_v) # Default arguments of none for size, and I for dtype (single value, and int for data type)
     dac.write_dac(modChan, aOut)
     aPos = int((float(aOut) / (dac.v_ref * dac.digit_per_v)) * 100)
     print( modChan, ' to Random', aPos)
