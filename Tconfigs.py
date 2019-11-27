@@ -103,16 +103,16 @@ def restCalc(length, dCycle):
     rest = float(length / (float(dCycle)/100))
     return rest
 
-def torqueMeasurement(inputs):
-    '''
-    Takes series of torque measurement readings and averages them
-    '''
+'''def torqueMeasurement(inputs):'''
+# Takes series of torque measurement readings and averages them
+'''
     raw_channels = ads.read_oneshot(inputs)
 
     # Collect 10 data point readings
     setData = []
     for i in range (0, 10):
         torSens = raw_channels
+        time.sleep(1)
         setData.append(torSens)
     # Remove max and min values
     setData.remove(max(setData)) 
@@ -122,7 +122,7 @@ def torqueMeasurement(inputs):
     voltage = float(rawVal*an.astep) # Convert raw value to voltage
     print('voltage: ', voltage) # for troubleshooting/calibration
     torque = voltage*6000/5 # Convert voltage value to torque value
-    return torque
+    return torque'''
 
 
 def switchCheck(test, switchInput):
@@ -133,7 +133,7 @@ def switchCheck(test, switchInput):
 
     checkStart = time.time()
 
-    torr = torqueMeasurement(test_channels[switchInput]['torq']) # collect torque data and average
+    torr = an.torqueMeasurement(test_channels[switchInput]['torq']) # collect torque data and average
     print('torr ', torr) # debugging
 
     if test.active == True:
@@ -160,7 +160,7 @@ def switchCheck(test, switchInput):
                 while True:
                     # wait 1/3 of cycle time or 1/cyclepoints
                     if (time.time() - checkStart) > (((y+1)/test.cycle_points)*test.cycle_time):
-                        tor = torqueMeasurement(test_channels[switchInput]['torq'])
+                        tor = an.torqueMeasurement(test_channels[switchInput]['torq'])
                         print('tor: ', tor) # Debugging
                         test.torque.append(tor) # store torque reading measurement
                         # store other values
@@ -180,6 +180,7 @@ def switchCheck(test, switchInput):
     
             else:
                 pass'''
+            test.pv += 1
         else:
             test.active = False
     else:

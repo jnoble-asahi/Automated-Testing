@@ -175,8 +175,8 @@ def torqueMeasurement(input):
     tor = torqueConvert(y)
     return(tor)
 
-def torqueConvert(tor):
-    torqueVal = (tor)*6000/5 #convert reading to torque value in in-lbs
+def torqueConvert(volt):
+    torqueVal = (volt - 2.5)*6000/2.5 #convert reading to torque value in in-lbs
     return(torqueVal)
 
 def single_measurement(chanIn):
