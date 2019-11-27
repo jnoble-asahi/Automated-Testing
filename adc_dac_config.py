@@ -50,6 +50,7 @@ minRaw = [22500, 22500]
 
 ads = ADS1256()
 ads.cal_self() 
+astep = ads.v_per_digit
 
 dac = DAC8552()
 dac.v_ref = 5
@@ -170,11 +171,12 @@ def torqueMeasurement(input):
     raw_channels = ads.read_oneshot(input)
     print('ads.v_per_digit: ', ads.v_per_digit)
     y = float(raw_channels * ads.v_per_digit)
-    #tor = torqueConvert(y)
-    return(y)
+    print('voltage: ', y) # troubleshooting/calibration purposes
+    tor = torqueConvert(y)
+    return(tor)
 
 def torqueConvert(tor):
-    #torqueVal = (tor)*6000/5 #convert reading to torque value in in-lbs
+    torqueVal = (tor)*6000/5 #convert reading to torque value in in-lbs
     return(torqueVal)
 
 def single_measurement(chanIn):
@@ -184,7 +186,7 @@ def single_measurement(chanIn):
     return(raw_channels)
 
 #testing
-u = torqueMeasurement(INPUTS_ADDRESS[0]) # this works - gives voltage
+u = torqueMeasurement(INPUTS_ADDRESS[0])
 print('torque measurement: ', u)
 time.sleep(5)
 s = torqueMeasurement(INPUTS_ADDRESS[0])

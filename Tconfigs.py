@@ -66,8 +66,6 @@ INPUT = binary['INPUT']
 LOW = binary['LOW']
 HIGH = binary['HIGH']
 
-#dac.write_dac(DAC_A, an.dac.v_ref) # set brake
-
 def warning_on():
     red.off() # off function because LED is wired NO
 
@@ -86,14 +84,10 @@ def set_on_off(test, channelID):
         test.cntrl_channel = test_channels[channelID]['cntrl']
         test.input_channel = test_channels[channelID]['input']
         test.output_channel = test_channels[channelID]['torq']
-        #test.input_sequence = input_sequence[channelID]
         print('setting dac')
         dac.write_dac(test.cntrl_channel, 0*an.step) # Set brake to 0
         print('Brake set to 0.')
-        #Calibration
-        time.sleep(150)
-        print('done')
-        wp.pinMode(test.input_channel, INPUT) # Declare the pins connected to limit swithces as inputs
+        wp.pinMode(test.input_channel, INPUT) # Declare the pins as inputs
         wp.pinMode(test.output_channel, OUTPUT) # Declare the pin connected to torque transducer signal as an output
         wp.pullUpDnControl(test.input_channel, 2) # Set the input pins for pull up control
 
@@ -123,22 +117,12 @@ def torqueMeasurement(inputs):
     # Remove max and min values
     setData.remove(max(setData)) 
     setData.remove(min(setData))
-    torqueVal = sum(setData)/len(setData) # Average everything else
-    return torqueVal
+    rawVal = float(sum(setData)/len(setData)) # Average everything else
 
-print('testing')
-#testing AI
-torr = torqueMeasurement(test_channels[0]['torq'])
-print(torr)
-time.sleep(4)
-torrr = torqueMeasurement(INPUTS_ADDRESS[0])
-print(torrr)
-time.sleep(4)
-torr = torqueMeasurement(test_channels[0]['torq'])
-print(torr)
-time.sleep(4)
-torrr = torqueMeasurement(test_channels[0]['torq'])
-print(torrr)
+    voltage = float(rawVal*an.astep) # Convert raw value to voltage
+    print('voltage: ', voltage) # for troubleshooting/calibration
+    torque = voltage*6000/5 # Convert voltage value to torque value
+    return torque
 
 
 def switchCheck(test, switchInput):
@@ -149,9 +133,12 @@ def switchCheck(test, switchInput):
 
     checkStart = time.time()
 
+    torr = torqueMeasurement(test_channels[switchInput]['torq']) # collect torque data and average
+    print('torr ', torr) # debugging
+
     if test.active == True:
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
-            torr = torqueMeasurement(test_channels[switchInput]['torq']) # collect torque data and average
+
             #state = wp.digitalRead(switchInput) # Reads the current switch state
             #last_state = test.last_state # Store the last switch state in a temp variable
 
@@ -166,6 +153,7 @@ def switchCheck(test, switchInput):
                     test.pv+= 1 # Increment the pv counter if the switch changed
                     print("Switch {} confirmed".format(test.name))'''
             test.torque.append(torr) # store torque reading measurement taken before if statement
+            print('torr: ', torr) # debugging
 
             # collect (cycle_points - 1) more points in cycle
             for y in range (test.cycle_points - 1):
@@ -173,6 +161,7 @@ def switchCheck(test, switchInput):
                     # wait 1/3 of cycle time or 1/cyclepoints
                     if (time.time() - checkStart) > (((y+1)/test.cycle_points)*test.cycle_time):
                         tor = torqueMeasurement(test_channels[switchInput]['torq'])
+                        print('tor: ', tor) # Debugging
                         test.torque.append(tor) # store torque reading measurement
                         # store other values
                         test.time.append(time.time()) 
