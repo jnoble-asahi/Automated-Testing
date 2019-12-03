@@ -206,6 +206,7 @@ def logCheck(testChannel):
     
     elif testChannel.active == False:
         pass
+    
 
     elif testChannel.active == True:
         testChannel.update_db()
