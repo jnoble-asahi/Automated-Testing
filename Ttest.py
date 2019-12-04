@@ -25,6 +25,14 @@ yes = ('YES', 'yes', 'y', 'Ye', 'Y')
 no = ('NO','no', 'n', 'N', 'n')
 yes_no = ('YES', 'yes', 'y', 'Ye', 'Y', 'NO','no', 'n', 'N', 'n')
 
+# prevents issues with shutdown (cogging etc)
+def shut_down():
+    tcf.running_off() # Turn off test running LED
+    for i, value in enumerate(tests):
+        if tests[i].active == True:
+            tcf.brakeOff(tests[i], i)
+    an.killDaemons()
+
 print('Starting test set-up')
 
 while True:
@@ -54,10 +62,7 @@ while True:
 
     else:
         tcf.warning_on()
-        print('sacrificing IO daemons') # Kill the IO daemon process
-        bash = "sudo killall pigpiod" 
-        process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-        output, error = process.communicate()
+        shut_down()
         raise Warning('Something went wrong, check your work ') # If the test case isn't caught by the above, something's wrong
 
 wait = 0.5 # A small waiting period is necessary, otherwise the switch input reads each cycle multiple times
@@ -65,8 +70,7 @@ print('Running test(s)')
 tcf.running_on() # Turn on test running LED
 stamp = time.time()
 
-#commented out for testing shut down process
-'''while True: # Start a loop to run the torque tests
+while True: # Start a loop to run the torque tests
     for i, value in enumerate(tests): # Loop through each test class one by one
 
         if ((time.time() - stamp) < (wait)): # Check to see if it's time to check the switch inputs again
@@ -94,14 +98,9 @@ if len(tests) > 0:
     for i, value in enumerate(tests[i]): # Log each test data one by one
         tests[i].update_db()
 else:
-    pass'''
+    pass
 
-# shut down
-tcf.running_off() # Turn off test running LED
-for i, value in enumerate(tests):
-    if tests[i].active == True:
-        tcf.brakeOff(tests[i], i)
-an.killDaemons()
+shut_down()
 
 print("Test exited with a clean status")
 
