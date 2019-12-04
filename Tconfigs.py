@@ -104,7 +104,7 @@ def brakeOff(test, channelID):
     for i in range(1, 6):
         dac.write_dac(test.cntrl_channel, int(an.step*setpnt*(5-i)/5))
         print(setpnt*(5-i)/5) # debugging
-        time.sleep(2)
+        time.sleep(10) # set higher while debugging
     an.power_down(channelID)
     print('brake ', channelID, 'powered off')
 
