@@ -69,7 +69,6 @@ wait = 0.5 # A small waiting period is necessary, otherwise the switch input rea
 print('Running test(s)')
 tcf.running_on() # Turn on test running LED
 stamp = time.time()
-shut_down()
 
 while True: # Start a loop to run the torque tests
     for i, value in enumerate(tests): # Loop through each test class one by one

@@ -37,11 +37,13 @@ wp.wiringPiSetupPhys()
 
 CH1_Loc = {'cntrl' : DAC_A,
            'torq' : INPUTS_ADDRESS[0],
-           'input': 31}
+           'FK_On': INPUTS_ADDRESS[1],
+           'FK_Off' : INPUTS_ADDRESS[2]}
 
 CH2_Loc = {'cntrl' : DAC_B,
-           'torq' : INPUTS_ADDRESS[1],
-           'input': 33}
+           'torq' : INPUTS_ADDRESS[3],
+           'FK_On': INPUTS_ADDESS[4],
+           'FK_Off' : INPUTS_ADDRESS[5]}
 '''
 CH1_SEQUENCE = (CH1_Loc['cntrl'], CH1_Loc['torq'], CH1_Loc['pos']) # Torque, Current, Position channels
 
@@ -104,7 +106,7 @@ def brakeOff(test, channelID):
     for i in range(1, 6):
         dac.write_dac(test.cntrl_channel, int(an.step*setpnt*(5-i)/5))
         print(setpnt*(5-i)/5) # debugging
-        time.sleep(10) # set higher while debugging
+        time.sleep(2)
     an.power_down(channelID)
     print('brake ', channelID, 'powered off')
 
@@ -115,16 +117,17 @@ def restCalc(length, dCycle):
     rest = float(length / (float(dCycle)/100))
     return rest
 
-'''def torqueMeasurement(inputs):'''
-# Takes series of torque measurement readings and averages them
-'''
+def torqueMeasurement(inputs):
+    '''
+    # Takes series of torque measurement readings and averages them
+    '''
     raw_channels = ads.read_oneshot(inputs)
 
     # Collect 10 data point readings
     setData = []
     for i in range (0, 10):
         torSens = raw_channels
-        time.sleep(1)
+        time.sleep(0.1)
         setData.append(torSens)
     # Remove max and min values
     setData.remove(max(setData)) 
@@ -132,74 +135,64 @@ def restCalc(length, dCycle):
     rawVal = float(sum(setData)/len(setData)) # Average everything else
 
     voltage = float(rawVal*an.astep) # Convert raw value to voltage
-    print('voltage: ', voltage) # for troubleshooting/calibration
-    torque = voltage*6000/5 # Convert voltage value to torque value
-    return torque'''
+    print('voltage reading: ', voltage) # for troubleshooting/calibration
+    torque = (voltage - 2.5)*6000/2.5 # Convert voltage value to torque value
+    print('torque reading', torque)
+    return torque
 
-
-def switchCheck(test, switchInput):
-
+def switchCheck(test, testIndex):
     '''
     Read the state of the actuator limit switch input
     If it's changed, do some stuff, if it hasn't changed, then do nothing '''
 
-    checkStart = time.time()
-
-    torr = an.torqueMeasurement(test_channels[switchInput]['torq']) # collect torque data and average
-    print('torr ', torr) # debugging
-    # Store other values
-    test.time.append(time.time()) 
-
     if test.active == True:
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
+            switchChannel = test_channels[testIndex]['FK_On']
+            state = ads.read_oneshot(switchChannel) # Reads the current switch state
+            last_state = test.lastState # Store the last switch state in a temp variable
+            checkStart = time.time()
 
-            #state = wp.digitalRead(switchInput) # Reads the current switch state
-            #last_state = test.last_state # Store the last switch state in a temp variable
-
-            '''if (last_state == HIGH) & (state == LOW): # Check if the switch changed from HIGH to LOW 
-            test.last_state = LOW #Reset the "last state" of the switch
-            length = time.time() - test.cycle_start # Calculate the length of the last cycle
+            if (last_state == HIGH) & (state == LOW): # Check if the switch changed from HIGH to LOW 
+                test.last_state = LOW #Reset the "last state" of the switch
+                length = time.time() - test.cycle_start # Calculate the length of the last cycle
         
                 if (length > (test.cycle_time*.25)):
                     test.pv+= 1 # Increment the pv counter if the switch changed
-                    print("Switch {} confirmed".format(test.name))'''
-            test.torque.append(torr) # store torque reading measurement taken before if statement
-            print('torr: ', torr) # debugging
+                    print("Switch {} confirmed".format(test.name))
 
-            # collect (cycle_points - 1) more points in cycle
-            for y in range (test.cycle_points - 1):
-                while True:
-                    # wait 1/3 of cycle time or 1/cyclepoints
-                    if (time.time() - checkStart) > (((y+1)/test.cycle_points)*test.cycle_time):
-                        tor = an.torqueMeasurement(test_channels[switchInput]['torq'])
-                        print('tor: ', tor) # Debugging
-                        test.torque.append(tor) # store torque reading measurement
-                        # store other values
-                        test.time.append(time.time()) 
-                        break
-                '''else:
-                    test.bounces = test.bounces + 1 # If the switch went LOW really quickly it's likely just a bounce. Increment the bounce counter
-                    print("Switch {} bounced".format(test.name))'''
+                    # collect "cycle_points" amount of points in cycle
+                    for y in range (test.cycle_points):
+                            # wait 1/3 of cycle time or 1/cyclepoints
+                            if (time.time() - checkStart) > (((y+1)/test.cycle_points)*test.cycle_time):
+                                tor = an.torqueMeasurement(test_channels[testIndex]['torq'])
+                                test.torque.append(tor) # store torque reading measurement
+                                # store other values
+                                test.time.append(time.time()) 
+                else:
+                    test.bounces = test.bounces + 1
+                    print("Switch {} bounced".format(testIndex))
 
-                '''
-                Reserved block to later add duty cycle calc functions
-                '''
-    
-            '''elif (last_state == LOW) & (state == HIGH): 
-                print("Switch {} changed".format(test.name))
-                test.last_state = HIGH
-    
+            elif (last_state == LOW) & (state == HIGH): 
+                print("Switch {} changed".format(testIndex))
+                test.lastState = 1
+
+                # collect "cycle_points" amount of points in cycle
+                for y in range (test.cycle_points):
+                    while True:
+                        # wait 1/3 of cycle time or 1/cyclepoints
+                        if (time.time() - checkStart) > (((y+1)/test.cycle_points)*test.cycle_time):
+                            tor = an.torqueMeasurement(test_channels[testIndex]['torq'])
+                            test.torque.append(tor) # store torque reading measurement
+                            # store other values
+                            test.time.append(time.time())
+                            break 
             else:
-                pass'''
-            test.pv += 1
+                pass
         else:
             test.active = False
     else:
         pass
 
-
-
-'''
 def onOff_measurement(inputs):
 
     # Read the input voltages from the current and brake control inputs on the ADC. 
@@ -208,8 +201,7 @@ def onOff_measurement(inputs):
     raw_channels = ads.read_sequence(inputs)
     cntrl = raw_channels[0]
     curr = raw_channels[1]
-    return(contrl, curr)
- '''   
+    return(contrl, curr)  
 
 def logCheck(testChannel):
     if (time.time() - testChannel.last_log) < (testChannel.print_rate):
@@ -218,7 +210,6 @@ def logCheck(testChannel):
     elif testChannel.active == False:
         pass
     
-
     elif testChannel.active == True:
         testChannel.update_db()
         testChannel.last_log = time.time()

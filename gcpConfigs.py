@@ -126,6 +126,7 @@ class define_test():
             self.chan_state = HIGH
             self.cycle_points = y['CyclePoints']
             self.update_db()
+            self.cycleTimeNow = float(0)
 
     def setCycleTime(self):
         '''
