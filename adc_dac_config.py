@@ -285,7 +285,7 @@ def logData(target):
 def power_down(testindex):
     print('powering down dac')
     test = tests[testindex]
-    dac.power_down(CH_Out[test]), MODE_POWER_DOWN_100K)
+    dac.power_down(CH_Out[test], MODE_POWER_DOWN_100K)
 
 def killDaemons():
     print('sacrificing IO daemons') # Kill the IO daemon process
