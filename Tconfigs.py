@@ -103,7 +103,7 @@ def brakeOff(test, channelID):
     test.cntrl_channel = test_channels[channelID]['cntrl']
     for i in range(1, 6):
         dac.write_dac(test.cntrl_channel, int(an.step*setpnt*(5-i)/5))
-    an.power_down(test.cntrl_channel)
+    an.power_down(channelID)
 
 def restCalc(length, dCycle):
     '''
