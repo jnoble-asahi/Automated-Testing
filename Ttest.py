@@ -66,7 +66,8 @@ print('Running test(s)')
 tcf.running_on() # Turn on test running LED
 stamp = time.time()
 
-while True: # Start a loop to run the torque tests
+#commented out for testing shut down process
+'''while True: # Start a loop to run the torque tests
     for i, value in enumerate(tests): # Loop through each test class one by one
 
         if ((time.time() - stamp) < (wait)): # Check to see if it's time to check the switch inputs again
@@ -94,16 +95,14 @@ if len(tests) > 0:
     for i, value in enumerate(tests[i]): # Log each test data one by one
         tests[i].update_db()
 else:
-    pass
-    
+    pass'''
+
+# shut down
 tcf.running_off() # Turn off test running LED
-an.power_down() # power off dacs
-
-print('sacrificing IO daemons') # Kill the IO daemon process
-
-bash = "sudo killall pigpiod" 
-process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()
+for i, value in enumerate(tests):
+    if test[i].active == True:
+        tcf.brakeOff(tests[i], i)
+an.killDaemons()
 
 print("Test exited with a clean status")
 

@@ -91,10 +91,19 @@ def set_on_off(test, channelID):
         wp.pinMode(test.output_channel, OUTPUT) # Declare the pin connected to torque transducer signal as an output
         wp.pullUpDnControl(test.input_channel, 2) # Set the input pins for pull up control
 
-def brakeOn(test, channelID, setpnt):
+def brakeOn(test, channelID):
+        setpnt = test.convertSig()
         test.cntrl_channel = test_channels[channelID]['cntrl']
         dac.write_dac(test.cntrl_channel, int(setpnt * an.step)) # Set brake to desired value
         print('Brake set to', setpnt, 'V')
+
+# Power brake off gradually to avoid cogging
+def brakeOff(test, channelID):
+    setpnt = test.convertSig()
+    test.cntrl_channel = test_channels[channelID]['cntrl']
+    for i in range(1, 6):
+        dac.write_dac(test.cntrl_channel, int(an.step*setpnt*(5-i)/5))
+    an.power_down(test.cntrl_channel)
 
 def restCalc(length, dCycle):
     '''
@@ -135,15 +144,14 @@ def switchCheck(test, switchInput):
 
     torr = an.torqueMeasurement(test_channels[switchInput]['torq']) # collect torque data and average
     print('torr ', torr) # debugging
+    # Store other values
+    test.time.append(time.time()) 
 
     if test.active == True:
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
 
             #state = wp.digitalRead(switchInput) # Reads the current switch state
             #last_state = test.last_state # Store the last switch state in a temp variable
-
-            # Store other values
-            test.time.append(time.time()) 
 
             '''if (last_state == HIGH) & (state == LOW): # Check if the switch changed from HIGH to LOW 
             test.last_state = LOW #Reset the "last state" of the switch

@@ -282,7 +282,13 @@ def logData(target):
                         'Set Point' : target.setpoints})
     df.to_csv("act{}.csv".format(target.name), sep = ',')
 
-def power_down():
+def power_down(testindex):
     print('powering down dac')
-    dac.power_down(DAC_A, MODE_POWER_DOWN_100K)
-    dac.power_down(DAC_B, MODE_POWER_DOWN_100K)
+    test = tests[testindex]
+    dac.power_down(CH_Out[test]), MODE_POWER_DOWN_100K)
+
+def killDaemons():
+    print('sacrificing IO daemons') # Kill the IO daemon process
+    bash = "sudo killall pigpiod" 
+    process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
