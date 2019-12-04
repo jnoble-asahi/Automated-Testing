@@ -99,7 +99,7 @@ else:
 # shut down
 tcf.running_off() # Turn off test running LED
 for i, value in enumerate(tests):
-    if test[i].active == True:
+    if tests[i].active == True:
         tcf.brakeOff(tests[i], i)
 an.killDaemons()
 
