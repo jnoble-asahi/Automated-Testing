@@ -168,11 +168,22 @@ def tempConvert(temp):
     return(y)
     
 def torqueMeasurement(input):
-    raw_channels = ads.read_oneshot(input)
-    y = float(raw_channels * ads.v_per_digit)
-    print('voltage input: ', y) # debugging
-    tor = torqueConvert(y)
-    return(tor)
+    # Collect 10 data point readings across 1 second
+    setData = []
+    for i in range (0, 10):
+        raw_channels = ads.read_oneshot(input)
+        time.sleep(0.1)
+        setData.append(raw_channels)
+    # Remove max and min values
+    setData.remove(max(setData)) 
+    setData.remove(min(setData))
+    rawVal = float(sum(setData)/len(setData)) # Average everything else
+
+    voltage = float(rawVal*an.astep) # Convert raw value to voltage
+    print('voltage reading: ', voltage) # for troubleshooting/calibration
+    torque = torqueConvert(voltage) # Convert voltage value to torque value
+    print('torque reading:', torque)
+    return torque
 
 def torqueConvert(volt):
     torqueVal = (volt - 2.5)*6000/2.5 #convert reading to torque value in in-lbs

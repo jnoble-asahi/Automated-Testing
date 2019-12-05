@@ -9,7 +9,7 @@ import firebase_admin as fa
 from firebase_admin import firestore
 from firebase_admin import credentials
 
-import adc_dac_config as adcon
+import adc_dac_config as an
 import Tconfigs as tcf
 
 print('opening database connection')
@@ -121,8 +121,9 @@ class define_test():
             #self.temp_time = time.time()
             #self.curr_time = time.time()
             self.last_log = time.time()
-            self.print_rate = 900
-            self.last_state = HIGH
+            self.print_rate = 30
+            self.open_last_state = HIGH
+            self.closed_last_state = LOW
             self.chan_state = HIGH
             self.cycle_points = y['CyclePoints']
             self.update_db()
@@ -135,10 +136,7 @@ class define_test():
         '''
         if self.cycle_time not in range(1, 101, 1):
             tcf.warning_on()
-            print('sacrificing IO daemons') # Kill the IO daemon process
-            bash = "sudo killall pigpiod" 
-            process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-            output, error = process.communicate()
+            an.killDaemons()
             raise ValueError('Cycle times must be whole number between 1 and 100')
         else:
             print('Test cycle time created')
@@ -150,7 +148,7 @@ class define_test():
         '''
         if self.target not in range(1, 1000000, 1):
             tcf.warning_on()
-            time.sleep(1)
+            an.killDaemons()
             raise ValueError('Number of cycles must be a whole number, between 1 and 1,000,000')
         else:
             print('Test cycles set point created')
@@ -161,6 +159,8 @@ class define_test():
         a tuple to make it immutable
         '''
         if self.duty_cycle not in range(0, 100, 1):
+            tcf.warning_on()
+            an.killDaemons()
             raise ValueError('Duty cycle must be a whole number between 1 and 100')
         else:
             print('Test duty cycle created')
@@ -177,10 +177,7 @@ class define_test():
     def setTorque(self):
         if self.control not in range(0, 6373):
             tcf.warning_on()
-            print('sacrificing IO daemons') # Kill the IO daemon process
-            bash = "sudo killall pigpiod" 
-            process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-            output, error = process.communicate()
+            an.killDaemons()
             raise ValueError('Torque setpoints must be between 0 and 6372 in-lbs')
         else:
             print('Torque setpoint created')
@@ -191,6 +188,7 @@ class define_test():
             tcf.warning_on()
             print('Gain value not valid. Choose from:')
             print(choices)
+            an.killDaemons()
             raise ValueError('Gain value not valid.')
         else:
             print('Gain set')

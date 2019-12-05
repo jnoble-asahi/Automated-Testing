@@ -42,7 +42,7 @@ CH1_Loc = {'cntrl' : DAC_A,
 
 CH2_Loc = {'cntrl' : DAC_B,
            'torq' : INPUTS_ADDRESS[3],
-           'FK_On': INPUTS_ADDESS[4],
+           'FK_On': INPUTS_ADDRESS[4],
            'FK_Off' : INPUTS_ADDRESS[5]}
 '''
 CH1_SEQUENCE = (CH1_Loc['cntrl'], CH1_Loc['torq'], CH1_Loc['pos']) # Torque, Current, Position channels
@@ -84,7 +84,7 @@ def set_on_off(test, channelID):
         test.name = channelID
         test.active = True
         test.cntrl_channel = test_channels[channelID]['cntrl']
-        test.input_channel = test_channels[channelID]['input']
+        test.input_channel = test_channels[channelID]['FK_On']
         test.output_channel = test_channels[channelID]['torq']
         print('setting dac')
         dac.write_dac(test.cntrl_channel, 0*an.step) # Set brake to 0
@@ -99,8 +99,10 @@ def brakeOn(test, channelID):
         dac.write_dac(test.cntrl_channel, int(setpnt * an.step)) # Set brake to desired value
         print('Brake set to', setpnt, 'V')
 
-# Power brake off gradually to avoid cogging
 def brakeOff(test, channelID):
+    '''
+    power brake off gradually to avoid cogging
+    '''
     setpnt = test.convertSig()
     test.cntrl_channel = test_channels[channelID]['cntrl']
     for i in range(1, 6):
@@ -117,53 +119,33 @@ def restCalc(length, dCycle):
     rest = float(length / (float(dCycle)/100))
     return rest
 
-def torqueMeasurement(inputs):
-    '''
-    # Takes series of torque measurement readings and averages them
-    '''
-    raw_channels = ads.read_oneshot(inputs)
-
-    # Collect 10 data point readings
-    setData = []
-    for i in range (0, 10):
-        torSens = raw_channels
-        time.sleep(0.1)
-        setData.append(torSens)
-    # Remove max and min values
-    setData.remove(max(setData)) 
-    setData.remove(min(setData))
-    rawVal = float(sum(setData)/len(setData)) # Average everything else
-
-    voltage = float(rawVal*an.astep) # Convert raw value to voltage
-    print('voltage reading: ', voltage) # for troubleshooting/calibration
-    torque = (voltage - 2.5)*6000/2.5 # Convert voltage value to torque value
-    print('torque reading', torque)
-    return torque
-
 def switchCheck(test, testIndex):
     '''
-    Read the state of the actuator limit switch input
-    If it's changed, do some stuff, if it hasn't changed, then do nothing '''
+    Read the state of the actuator limit switch inputs
+    If they changed, do some stuff, if they haven't changed, then do nothing '''
 
     if test.active == True:
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
-            switchChannel = test_channels[testIndex]['FK_On']
-            state = ads.read_oneshot(switchChannel) # Reads the current switch state
-            last_state = test.lastState # Store the last switch state in a temp variable
-            checkStart = time.time()
-
-            if (last_state == HIGH) & (state == LOW): # Check if the switch changed from HIGH to LOW 
-                test.last_state = LOW #Reset the "last state" of the switch
+            open_switch = test_channels[testIndex]['FK_On']
+            closed_switch = test_channels[testIndex]['FK_Off']
+            open_state = ads.read_oneshot(open_switch) # Reads the current FK_On switch state
+            closed_state = ads.read_oneshot(closed_switch) # Reads the current FK_Off swtich state
+            open_last_state = test.last_state_open # Store the last FK_On switch state in a temp variable
+            closed_last_state = test.last_state_closed # Store the last FK_Off switch state in temp variable
+            
+            if (open_last_state == HIGH) & (open_state == LOW) & (closed_state == LOW): # Check if changed from fully open position to closing (moving)
+                test.open_last_state = LOW #Reset the "open last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last cycle
-        
-                if (length > (test.cycle_time*.25)):
+
+                if (length > (test.duty_cycle*.49)):
+                    test.cycle_start = time.time() # update cycle start time
                     test.pv+= 1 # Increment the pv counter if the switch changed
-                    print("Switch {} confirmed".format(test.name))
+                    print("Switch {} confirmed. Actuator is closing.".format(test.name))
 
                     # collect "cycle_points" amount of points in cycle
                     for y in range (test.cycle_points):
                             # wait 1/3 of cycle time or 1/cyclepoints
-                            if (time.time() - checkStart) > (((y+1)/test.cycle_points)*test.cycle_time):
+                            if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
                                 tor = an.torqueMeasurement(test_channels[testIndex]['torq'])
                                 test.torque.append(tor) # store torque reading measurement
                                 # store other values
@@ -172,20 +154,37 @@ def switchCheck(test, testIndex):
                     test.bounces = test.bounces + 1
                     print("Switch {} bounced".format(testIndex))
 
-            elif (last_state == LOW) & (state == HIGH): 
-                print("Switch {} changed".format(testIndex))
-                test.lastState = 1
+            elif (closed_last_state == HIGH) & (closed_state == LOW) & (open_state == LOW): # Check if changed from fully closed position to opening (moving)
+                test.closed_last_state = LOW # Reset the "closed last state" of the switch
+                length = time.time() - test.cycle_start # Calculate the length of the last cycle
 
-                # collect "cycle_points" amount of points in cycle
-                for y in range (test.cycle_points):
-                    while True:
-                        # wait 1/3 of cycle time or 1/cyclepoints
-                        if (time.time() - checkStart) > (((y+1)/test.cycle_points)*test.cycle_time):
-                            tor = an.torqueMeasurement(test_channels[testIndex]['torq'])
-                            test.torque.append(tor) # store torque reading measurement
-                            # store other values
-                            test.time.append(time.time())
-                            break 
+                if (length > (test.duty_cycle*.49)):
+                    test.cycle_start = time.time() # Update cycle start time
+                    test.pv+= 1 # Increment the pv counter if the switch changed
+                    print("Switch {} confirmed. Actuator is opening.".format(test.name))
+
+                    # collect "cycle_points" amount of points in cycle
+                    for y in range (test.cycle_points):
+                            # wait 1/3 of cycle time or 1/cyclepoints
+                            if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
+                                tor = an.torqueMeasurement(test_channels[testIndex]['torq'])
+                                test.torque.append(tor) # store torque reading measurement
+                                # store other values
+                                test.time.append(time.time()) 
+                else:
+                    test.bounces = test.bounces + 1
+                    print("Switch {} bounced".format(testIndex))
+
+            elif (open_last_state == LOW) & (open_state == HIGH) & (closed_state == LOW): # Check to see if recently in fully open position
+                print("Switch {} changed. Actuator is in fully open position.".format(testIndex))
+                test.open_last_state = HIGH # Update last switch state
+                test.cycle_time = time.time() - test.cycle_time # Update cycle_time
+
+            elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == LOW): # Check to see if recently in fully closed position
+                print("Switch {} changed. Actuator is in fully closed position.".format(testIndex))
+                test.closed_last_state = HIGH # Update last switch state
+                test.cycle_time = time.time() - test.cycle_time # Update cycle_time
+
             else:
                 pass
         else:
@@ -201,7 +200,7 @@ def onOff_measurement(inputs):
     raw_channels = ads.read_sequence(inputs)
     cntrl = raw_channels[0]
     curr = raw_channels[1]
-    return(contrl, curr)  
+    return(cntrl, curr)  
 
 def logCheck(testChannel):
     if (time.time() - testChannel.last_log) < (testChannel.print_rate):
@@ -216,6 +215,7 @@ def logCheck(testChannel):
     
     else:
         warning_on()
+        an.killDeamons()
         raise Warning("You didn't catch all of the cases")
 
 
