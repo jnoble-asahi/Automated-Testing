@@ -62,14 +62,16 @@ EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_
 
 INPUTS_ADDRESS = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7, EXT8)
 
-CH1_Loc = {'tor' : INPUTS_ADDRESS[0],
-           'cur' : INPUTS_ADDRESS[2],
-           'temp' : INPUTS_ADDRESS[5]}
+CH1_Loc = {'cntrl' : DAC_A,
+           'torq' : INPUTS_ADDRESS[0],
+           'FK_On': INPUTS_ADDRESS[1],
+           'FK_Off' : INPUTS_ADDRESS[2]}
 
-CH2_Loc = {'tor' : INPUTS_ADDRESS[1],
-           'cur' : INPUTS_ADDRESS[3],
-           'temp' : INPUTS_ADDRESS[6]}
-
+CH2_Loc = {'cntrl' : DAC_B,
+           'torq' : INPUTS_ADDRESS[3],
+           'FK_On': INPUTS_ADDRESS[4],
+           'FK_Off' : INPUTS_ADDRESS[5]}
+           
 CH_Out = {'1' : DAC_A ,
           '2' : DAC_B}
 
