@@ -211,6 +211,8 @@ def onOff_measurement(inputs):
 
 def logCheck(testChannel):
     print('logcheck') #debugging
+    print('current time' , time.time()) #debugging
+    print('last log time:', testChannel.last_log)
     if (time.time() - testChannel.last_log) < (testChannel.print_rate):
         pass
     
