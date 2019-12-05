@@ -130,8 +130,8 @@ def switchCheck(test, testIndex):
             closed_switch = test_channels[testIndex]['FK_Off']
             open_state = ads.read_oneshot(open_switch) # Reads the current FK_On switch state
             closed_state = ads.read_oneshot(closed_switch) # Reads the current FK_Off swtich state
-            open_last_state = test.last_state_open # Store the last FK_On switch state in a temp variable
-            closed_last_state = test.last_state_closed # Store the last FK_Off switch state in temp variable
+            open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
+            closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
             
             if (open_last_state == HIGH) & (open_state == LOW) & (closed_state == LOW): # Check if changed from fully open position to closing (moving)
                 test.open_last_state = LOW #Reset the "open last state" of the switch
