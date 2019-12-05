@@ -85,13 +85,16 @@ def set_on_off(test, channelID):
         test.active = True
         test.cntrl_channel = test_channels[channelID]['cntrl']
         test.input_channel = test_channels[channelID]['FK_On']
+        test.input_off_channel = test-channels[channelID]['FK_Off']
         test.output_channel = test_channels[channelID]['torq']
         print('setting dac')
         dac.write_dac(test.cntrl_channel, 0*an.step) # Set brake to 0
         print('Brake set to 0.')
         wp.pinMode(test.input_channel, INPUT) # Declare the pins as inputs
+        wp.pinMode(test.input_off-channel, INPUT) # Declare the pins as inputs
         wp.pinMode(test.output_channel, OUTPUT) # Declare the pin connected to torque transducer signal as an output
         wp.pullUpDnControl(test.input_channel, 2) # Set the input pins for pull up control
+        wp.pullUpDnControl(test.input_off_channel, 2) # Set the input pins for pull up control
 
 def brakeOn(test, channelID):
         setpnt = test.convertSig()
@@ -136,7 +139,7 @@ def switchCheck(test, testIndex):
             closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
             print('closed state: ', closed_state) # debugging
             print('open state: ', open_state) # debugging
-            print('closed last state: ', closed_last_state) #debugging
+            print('closed last state: ', closed_last_state) # debugging
             print('open last state: ', open_last_state) # debugging
             
             if (open_last_state == HIGH) & (open_state == LOW) & (closed_state == LOW): # Check if changed from fully open position to closing (moving)
@@ -211,8 +214,6 @@ def onOff_measurement(inputs):
 
 def logCheck(testChannel):
     print('logcheck') #debugging
-    print('current time' , time.time()) #debugging
-    print('last log time:', testChannel.last_log)
     if (time.time() - testChannel.last_log) < (testChannel.print_rate):
         pass
     
