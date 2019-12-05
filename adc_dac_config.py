@@ -75,13 +75,6 @@ CH2_Loc = {'cntrl' : DAC_B,
 CH_Out = {'1' : DAC_A ,
           '2' : DAC_B}
 
-'''CH1_SEQUENCE = (CH1_Loc['tor'], CH1_Loc['cur'], CH1_Loc['temp']) #Position, Current, Temperature channels
-
-CH2_SEQUENCE =  (CH2_Loc['tor'], CH2_Loc['cur'], CH2_Loc['temp']) #Position, Current, Temperature channels
-
-channels = {'1' : CH1_SEQUENCE,
-            '2' : CH2_SEQUENCE}'''
-
 tests = ('1', '2')
 
 class modSample():

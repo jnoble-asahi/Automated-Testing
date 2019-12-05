@@ -127,7 +127,6 @@ def switchCheck(test, testIndex):
     print('switchCheck') # debugging
     if test.active == True:
         print('test.pv: ', test.pv)
-        print('test.target', test.target)
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
             open_switch = test_channels[testIndex]['FK_On']
             closed_switch = test_channels[testIndex]['FK_Off']
@@ -136,6 +135,9 @@ def switchCheck(test, testIndex):
             open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
             closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
             print('closed state: ', closed_state) # debugging
+            print('open state: ', open_state) # debugging
+            print('closed last state: ', closed_last_state) #debugging
+            print('open last state: ', open_last_state) # debugging
             
             if (open_last_state == HIGH) & (open_state == LOW) & (closed_state == LOW): # Check if changed from fully open position to closing (moving)
                 test.open_last_state = LOW # Reset the "open last state" of the switch
