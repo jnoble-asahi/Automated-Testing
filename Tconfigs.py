@@ -37,13 +37,13 @@ wp.wiringPiSetupPhys()
 
 CH1_Loc = {'cntrl' : DAC_A,
            'torq' : INPUTS_ADDRESS[0],
-           'FK_On': 22,
-           'FK_Off' : 23} # 22 is phys 31 and 23 is phys 33 (using wiringpi pins)
+           'FK_On': 31,
+           'FK_Off' : 33}
 
 CH2_Loc = {'cntrl' : DAC_B,
            'torq' : INPUTS_ADDRESS[3],
-           'FK_On': 24,
-           'FK_Off' : 25} # 24 is phys 35 and 25 is phys 37 (using wiringpi pins)
+           'FK_On': 35,
+           'FK_Off' : 37} 
 '''
 CH1_SEQUENCE = (CH1_Loc['cntrl'], CH1_Loc['torq'], CH1_Loc['pos']) # Torque, Current, Position channels
 
