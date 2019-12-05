@@ -37,13 +37,13 @@ wp.wiringPiSetupPhys()
 
 CH1_Loc = {'cntrl' : DAC_A,
            'torq' : INPUTS_ADDRESS[0],
-           'FK_On': 31,
-           'FK_Off' : 33}
+           'FK_On': 22,
+           'FK_Off' : 23} # 22 is phys 31 and 23 is phys 33 (using wiringpi pins)
 
 CH2_Loc = {'cntrl' : DAC_B,
            'torq' : INPUTS_ADDRESS[3],
-           'FK_On': 35,
-           'FK_Off' : 37}
+           'FK_On': 24,
+           'FK_Off' : 25} # 24 is phys 35 and 25 is phys 37 (using wiringpi pins)
 '''
 CH1_SEQUENCE = (CH1_Loc['cntrl'], CH1_Loc['torq'], CH1_Loc['pos']) # Torque, Current, Position channels
 
@@ -123,19 +123,20 @@ def switchCheck(test, testIndex):
     '''
     Read the state of the actuator limit switch inputs
     If they changed, do some stuff, if they haven't changed, then do nothing '''
+
     print('switchCheck') # debugging
     if test.active == True:
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
             open_switch = test_channels[testIndex]['FK_On']
             closed_switch = test_channels[testIndex]['FK_Off']
-            open_state = ads.read_oneshot(open_switch) # Reads the current FK_On switch state
-            closed_state = ads.read_oneshot(closed_switch) # Reads the current FK_Off swtich state
+            open_state = wp.digitalRead(open_switch) # Reads the current FK_On switch state
+            closed_state = wp.digitalRead(closed_switch) # Reads the current FK_Off swtich state
             open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
             closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
-            print('closed state: ', closed_state) #debugging
+            print('closed state: ', closed_state) # debugging
             
             if (open_last_state == HIGH) & (open_state == LOW) & (closed_state == LOW): # Check if changed from fully open position to closing (moving)
-                test.open_last_state = LOW #Reset the "open last state" of the switch
+                test.open_last_state = LOW # Reset the "open last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last cycle
                 print ('length', length)
 
