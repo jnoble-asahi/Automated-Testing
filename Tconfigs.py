@@ -126,6 +126,8 @@ def switchCheck(test, testIndex):
 
     print('switchCheck') # debugging
     if test.active == True:
+        print('test.pv: ', test.pv)
+        print('test.target', test.target)
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
             open_switch = test_channels[testIndex]['FK_On']
             closed_switch = test_channels[testIndex]['FK_Off']
