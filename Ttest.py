@@ -30,7 +30,7 @@ def shut_down():
     for i, value in enumerate(tests):
         if tests[i].active == True:
             tcf.brakeOff(tests[i], i)
-    killDaemons()
+    tcf.killDaemons()
 
 print('Starting test set-up')
 

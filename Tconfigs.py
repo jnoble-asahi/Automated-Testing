@@ -186,6 +186,7 @@ def switchCheck(test, testIndex):
 
                 if (length > (test.duty_cycle*.49)):
                     test.cycle_start = time.time() # update cycle start time
+                    print('cycle start updated to: ', test.cycle_start) # debugging
                     test.pv+= 1 # Increment the pv counter if the switch changed
                     print('test.pv: ', test.pv)
                     print("Switch {} confirmed. Actuator is closing.".format(test.name))
@@ -241,7 +242,7 @@ def switchCheck(test, testIndex):
                 print('open last state: ', open_last_state) # debugging
                 print("Switch {} changed. Actuator is in fully open position.".format(testIndex))
                 test.open_last_state = LOW # Update last switch state
-                test.cycle_time = time.time() - test.cycle_time # Update cycle_time
+                test.cycle_time = time.time() - test.cycle_start # Update cycle_time
                 print('test.cycle_time updated to: ', test.cycle_time)
 
             elif (closed_last_state == HIGH) & (closed_state == LOW) & (open_state == HIGH): # Check to see if recently in fully closed position
@@ -251,7 +252,7 @@ def switchCheck(test, testIndex):
                 print('open last state: ', open_last_state) # debugging
                 print("Switch {} changed. Actuator is in fully closed position.".format(testIndex))
                 test.closed_last_state = LOW # Update last switch state
-                test.cycle_time = time.time() - test.cycle_time # Update cycle_time
+                test.cycle_time = time.time() - test.cycle_start # Update cycle_time
                 print('test.cycle_time updated to: ', test.cycle_time)
 
             else:
