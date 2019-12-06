@@ -136,6 +136,8 @@ def switchCheck(test, testIndex):
             closed_switch = test_channels[testIndex]['FK_Off']
             open_state = wp.digitalRead(open_switch) # Reads the current FK_On switch state
             closed_state = wp.digitalRead(closed_switch) # Reads the current FK_Off swtich state
+            print('closed_switch', closed_switch) #debugging
+            print('open-switch', open_switch) #debugging
             open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
             closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
             print('closed state: ', closed_state) # debugging
