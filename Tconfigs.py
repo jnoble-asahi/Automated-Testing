@@ -94,6 +94,10 @@ def running_off():
 def set_on_off(test, channelID):
         test.name = channelID
         test.active = True
+        print('Reseting variable values in the cloud')
+        test.bounces = 0
+        test.torque = []
+        test.pv = 0
         test.cntrl_channel = test_channels[channelID]['cntrl']
         test.input_channel = test_channels[channelID]['FK_On']
         test.input_off_channel = test_channels[channelID]['FK_Off']
@@ -190,8 +194,6 @@ def switchCheck(test, testIndex):
                     for y in range (test.cycle_points):
                         while True:
                             # wait 1/3 of cycle time or 1/cyclepoints
-                            print('(time.time() - test.cycle_start)', (time.time() - test.cycle_start)) # debugging
-                            print('((y+1)/test.cycle_points)*test.cycle_time', ((y+1)/test.cycle_points)*test.cycle_time) # debugging
                             if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
                                 tor = torqueMeasurement(test_channels[testIndex]['torq'])
                                 print('torque in switchcheck:', tor) # debugging
@@ -221,8 +223,6 @@ def switchCheck(test, testIndex):
                     for y in range (test.cycle_points):
                         # wait 1/3 of cycle time or 1/cyclepoints
                         while True:
-                            print('(time.time() - test.cycle_start)', (time.time() - test.cycle_start)) # debugging
-                            print('((y+1)/test.cycle_points)*test.cycle_time: ', ((y+1)/test.cycle_points)*test.cycle_time) # debugging
                             if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
                                 tor = torqueMeasurement(test_channels[testIndex]['torq'])
                                 print('torque in switchcheck: ', tor) # debugging
