@@ -161,28 +161,6 @@ def tempConvert(temp):
     x = float(temp * ads.v_per_digit)
     y = (x- 1.25)/ 0.005
     return(y)
-    
-def torqueMeasurement(input):
-    # Collect 10 data point readings across 1 second
-    setData = []
-    for i in range (0, 10):
-        raw_channels = ads.read_oneshot(input)
-        time.sleep(0.1)
-        setData.append(raw_channels)
-    # Remove max and min values
-    setData.remove(max(setData)) 
-    setData.remove(min(setData))
-    rawVal = float(sum(setData)/len(setData)) # Average everything else
-
-    voltage = float(rawVal*astep) # Convert raw value to voltage
-    print('voltage reading: ', voltage) # for troubleshooting/calibration
-    torque = torqueConvert(voltage) # Convert voltage value to torque value
-    print('torque reading:', torque)
-    return torque
-
-def torqueConvert(volt):
-    torqueVal = (volt - 2.5)*6000/2.5 #convert reading to torque value in in-lbs
-    return(torqueVal)
 
 def single_measurement(chanIn):
     '''Read the input voltages from the ADC inputs, returns as a raw integer value
@@ -287,11 +265,6 @@ def logData(target):
                         'Temperature' : target.temps,
                         'Set Point' : target.setpoints})
     df.to_csv("act{}.csv".format(target.name), sep = ',')
-
-def power_down(testindex):
-    print('powering down dac')
-    test = tests[testindex]
-    dac.power_down(CH_Out[test], MODE_POWER_DOWN_100K)
 
 def killDaemons():
     print('sacrificing IO daemons') # Kill the IO daemon process
