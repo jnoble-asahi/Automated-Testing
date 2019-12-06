@@ -44,6 +44,7 @@ CH2_Loc = {'cntrl' : DAC_B,
            'torq' : INPUTS_ADDRESS[3],
            'FK_On': 35,
            'FK_Off' : 37} 
+
 '''
 CH1_SEQUENCE = (CH1_Loc['cntrl'], CH1_Loc['torq'], CH1_Loc['pos']) # Torque, Current, Position channels
 
