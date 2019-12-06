@@ -80,7 +80,7 @@ while True: # Start a loop to run the torque tests
             pass
 
         else: 
-            time.sleep(5) # debugging
+            time.sleep(7) # debugging
             tcf.switchCheck(tests[i], i) # Run a check of the current switch state, add 1 to pv if valid
             tcf.logCheck(tests[i]) # Check to see if it's time to log data
             stamp = time.time()
