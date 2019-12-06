@@ -9,7 +9,6 @@ import firebase_admin as fa
 from firebase_admin import firestore
 from firebase_admin import credentials
 
-import adc_dac_config as an
 import Tconfigs as tcf
 
 print('opening database connection')
@@ -136,7 +135,7 @@ class define_test():
         '''
         if self.cycle_time not in range(1, 101, 1):
             tcf.warning_on()
-            an.killDaemons()
+            killDaemons()
             raise ValueError('Cycle times must be whole number between 1 and 100')
         else:
             print('Test cycle time created')
@@ -148,7 +147,7 @@ class define_test():
         '''
         if self.target not in range(1, 1000000, 1):
             tcf.warning_on()
-            an.killDaemons()
+            killDaemons()
             raise ValueError('Number of cycles must be a whole number, between 1 and 1,000,000')
         else:
             print('Test cycles set point created')
@@ -160,7 +159,7 @@ class define_test():
         '''
         if self.duty_cycle not in range(0, 100, 1):
             tcf.warning_on()
-            an.killDaemons()
+            killDaemons()
             raise ValueError('Duty cycle must be a whole number between 1 and 100')
         else:
             print('Test duty cycle created')
@@ -177,7 +176,7 @@ class define_test():
     def setTorque(self):
         if self.control not in range(0, 6373):
             tcf.warning_on()
-            an.killDaemons()
+            killDaemons()
             raise ValueError('Torque setpoints must be between 0 and 6372 in-lbs')
         else:
             print('Torque setpoint created')
@@ -188,7 +187,7 @@ class define_test():
             tcf.warning_on()
             print('Gain value not valid. Choose from:')
             print(choices)
-            an.killDaemons()
+            killDaemons()
             raise ValueError('Gain value not valid.')
         else:
             print('Gain set')

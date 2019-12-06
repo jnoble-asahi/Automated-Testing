@@ -11,9 +11,14 @@ import pandas as pd
 import RPi.GPIO as GPIO # Using GPIO instead of wiringpi for reading digital inputs
 
 from ADS1256_definitions import * #Configuration file for the ADC settings
-import adc_dac_config as an
 import dac8552.dac8552 as dac1
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
+
+# Start the pigpio daemon 
+print('summoning IO daemons')
+bash = "sudo pigpiod" 
+process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
 
 # LED pins
 red = gz.LED(26) # Using wirinpi pin numbers
@@ -23,9 +28,13 @@ blue = gz.LED(20) # Using wiringpi pin numbers
 red.on() 
 blue.on()
 
+# DAC/ADS setup
 ads = ADS1256()
 ads.cal_self() 
+astep = ads.v_per_digit
 dac = DAC8552()
+dac.v_ref = 5
+step = dac.digit_per_v
 
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
 EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
@@ -43,6 +52,11 @@ CH2_Loc = {'cntrl' : DAC_B,
            'FK_On': 19,
            'FK_Off' : 26} #GPIO pin numbers
 
+CH_Out = {'1' : DAC_A ,
+          '2' : DAC_B}
+
+tests = ('1', '2')
+
 '''
 CH1_SEQUENCE = (CH1_Loc['cntrl'], CH1_Loc['torq'], CH1_Loc['pos']) # Torque, Current, Position channels
 
@@ -54,8 +68,6 @@ input_sequence = {1 : CH1_SEQUENCE,
 '''
 test_channels = {0: CH1_Loc,
                  1: CH2_Loc}
-
-tests = ('1', '2')
 
 binary = {'INPUT' : 0,
           'OUTPUT': 1,
@@ -87,7 +99,7 @@ def set_on_off(test, channelID):
         test.input_off_channel = test_channels[channelID]['FK_Off']
         test.output_channel = test_channels[channelID]['torq']
         print('setting dac')
-        dac.write_dac(test.cntrl_channel, 0*an.step) # Set brake to 0
+        dac.write_dac(test.cntrl_channel, 0*step) # Set brake to 0
         print('Brake set to 0.')
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -102,7 +114,7 @@ def set_on_off(test, channelID):
 def brakeOn(test, channelID):
         setpnt = test.convertSig()
         test.cntrl_channel = test_channels[channelID]['cntrl']
-        dac.write_dac(test.cntrl_channel, int(setpnt * an.step)) # Set brake to desired value
+        dac.write_dac(test.cntrl_channel, int(setpnt * step)) # Set brake to desired value
         print('Brake set to', setpnt, 'V')
 
 def brakeOff(test, channelID):
@@ -112,12 +124,33 @@ def brakeOff(test, channelID):
     setpnt = test.convertSig()
     test.cntrl_channel = test_channels[channelID]['cntrl']
     for i in range(1, 6):
-        dac.write_dac(test.cntrl_channel, int(an.step*setpnt*(5-i)/5))
+        dac.write_dac(test.cntrl_channel, int(step*setpnt*(5-i)/5))
         print(setpnt*(5-i)/5) # debugging
         time.sleep(2)
-    an.power_down(channelID)
+    power_down(channelID)
     print('brake ', channelID, 'powered off')
 
+def torqueMeasurement(input):
+    # Collect 10 data point readings across 1 second
+    setData = []
+    for i in range (0, 10):
+        raw_channels = ads.read_oneshot(input)
+        time.sleep(0.1)
+        setData.append(raw_channels)
+    # Remove max and min values
+    setData.remove(max(setData)) 
+    setData.remove(min(setData))
+    rawVal = float(sum(setData)/len(setData)) # Average everything else
+
+    voltage = float(rawVal*astep) # Convert raw value to voltage
+    print('voltage reading: ', voltage) # for troubleshooting/calibration
+    torque = torqueConvert(voltage) # Convert voltage value to torque value
+    print('torque reading:', torque)
+    return torque
+
+def torqueConvert(volt):
+    torqueVal = (volt - 2.5)*6000/2.5 #convert reading to torque value in in-lbs
+    return(torqueVal)
 def restCalc(length, dCycle):
     '''
     Calculate a new cycle time using the length of the last half cycle, and the duty cycle setting of the test 
@@ -163,7 +196,7 @@ def switchCheck(test, testIndex):
                             print('((y+1)/test.cycle_points)*test.cycle_time', ((y+1)/test.cycle_points)*test.cycle_time) # debugging
                             time.sleep(1) # debugging
                             if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
-                                tor = an.torqueMeasurement(test_channels[testIndex]['torq'])
+                                tor = torqueMeasurement(test_channels[testIndex]['torq'])
                                 print('torque in switchcheck:', tor) # debugging
                                 test.torque.append(tor) # store torque reading measurement
                                 # store other values
@@ -191,7 +224,7 @@ def switchCheck(test, testIndex):
                             print('((y+1)/test.cycle_points)*test.cycle_time: ', ((y+1)/test.cycle_points)*test.cycle_time) # debugging
                             time.sleep(1) # debugging
                             if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
-                                tor = an.torqueMeasurement(test_channels[testIndex]['torq'])
+                                tor = torqueMeasurement(test_channels[testIndex]['torq'])
                                 print('torque in switchcheck: ', tor) # debugging
                                 test.torque.append(tor) # store torque reading measurement
                                 # store other values
@@ -242,9 +275,19 @@ def logCheck(testChannel):
     
     else:
         warning_on()
-        an.killDeamons()
+        killDeamons()
         raise Warning("You didn't catch all of the cases")
 
+def power_down(testindex):
+    print('powering down dac')
+    test = tests[testindex]
+    dac.power_down(CH_Out[test], MODE_POWER_DOWN_100K)
+
+def killDaemons():
+    print('sacrificing IO daemons') # Kill the IO daemon process
+    bash = "sudo killall pigpiod" 
+    process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+    output, error = process.communicate()
 
 
 

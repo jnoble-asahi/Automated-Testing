@@ -9,7 +9,6 @@ from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python
 
 import Tconfigs as tcf 
-import adc_dac_config as an
 import gcpConfigs as gcpc
 from ADS1256_definitions import * #Configuration file for the ADC settings
 
@@ -31,7 +30,7 @@ def shut_down():
     for i, value in enumerate(tests):
         if tests[i].active == True:
             tcf.brakeOff(tests[i], i)
-    an.killDaemons()
+    killDaemons()
 
 print('Starting test set-up')
 
