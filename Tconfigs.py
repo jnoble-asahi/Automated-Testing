@@ -194,7 +194,7 @@ def switchCheck(test, testIndex):
                     for y in range (test.cycle_points):
                         while True:
                             # wait 1/3 of cycle time or 1/cyclepoints
-                            if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
+                            if (time.time() - test.cycle_start) > (((y)/test.cycle_points)*test.cycle_time):
                                 tor = torqueMeasurement(test_channels[testIndex]['torq'])
                                 print('torque in switchcheck:', tor) # debugging
                                 test.torque.append(tor) # store torque reading measurement
@@ -223,7 +223,7 @@ def switchCheck(test, testIndex):
                     for y in range (test.cycle_points):
                         # wait 1/3 of cycle time or 1/cyclepoints
                         while True:
-                            if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
+                            if (time.time() - test.cycle_start) > (((y)/test.cycle_points)*test.cycle_time):
                                 tor = torqueMeasurement(test_channels[testIndex]['torq'])
                                 print('torque in switchcheck: ', tor) # debugging
                                 test.torque.append(tor) # store torque reading measurement
@@ -242,6 +242,7 @@ def switchCheck(test, testIndex):
                 print("Switch {} changed. Actuator is in fully open position.".format(testIndex))
                 test.open_last_state = LOW # Update last switch state
                 test.cycle_time = time.time() - test.cycle_time # Update cycle_time
+                print('test.cycle_time updated to: ', test.cycle_time)
 
             elif (closed_last_state == HIGH) & (closed_state == LOW) & (open_state == HIGH): # Check to see if recently in fully closed position
                 print('closed state: ', closed_state) # debugging
@@ -251,6 +252,7 @@ def switchCheck(test, testIndex):
                 print("Switch {} changed. Actuator is in fully closed position.".format(testIndex))
                 test.closed_last_state = LOW # Update last switch state
                 test.cycle_time = time.time() - test.cycle_time # Update cycle_time
+                print('test.cycle_time updated to: ', test.cycle_time)print('test.cycle_time updated to: ', test.cycle_time)
 
             else:
                 pass
