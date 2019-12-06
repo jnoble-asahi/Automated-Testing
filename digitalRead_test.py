@@ -15,3 +15,4 @@ GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 while True:
     print ('input 6:', GPIO.input(6))
     print ('input 13:', GPIO.input(13))
+    time.sleep(2)
