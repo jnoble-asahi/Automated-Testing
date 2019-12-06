@@ -9,8 +9,8 @@ import RPi.GPIO as GPIO
 
 
 GPIO.setmode(GPIO.BCM)
-GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 while True:
     print ('input 6:', GPIO.input(6))
