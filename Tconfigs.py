@@ -142,7 +142,7 @@ def switchCheck(test, testIndex):
             if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # Check if changed from fully open position to closing (moving)
                 test.open_last_state = HIGH # Reset the "open last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last cycle
-                print ('length', length)
+                print ('length', length) # debugging
 
                 if (length > (test.duty_cycle*.49)):
                     test.cycle_start = time.time() # update cycle start time
@@ -173,8 +173,10 @@ def switchCheck(test, testIndex):
 
                     # collect "cycle_points" amount of points in cycle
                     for y in range (test.cycle_points):
+                        print('y:', y) #debugging
                         # wait 1/3 of cycle time or 1/cyclepoints
                         if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
+                            print('((y+1)/test.cycle_points)*test.cycle_time: ', ((y+1)/test.cycle_points)*test.cycle_time) # debugging
                             tor = an.torqueMeasurement(test_channels[testIndex]['torq'])
                             print('torque in switchcheck: ', tor) # debugging
                             test.torque.append(tor) # store torque reading measurement
