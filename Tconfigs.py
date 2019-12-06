@@ -5,7 +5,6 @@ import math as mt
 import numpy as np
 import subprocess
 
-import wiringpi as wp
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python
 import pandas as pd
@@ -33,8 +32,6 @@ EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_
 EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
 
 INPUTS_ADDRESS = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7, EXT8)
-
-wp.wiringPiSetupPhys()
 
 CH1_Loc = {'cntrl' : DAC_A,
            'torq' : INPUTS_ADDRESS[0],
@@ -95,12 +92,6 @@ def set_on_off(test, channelID):
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        '''wp.pinMode(test.input_channel, INPUT) # Declare the pins as inputs
-        wp.pinMode(test.input_off_channel, INPUT) # Declare the pins as inputs
-        wp.pinMode(test.output_channel, OUTPUT) # Declare the pin connected to torque transducer signal as an output
-        wp.pullUpDnControl(test.input_channel, 1) # Set the input pins for pull up control
-        wp.pullUpDnControl(test.input_off_channel, 1) # Set the input pins for pull up control - set to pull-down for debugging
-        print('pull down control set') # debugging'''
 
 def brakeOn(test, channelID):
         setpnt = test.convertSig()
@@ -141,10 +132,6 @@ def switchCheck(test, testIndex):
             closed_switch = test_channels[testIndex]['FK_Off']
             open_state = GPIO.input(open_switch)
             closed_state = GPIO.input(closed_switch)
-            '''open_state = wp.digitalRead(open_switch) # Reads the current FK_On switch state
-            closed_state = wp.digitalRead(closed_switch) # Reads the current FK_Off swtich state'''
-            print('closed_switch', closed_switch) #debugging
-            print('open-switch', open_switch) #debugging
             open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
             closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
             print('closed state: ', closed_state) # debugging
