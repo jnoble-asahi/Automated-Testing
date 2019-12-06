@@ -9,6 +9,7 @@ import wiringpi as wp
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python
 import pandas as pd
+import RPi.GPIO as GPIO # Using GPIO instead of wiringpi for reading digital inputs
 
 from ADS1256_definitions import * #Configuration file for the ADC settings
 import adc_dac_config as an
@@ -18,6 +19,15 @@ from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library
 # LED pins
 red = gz.LED(26) # Using wirinpi pin numbers
 blue = gz.LED(20) # Using wiringpi pin numbers
+
+
+
+
+
+while True:
+    print ('input 6:', GPIO.input(6))
+    print ('input 13:', GPIO.input(13))
+    time.sleep(2)
 
 # Make sure LEDs are off to start
 red.on() 
@@ -37,13 +47,13 @@ wp.wiringPiSetupPhys()
 
 CH1_Loc = {'cntrl' : DAC_A,
            'torq' : INPUTS_ADDRESS[0],
-           'FK_On': 31,
-           'FK_Off' : 33}
+           'FK_On': 6,
+           'FK_Off' : 13} #GPIO pin numbers
 
 CH2_Loc = {'cntrl' : DAC_B,
            'torq' : INPUTS_ADDRESS[3],
-           'FK_On': 35,
-           'FK_Off' : 37} 
+           'FK_On': 19,
+           'FK_Off' : 26} #GPIO pin numbers
 
 '''
 CH1_SEQUENCE = (CH1_Loc['cntrl'], CH1_Loc['torq'], CH1_Loc['pos']) # Torque, Current, Position channels
@@ -91,12 +101,15 @@ def set_on_off(test, channelID):
         print('setting dac')
         dac.write_dac(test.cntrl_channel, 0*an.step) # Set brake to 0
         print('Brake set to 0.')
-        wp.pinMode(test.input_channel, INPUT) # Declare the pins as inputs
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        '''wp.pinMode(test.input_channel, INPUT) # Declare the pins as inputs
         wp.pinMode(test.input_off_channel, INPUT) # Declare the pins as inputs
         wp.pinMode(test.output_channel, OUTPUT) # Declare the pin connected to torque transducer signal as an output
         wp.pullUpDnControl(test.input_channel, 1) # Set the input pins for pull up control
         wp.pullUpDnControl(test.input_off_channel, 1) # Set the input pins for pull up control - set to pull-down for debugging
-        print('pull down control set') # debugging
+        print('pull down control set') # debugging'''
 
 def brakeOn(test, channelID):
         setpnt = test.convertSig()
@@ -135,8 +148,10 @@ def switchCheck(test, testIndex):
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
             open_switch = test_channels[testIndex]['FK_On']
             closed_switch = test_channels[testIndex]['FK_Off']
-            open_state = wp.digitalRead(open_switch) # Reads the current FK_On switch state
-            closed_state = wp.digitalRead(closed_switch) # Reads the current FK_Off swtich state
+            open_state = GPIO.input(open_switch)
+            closed_state = GPIO.input(closed_switch)
+            '''open_state = wp.digitalRead(open_switch) # Reads the current FK_On switch state
+            closed_state = wp.digitalRead(closed_switch) # Reads the current FK_Off swtich state'''
             print('closed_switch', closed_switch) #debugging
             print('open-switch', open_switch) #debugging
             open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
