@@ -167,6 +167,7 @@ def switchCheck(test, testIndex):
     if test.active == True:
         print('test.pv: ', test.pv)
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
+            print('test.cycle_time', test.cycle_time) # debugging
             open_switch = test_channels[testIndex]['FK_On']
             closed_switch = test_channels[testIndex]['FK_Off']
             open_state = GPIO.input(open_switch)

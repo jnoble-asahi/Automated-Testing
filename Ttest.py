@@ -58,7 +58,6 @@ while True:
         tcf.set_on_off(tests[i-nos], (i + nos)) # Sets up the IO pins to work for torque tests
         tcf.brakeOn(tests[i-nos], (i-nos)) # Turn brake on to setpoint value
         i += 1 # Increment the test channel counter to track the number of active tests
-        print('tests.cycle_time', tests.cycle_time) # debugging
 
     else:
         tcf.warning_on()
