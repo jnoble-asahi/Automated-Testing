@@ -140,7 +140,7 @@ def switchCheck(test, testIndex):
             print('open last state: ', open_last_state) # debugging
             
             if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # Check if changed from fully open position to closing (moving)
-                test.open_last_state = LOW # Reset the "open last state" of the switch
+                test.open_last_state = HIGH # Reset the "open last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last cycle
                 print ('length', length)
 
@@ -162,7 +162,7 @@ def switchCheck(test, testIndex):
                     print("Switch {} bounced".format(testIndex))
 
             elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # Check if changed from fully closed position to opening (moving)
-                test.closed_last_state = LOW # Reset the "closed last state" of the switch
+                test.closed_last_state = HIGH # Reset the "closed last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last cycle
 
                 if (length > (test.duty_cycle*.49)):
@@ -184,12 +184,12 @@ def switchCheck(test, testIndex):
 
             elif (open_last_state == HIGH) & (open_state == LOW) & (closed_state == HIGH): # Check to see if recently in fully open position
                 print("Switch {} changed. Actuator is in fully open position.".format(testIndex))
-                test.open_last_state = HIGH # Update last switch state
+                test.open_last_state = LOW # Update last switch state
                 test.cycle_time = time.time() - test.cycle_time # Update cycle_time
 
             elif (closed_last_state == HIGH) & (closed_state == LOW) & (open_state == HIGH): # Check to see if recently in fully closed position
                 print("Switch {} changed. Actuator is in fully closed position.".format(testIndex))
-                test.closed_last_state = HIGH # Update last switch state
+                test.closed_last_state = LOW # Update last switch state
                 test.cycle_time = time.time() - test.cycle_time # Update cycle_time
 
             else:
