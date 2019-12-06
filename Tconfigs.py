@@ -93,6 +93,12 @@ def set_on_off(test, channelID):
         GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
+        # store current switch states for later
+        open_switch = test_channels[channelID]['FK_On']
+        closed_switch = test_channels[channelID]['FK_Off']
+        test.open_last_state = GPIO.input(open_switch)
+        test.closed_last_state = GPIO.input(closed_switch)
+
 def brakeOn(test, channelID):
         setpnt = test.convertSig()
         test.cntrl_channel = test_channels[channelID]['cntrl']
@@ -153,9 +159,9 @@ def switchCheck(test, testIndex):
                     for y in range (test.cycle_points):
                         while True:
                             # wait 1/3 of cycle time or 1/cyclepoints
+                            print('(time.time() - test.cycle_start)', (time.time() - test.cycle_start)) # debugging
+                            print('((y+1)/test.cycle_points)*test.cycle_time', ((y+1)/test.cycle_points)*test.cycle_time) # debugging
                             if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
-                                print('(time.time() - test.cycle_start)', (time.time() - test.cycle_start)) # debugging
-                                print('((y+1)/test.cycle_points)*test.cycle_time', ((y+1)/test.cycle_points)*test.cycle_time) # debugging
                                 tor = an.torqueMeasurement(test_channels[testIndex]['torq'])
                                 print('torque in switchcheck:', tor) # debugging
                                 test.torque.append(tor) # store torque reading measurement
@@ -180,9 +186,9 @@ def switchCheck(test, testIndex):
                         print('y:', y) #debugging
                         # wait 1/3 of cycle time or 1/cyclepoints
                         while True:
+                            print('(time.time() - test.cycle_start)', (time.time() - test.cycle_start)) # debugging
+                            print('((y+1)/test.cycle_points)*test.cycle_time: ', ((y+1)/test.cycle_points)*test.cycle_time) # debugging
                             if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
-                                print('(time.time() - test.cycle_start)', (time.time() - test.cycle_start)) # debugging
-                                print('((y+1)/test.cycle_points)*test.cycle_time: ', ((y+1)/test.cycle_points)*test.cycle_time) # debugging
                                 tor = an.torqueMeasurement(test_channels[testIndex]['torq'])
                                 print('torque in switchcheck: ', tor) # debugging
                                 test.torque.append(tor) # store torque reading measurement
