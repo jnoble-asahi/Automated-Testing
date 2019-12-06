@@ -163,29 +163,27 @@ def switchCheck(test, testIndex):
     Read the state of the actuator limit switch inputs
     If they changed, do some stuff, if they haven't changed, then do nothing '''
 
-    print('switchCheck') # debugging
     if test.active == True:
-        print('test.pv: ', test.pv)
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
-            print('test.cycle_time', test.cycle_time) # debugging
             open_switch = test_channels[testIndex]['FK_On']
             closed_switch = test_channels[testIndex]['FK_Off']
             open_state = GPIO.input(open_switch)
             closed_state = GPIO.input(closed_switch)
             open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
             closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
-            print('closed state: ', closed_state) # debugging
-            print('open state: ', open_state) # debugging
-            print('closed last state: ', closed_last_state) # debugging
-            print('open last state: ', open_last_state) # debugging
             
             if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # Check if changed from fully open position to closing (moving)
+                print('closed state: ', closed_state) # debugging
+                print('open state: ', open_state) # debugging
+                print('closed last state: ', closed_last_state) # debugging
+                print('open last state: ', open_last_state) # debugging
                 test.open_last_state = HIGH # Reset the "open last state" of the switch
-                length = time.time() - test.cycle_start # Calculate the length of the last cycle
+                length = time.time() - test.cycle_start # Calculate the length of the last duty cycle
 
                 if (length > (test.duty_cycle*.49)):
                     test.cycle_start = time.time() # update cycle start time
                     test.pv+= 1 # Increment the pv counter if the switch changed
+                    print('test.pv: ', test.pv)
                     print("Switch {} confirmed. Actuator is closing.".format(test.name))
 
                     # collect "cycle_points" amount of points in cycle
@@ -194,7 +192,6 @@ def switchCheck(test, testIndex):
                             # wait 1/3 of cycle time or 1/cyclepoints
                             print('(time.time() - test.cycle_start)', (time.time() - test.cycle_start)) # debugging
                             print('((y+1)/test.cycle_points)*test.cycle_time', ((y+1)/test.cycle_points)*test.cycle_time) # debugging
-                            time.sleep(1) # debugging
                             if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
                                 tor = torqueMeasurement(test_channels[testIndex]['torq'])
                                 print('torque in switchcheck:', tor) # debugging
@@ -204,25 +201,28 @@ def switchCheck(test, testIndex):
                                 break
                 else:
                     test.bounces = test.bounces + 1
-                    print("Switch {} bounced".format(testIndex))
+                    print("Switch {} bounced. Bounce count: {}.".format(testIndex, test.bounces))
 
             elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # Check if changed from fully closed position to opening (moving)
+                print('closed state: ', closed_state) # debugging
+                print('open state: ', open_state) # debugging
+                print('closed last state: ', closed_last_state) # debugging
+                print('open last state: ', open_last_state) # debugging
                 test.closed_last_state = HIGH # Reset the "closed last state" of the switch
-                length = time.time() - test.cycle_start # Calculate the length of the last cycle
+                length = time.time() - test.cycle_start # Calculate the length of the last duty cycle
 
                 if (length > (test.duty_cycle*.49)):
                     test.cycle_start = time.time() # Update cycle start time
                     test.pv+= 1 # Increment the pv counter if the switch changed
+                    print('test.pv: ', test.pv)
                     print("Switch {} confirmed. Actuator is opening.".format(test.name))
 
                     # collect "cycle_points" amount of points in cycle
                     for y in range (test.cycle_points):
-                        print('y:', y) #debugging
                         # wait 1/3 of cycle time or 1/cyclepoints
                         while True:
                             print('(time.time() - test.cycle_start)', (time.time() - test.cycle_start)) # debugging
                             print('((y+1)/test.cycle_points)*test.cycle_time: ', ((y+1)/test.cycle_points)*test.cycle_time) # debugging
-                            time.sleep(1) # debugging
                             if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
                                 tor = torqueMeasurement(test_channels[testIndex]['torq'])
                                 print('torque in switchcheck: ', tor) # debugging
@@ -232,14 +232,22 @@ def switchCheck(test, testIndex):
                                 break
                 else:
                     test.bounces = test.bounces + 1
-                    print("Switch {} bounced".format(testIndex))
+                    print("Switch {} bounced. Bounce count: {}.".format(testIndex, test.bounces))
 
             elif (open_last_state == HIGH) & (open_state == LOW) & (closed_state == HIGH): # Check to see if recently in fully open position
+                print('closed state: ', closed_state) # debugging
+                print('open state: ', open_state) # debugging
+                print('closed last state: ', closed_last_state) # debugging
+                print('open last state: ', open_last_state) # debugging
                 print("Switch {} changed. Actuator is in fully open position.".format(testIndex))
                 test.open_last_state = LOW # Update last switch state
                 test.cycle_time = time.time() - test.cycle_time # Update cycle_time
 
             elif (closed_last_state == HIGH) & (closed_state == LOW) & (open_state == HIGH): # Check to see if recently in fully closed position
+                print('closed state: ', closed_state) # debugging
+                print('open state: ', open_state) # debugging
+                print('closed last state: ', closed_last_state) # debugging
+                print('open last state: ', open_last_state) # debugging
                 print("Switch {} changed. Actuator is in fully closed position.".format(testIndex))
                 test.closed_last_state = LOW # Update last switch state
                 test.cycle_time = time.time() - test.cycle_time # Update cycle_time
@@ -262,7 +270,6 @@ def onOff_measurement(inputs):
     return(cntrl, curr)  
 
 def logCheck(testChannel):
-    print('logcheck') #debugging
     if (time.time() - testChannel.last_log) < (testChannel.print_rate):
         pass
     
