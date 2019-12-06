@@ -174,7 +174,7 @@ def torqueMeasurement(input):
     setData.remove(min(setData))
     rawVal = float(sum(setData)/len(setData)) # Average everything else
 
-    voltage = float(rawVal*an.astep) # Convert raw value to voltage
+    voltage = float(rawVal*astep) # Convert raw value to voltage
     print('voltage reading: ', voltage) # for troubleshooting/calibration
     torque = torqueConvert(voltage) # Convert voltage value to torque value
     print('torque reading:', torque)

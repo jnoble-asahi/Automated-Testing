@@ -161,6 +161,7 @@ def switchCheck(test, testIndex):
                             # wait 1/3 of cycle time or 1/cyclepoints
                             print('(time.time() - test.cycle_start)', (time.time() - test.cycle_start)) # debugging
                             print('((y+1)/test.cycle_points)*test.cycle_time', ((y+1)/test.cycle_points)*test.cycle_time) # debugging
+                            time.sleep(1) # debugging
                             if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
                                 tor = an.torqueMeasurement(test_channels[testIndex]['torq'])
                                 print('torque in switchcheck:', tor) # debugging
@@ -188,6 +189,7 @@ def switchCheck(test, testIndex):
                         while True:
                             print('(time.time() - test.cycle_start)', (time.time() - test.cycle_start)) # debugging
                             print('((y+1)/test.cycle_points)*test.cycle_time: ', ((y+1)/test.cycle_points)*test.cycle_time) # debugging
+                            time.sleep(1) # debugging
                             if (time.time() - test.cycle_start) > (((y+1)/test.cycle_points)*test.cycle_time):
                                 tor = an.torqueMeasurement(test_channels[testIndex]['torq'])
                                 print('torque in switchcheck: ', tor) # debugging
