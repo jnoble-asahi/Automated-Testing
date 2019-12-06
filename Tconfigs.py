@@ -20,15 +20,6 @@ from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library
 red = gz.LED(26) # Using wirinpi pin numbers
 blue = gz.LED(20) # Using wiringpi pin numbers
 
-
-
-
-
-while True:
-    print ('input 6:', GPIO.input(6))
-    print ('input 13:', GPIO.input(13))
-    time.sleep(2)
-
 # Make sure LEDs are off to start
 red.on() 
 blue.on()
