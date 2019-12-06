@@ -94,7 +94,7 @@ def set_on_off(test, channelID):
         wp.pinMode(test.input_off_channel, INPUT) # Declare the pins as inputs
         wp.pinMode(test.output_channel, OUTPUT) # Declare the pin connected to torque transducer signal as an output
         wp.pullUpDnControl(test.input_channel, 2) # Set the input pins for pull up control
-        wp.pullUpDnControl(test.input_off_channel, 2) # Set the input pins for pull up control
+        wp.pullUpDnControl(test.input_off_channel, 1) # Set the input pins for pull up control
 
 def brakeOn(test, channelID):
         setpnt = test.convertSig()
