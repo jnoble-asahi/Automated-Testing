@@ -112,12 +112,12 @@ def torqueMeasurement(input):
         vo = float(raw_channels*astep) # Convert raw value to voltage
         t = time.time()-test[0].cycle_start
         # append data
-        vtime.append(t)
-        vData.append(vo)
+        #vtime.append(t)
+        #vData.append(vo)
         setData.append(vo)
         print(vo)
-        sheet.cell(row=2, column = i+2+(y-1)*10).value = t
-        sheet.cell(row=3, column=i+2+(y-1)*10).value = vo
+        sheet.cell(row=i+2+(y-1)*10, column =2.value = t
+        sheet.cell(row=i+2+(y-1)*10, column=3).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
         torque.append(torq)
         time.sleep(0.1)
@@ -126,14 +126,14 @@ def torqueMeasurement(input):
     setData.remove(min(setData))
     rawVal = float(sum(setData)/len(setData)) # Average everything else
     voltage = float(rawVal*astep) # Convert raw value to voltage
-    for i in range (0, 10): # append average 10 times (to align with rest of data)
-        vAverage.append(voltage)
+    #for i in range (0, 10): # append average 10 times (to align with rest of data)
+       # vAverage.append(voltage)
     print('voltage reading: ', voltage) # for troubleshooting/calibration
-    sheet.cell(row=4, column = (y-1)*10+1).value = voltage
+    sheet.cell(row=(y-1)*10+2, column = 4.value = voltage
     to = torqueConvert(voltage) # Convert voltage value to torque value
-    for i in range (0, 10): # append average 10 times (to align with rest of data)
+    #for# i in range (0, 10): # append average 10 times (to align with rest of data)
         tAverage.append(to)
-    sheet.cell(row=5, column=(y-1)*10+1).value = to
+    sheet.cell(row=(y-1)*10+2, column=5).value = to
     print('torque reading:', to)
     return to
 
@@ -194,7 +194,7 @@ def switchCheck(test, testIndex):
                         while True:
                             if (time.time() - test.cycle_start) > (((y)/test.cycle_points)*test.cycle_time):
                                 torqueMeasurement(test_channels[testIndex]['torq'])
-                                jsonUpdate()
+                                #jsonUpdate()
                                 break
                 else:
                     test.bounces = test.bounces + 1
