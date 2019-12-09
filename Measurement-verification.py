@@ -85,11 +85,9 @@ state = True
 #create xl workbook
 wb = Workbook()
 sheet = wb.active
-headers = [('Time (s)', 'Voltage (V)', 'Torque (in-lbs)', 'Average Voltage (V)', 'Average Torque (in-lbs)', 'Constant torque at 80')]
+headers = [('Time (s)', 'Voltage (V)', 'Torque (in-lbs)', 'Average Voltage (V)', 'Average Torque (in-lbs)', 'Constant torque at 1 mA')]
 for row in headers:
     sheet.append(row)
-
-timestart = time.time() # for torque measurements
 
 '''def jsonUpdate():
     jDict = {u'Time' : vtime, u'Voltage' : vData, u'Torque' : torque, u'Voltage Average' : vAverage, u'Torque Average' : tAverage,
@@ -107,7 +105,7 @@ def torqueMeasurement(input):
     for i in range (0, 10):
         raw_channels = ads.read_oneshot(input)
         vo = float(raw_channels*astep) # Convert raw value to voltage
-        t = time.time()-timestart
+        t = time.time()-stamp
         # append data
         setData.append(vo)
         print(vo)
@@ -281,7 +279,6 @@ else:
 #save excel sheet
 wb.save('{} in-lbs.xlsx'.format(test[0].control))
 print('excel file saved')
-time.sleep(5)
 
 shut_down()
 
