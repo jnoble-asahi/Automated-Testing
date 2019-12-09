@@ -91,6 +91,7 @@ def jsonUpdate():
 def torqueMeasurement(input):
     # Collect 10 data point readings across 1 second
     y = test[0].pv
+    setData=[] #array for average torque calculation
     for i in range (0, 10):
         raw_channels = ads.read_oneshot(input)
         vo = float(raw_channels*astep) # Convert raw value to voltage
@@ -98,6 +99,7 @@ def torqueMeasurement(input):
         # append data
         vtime.append(t)
         vData.append(vo)
+        setData.append(vo)
         print(vo)
         torq = torqueConvert(vo) # Convert voltage value to torque value
         torque.append(torq)
@@ -254,7 +256,6 @@ while True: # Start a loop to run the torque tests
 
         else: 
             switchCheck(test[i], i) # Run a check of the current switch state, add 1 to pv if valid
-            saveData() # dump to json file
             stamp = time.time()
 
     state = False
