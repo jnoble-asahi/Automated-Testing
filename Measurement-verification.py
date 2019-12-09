@@ -11,6 +11,7 @@ from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python
 import pandas as pd
 import RPi.GPIO as GPIO # Using GPIO instead of wiringpi for reading digital inputs
+from openpyxl import Workbook
 
 import Tconfigs as tcf 
 import gcpConfigs as gcpc
@@ -79,7 +80,12 @@ torque = []
 vAverage = []
 tAverage = []
 
-def jsonUpdate():
+
+#create xl workbook
+wb = Workbook()
+
+
+'''def jsonUpdate():
     jDict = {u'Time' : vtime, u'Voltage' : vData, u'Torque' : torque, u'Voltage Average' : vAverage, u'Torque Average' : tAverage,
     u'PV' : test[0].pv, u'Bounces' : test[0].bounces, u'Description' : test[0].description}
 
@@ -272,8 +278,10 @@ while True: # Start a loop to run the torque tests
 
     test[0].update_db()
 else:
-    pass
+    pass'''
+sheet['A1']=1
+wb.save('data.xlsx')
 
-shut_down()
+'''shut_down()
 
-print("Test exited with a clean status")
+print("Test exited with a clean status")'''
