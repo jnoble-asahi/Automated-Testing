@@ -8,7 +8,7 @@ import google.cloud
 import firebase_admin as fa
 from firebase_admin import firestore
 from firebase_admin import credentials
-import openpyxl import Workbook
+from openpyxl import Workbook
 
 import Tconfigs as tcf
 
