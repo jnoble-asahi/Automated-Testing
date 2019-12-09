@@ -246,20 +246,21 @@ tcf.running_on() # Turn on test running LED
 stamp = time.time()
 
 while True: # Start a loop to run the torque tests
-    for i, value in enumerate(test): # Loop through each test class one by one
+    # Loop through each test class one by one
+    i = 0
+    if ((time.time() - stamp) < (wait)): # Check to see if it's time to check the switch inputs again
+        pass
 
-        if ((time.time() - stamp) < (wait)): # Check to see if it's time to check the switch inputs again
-            pass
+    elif test[i].active != True: # Check to see if the test is still active
+        pass
 
-        elif test[i].active != True: # Check to see if the test is still active
-            pass
+    else: 
+        switchCheck(test[i], i) # Run a check of the current switch state, add 1 to pv if valid
+        stamp = time.time()
 
-        else: 
-            switchCheck(test[i], i) # Run a check of the current switch state, add 1 to pv if valid
-            stamp = time.time()
-
-    state = False
-    for i, value in enumerate(test): # Loop through each test class and see if they're all inactive
+        if test[i].pv >= test[i].target:
+            state = False
+        # Loop through each test class and see if they're all inactive
         state = (state | test[i].active)
 
     if state == False: # If all the test states are inactive, exit the loop
@@ -268,9 +269,8 @@ while True: # Start a loop to run the torque tests
     else:
         pass
 
-if len(test) > 0:
-    for i, value in enumerate(test[i]): # Log each test data one by one
-        test[i].update_db()
+
+    test[0].update_db()
 else:
     pass
 
