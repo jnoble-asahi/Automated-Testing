@@ -57,15 +57,6 @@ CH_Out = {'1' : DAC_A ,
 
 tests = ('1', '2')
 
-'''
-CH1_SEQUENCE = (CH1_Loc['cntrl'], CH1_Loc['torq'], CH1_Loc['pos']) # Torque, Current, Position channels
-
-CH2_SEQUENCE =  (CH2_Loc['cntrl'], CH2_Loc['torq'], CH2_Loc['pos']) # Torque, Current, Position channels
-
-
-input_sequence = {1 : CH1_SEQUENCE,
-                 2 : CH2_SEQUENCE} 
-'''
 test_channels = {0: CH1_Loc,
                  1: CH2_Loc}
 

@@ -10,8 +10,6 @@ from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python
 import pandas as pd
 import RPi.GPIO as GPIO # Using GPIO instead of wiringpi for reading digital inputs
-import xlwt
-from xlwt import Workbook
 
 import Tconfigs as tcf 
 import gcpConfigs as gcpc
@@ -30,6 +28,14 @@ nos = 0
 yes = ('YES', 'yes', 'y', 'Ye', 'Y')
 no = ('NO','no', 'n', 'N', 'n')
 yes_no = ('YES', 'yes', 'y', 'Ye', 'Y', 'NO','no', 'n', 'N', 'n')
+
+# LED pins
+red = gz.LED(26) # Using wirinpi pin numbers
+blue = gz.LED(20) # Using wiringpi pin numbers
+
+# Make sure LEDs are off to start
+red.on() 
+blue.on() 
 
 # DAC/ADS setup
 ads = ADS1256()
@@ -73,52 +79,53 @@ INPUT = binary['INPUT']
 LOW = binary['LOW']
 HIGH = binary['HIGH']
 
-wb = Workbook() # create xl workbook
-sheet = wb.add_sheet('Torque setting {} in-lbs', test[0].control) #create sheet
-# ADD headers
-sheet.write(0,0, 'Time (s)')
-sheet.write(1,0, 'Voltage Reading (V)')
-sheet.write(2,0, 'Torque (in-lbs)')
-sheet.write(3,0, 'Average Voltage (V)')
-sheet.wrtie(4,0, 'Average Torque (in-lbs)')
+# Set up arrays
+vData = []
+vtime = []
+torque = []
+vAverage = []
+tAverage = []
+
+def jsonUpdate():
+    jDict = {u'Time' : vtime, u'Voltage' : vData, u'Torque' : torque, u'Voltage Average' : vAverage, u'Torque Average' : tAverage,
+    u'PV' : test[0].pv, u'Bounces' : test[0].bounces, u'Description' : test[0].description}
+
+    name = test[0].control + 'in_lbs.txt'
+    with open(name, 'w') as json_file:
+    json.dump(jDict, json_file)
+    print('json.dump')
 
 def torqueMeasurement(input):
     # Collect 10 data point readings across 1 second
-    setData = []
     y = test[0].pv
     for i in range (0, 10):
         raw_channels = ads.read_oneshot(input)
         vo = float(raw_channels*astep) # Convert raw value to voltage
-        # write to excel sheet
-        sheet.write(0, i+1+10*y, time.time()-test[0].cycle_start)
-        sheet.write(1, i+1+10*y, vo)
+        t = time.time()-test[0].cycle_start
+        # append data
+        vtime.append(t)
+        vData.append(vo)
         print(vo)
         torq = torqueConvert(vo) # Convert voltage value to torque value
-        sheet.write(2, i+1+10*y, torq)
+        torque.append(torq)
         time.sleep(0.1)
-        setData.append(raw_channels)
     # Remove max and min values
     setData.remove(max(setData)) 
     setData.remove(min(setData))
     rawVal = float(sum(setData)/len(setData)) # Average everything else
     voltage = float(rawVal*astep) # Convert raw value to voltage
-    sheet.write(3, y*10, voltage)
+    for i in range (0, 10): # append average 10 times (to align with rest of data)
+        vAverage.append(voltage)
     print('voltage reading: ', voltage) # for troubleshooting/calibration
-    torque = torqueConvert(voltage) # Convert voltage value to torque value
-    sheet.write(4, y*10, torque)
-    print('torque reading:', torque)
-    return torque
+    to = torqueConvert(voltage) # Convert voltage value to torque value
+    for i in range (0, 10): # append average 10 times (to align with rest of data)
+        tAverage.append(to)
+    print('torque reading:', to)
+    return to
 
 def torqueConvert(volt):
     torqueVal = (volt - 2.5)*6000/2.5 #convert reading to torque value in in-lbs
     return(torqueVal)
-    
-def restCalc(length, dCycle):
-    '''
-    Calculate a new cycle time using the length of the last half cycle, and the duty cycle setting of the test 
-    '''
-    rest = float(length / (float(dCycle)/100))
-    return rest
 
 def switchCheck(test, testIndex):
     '''
@@ -150,10 +157,8 @@ def switchCheck(test, testIndex):
                         while True:
                             # wait 1/3 of cycle time or 1/cyclepoints
                             if (time.time() - test.cycle_start) > (((y)/test.cycle_points)*test.cycle_time):
-                                tor = torqueMeasurement(test_channels[testIndex]['torq'])
-                                test.torque.append(tor) # store torque reading measurement
-                                # store other values
-                                test.time.append(time.time())
+                                torqueMeasurement(test_channels[testIndex]['torq'])
+                                jsonUpdate()
                                 break
                 else:
                     test.bounces = test.bounces + 1
@@ -174,10 +179,8 @@ def switchCheck(test, testIndex):
                         # wait 1/3 of cycle time or 1/cyclepoints
                         while True:
                             if (time.time() - test.cycle_start) > (((y)/test.cycle_points)*test.cycle_time):
-                                tor = torqueMeasurement(test_channels[testIndex]['torq'])
-                                test.torque.append(tor) # store torque reading measurement
-                                # store other values
-                                test.time.append(time.time())
+                                torqueMeasurement(test_channels[testIndex]['torq'])
+                                jsonUpdate()
                                 break
                 else:
                     test.bounces = test.bounces + 1
@@ -201,6 +204,18 @@ def switchCheck(test, testIndex):
             test.active = False
     else:
         pass
+
+def warning_on():
+    red.off() # off function because LED is wired NO
+
+def warning_off():
+    red.on()
+
+def running_on():
+    blue.off() # off function because LED is wired NO
+
+def running_off():
+    blue.on()
 
 # prevents issues with shutdown (cogging etc)
 def shut_down():
@@ -253,12 +268,12 @@ while True: # Start a loop to run the torque tests
         if ((time.time() - stamp) < (wait)): # Check to see if it's time to check the switch inputs again
             pass
 
-        elif tess[i].active != True: # Check to see if the test is still active
+        elif test[i].active != True: # Check to see if the test is still active
             pass
 
         else: 
             switchCheck(test[i], i) # Run a check of the current switch state, add 1 to pv if valid
-            tcf.logCheck(test[i]) # Check to see if it's time to log data
+            saveData() # dump to json file
             stamp = time.time()
 
     state = False
@@ -276,9 +291,6 @@ if len(test) > 0:
         test[i].update_db()
 else:
     pass
-
-# Save excel sheet
-wb.save('xlwt measurements.xls')
 
 shut_down()
 
