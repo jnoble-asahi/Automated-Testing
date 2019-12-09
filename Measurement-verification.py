@@ -76,19 +76,20 @@ HIGH = binary['HIGH']
 # Set up arrays
 vData = []
 vtime = []
-torque = []
+'''torque = []
 vAverage = []
-tAverage = []
+tAverage = []'''
 
 state = True
 
 #create xl workbook
 wb = Workbook()
 sheet = wb.active
-headers = [('Time (s)', 'Voltage (V)', 'Torque (in-lbs)', 'Average Voltage (V)', 'Average Torque (in-lbs)', 'Constant torque at 80 mA')]
+headers = [('Time (s)', 'Voltage (V)', 'Torque (in-lbs)', 'Average Voltage (V)', 'Average Torque (in-lbs)', 'Constant torque at 80')]
 for row in headers:
     sheet.append(row)
 
+timestart = time.time() # for torque measurements
 
 '''def jsonUpdate():
     jDict = {u'Time' : vtime, u'Voltage' : vData, u'Torque' : torque, u'Voltage Average' : vAverage, u'Torque Average' : tAverage,
@@ -106,7 +107,7 @@ def torqueMeasurement(input):
     for i in range (0, 10):
         raw_channels = ads.read_oneshot(input)
         vo = float(raw_channels*astep) # Convert raw value to voltage
-        t = time.time()-test[0].cycle_start
+        t = time.time()-timestart
         # append data
         setData.append(vo)
         print(vo)
