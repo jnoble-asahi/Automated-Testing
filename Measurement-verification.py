@@ -114,18 +114,16 @@ def torqueMeasurement(input):
         # append data
         setData.append(vo)
         print(vo)
-        sheet.cell(row=i+2+(y-1)*10, column =2).value = t
-        sheet.cell(row=i+2+(y-1)*10, column=3).value = vo
+        sheet.cell(row=i+2+(y-1)*10, column =1).value = t
+        sheet.cell(row=i+2+(y-1)*10, column=2).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
+        sheet.cell(row=i+2+(y-1)*10, column=3).value = torq
         torque.append(torq)
         time.sleep(0.1)
     # Remove max and min values
     setData.remove(max(setData)) 
     setData.remove(min(setData))
-    rawVal = float(sum(setData)/len(setData)) # Average everything else
-    voltage = float(rawVal*astep) # Convert raw value to voltage
-    #for i in range (0, 10): # append average 10 times (to align with rest of data)
-       # vAverage.append(voltage)
+    voltage = float(sum(setData)/len(setData)) # Average everything else
     print('voltage reading: ', voltage) # for troubleshooting/calibration
     sheet.cell(row=(y-1)*10+2, column = 4).value = voltage
     to = torqueConvert(voltage) # Convert voltage value to torque value
