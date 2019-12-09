@@ -113,7 +113,7 @@ class define_test():
             self.bounces = y['Bounces']
             self.shot_count = y['Shots']
             self.input = []
-            self.time = []
+            self.time = ['time']
             self.active = False
             self.cycle_start = time.time()
             self.last_log = time.time()
@@ -207,7 +207,7 @@ class define_test():
         self.setCycles()
         self.setTorque()
         self.setGain()
-        #self.setDuty()
+        self.setDuty()
         self.setTime()
 
     def update_db(self):
@@ -217,6 +217,7 @@ class define_test():
             #ref.update({u'temps': self.temps})
             #ref.update({u'currents': self.currents})
             ref.update({u'PV' : self.pv})
+            ref.update({u'time' : self.time})
             ref.update({u'Bounces' : self.bounces})
             ref.update({u'Shots' : self.shot_count})
             ref.update({u'Torque' : self.torque})
@@ -226,7 +227,7 @@ class define_test():
             jDict = {u'testID' : self.testID, u'timestamp' : self.last_log,
             u'PV' : self.pv, u'Bounces' : self.bounces, u'Shots' : self.shot_count, u'Description' : self.description, 
             u'Type' : self.type, u'DutyCycle' : self.duty_cycle, u'Target' : self.target,
-            u'CycleTime' : self.cycle_time, u'Torque' : self.torque } #u'temps': self.temps, u'currents': self.currents,
+            u'CycleTime' : self.cycle_time, u'Torque' : self.torque, u'time' : self.time } #u'temps': self.temps, u'currents': self.currents,
 
             name = self.testID + '.txt'
             with open(name, 'w') as json_file:

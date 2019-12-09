@@ -3,7 +3,7 @@ import time
 import sys
 import subprocess
 
-import wiringpi as wp
+#import wiringpi as wp
 import pigpio as io # pigpio daemon
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python

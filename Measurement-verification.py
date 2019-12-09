@@ -5,28 +5,31 @@ import math as mt
 import numpy as np
 import subprocess
 
+import pigpio as io # pigpio daemon
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gpiozero as gz #Library for using the GPIO with python
 import pandas as pd
 import RPi.GPIO as GPIO # Using GPIO instead of wiringpi for reading digital inputs
+import xlwt
+from xlwt import Workbook
 
+import Tconfigs as tcf 
+import gcpConfigs as gcpc
 from ADS1256_definitions import * #Configuration file for the ADC settings
 import dac8552.dac8552 as dac1
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 
-# Start the pigpio daemon 
-print('summoning IO daemons')
-bash = "sudo pigpiod" 
-process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()
+# Set pin numbers for the relay channels and the limit switch inputs
+# Note that the pin numbers here follow the wiringPI scheme, which we've setup for *.phys or the GPIO header locations
+# Since the wiringpi module communicates through the GPIO, there shouldn't be a need to initiate the SPI bus connection
 
-# LED pins
-red = gz.LED(26) # Using wirinpi pin numbers
-blue = gz.LED(20) # Using wiringpi pin numbers
-
-# Make sure LEDs are off to start
-red.on() 
-blue.on()
+chan = ('1', '2')
+test = []
+i = 0
+nos = 0
+yes = ('YES', 'yes', 'y', 'Ye', 'Y')
+no = ('NO','no', 'n', 'N', 'n')
+yes_no = ('YES', 'yes', 'y', 'Ye', 'Y', 'NO','no', 'n', 'N', 'n')
 
 # DAC/ADS setup
 ads = ADS1256()
@@ -57,15 +60,6 @@ CH_Out = {'1' : DAC_A ,
 
 tests = ('1', '2')
 
-'''
-CH1_SEQUENCE = (CH1_Loc['cntrl'], CH1_Loc['torq'], CH1_Loc['pos']) # Torque, Current, Position channels
-
-CH2_SEQUENCE =  (CH2_Loc['cntrl'], CH2_Loc['torq'], CH2_Loc['pos']) # Torque, Current, Position channels
-
-
-input_sequence = {1 : CH1_SEQUENCE,
-                 2 : CH2_SEQUENCE} 
-'''
 test_channels = {0: CH1_Loc,
                  1: CH2_Loc}
 
@@ -79,78 +73,39 @@ INPUT = binary['INPUT']
 LOW = binary['LOW']
 HIGH = binary['HIGH']
 
-def warning_on():
-    red.off() # off function because LED is wired NO
-
-def warning_off():
-    red.on()
-
-def running_on():
-    blue.off() # off function because LED is wired NO
-
-def running_off():
-    blue.on()
-
-def set_on_off(test, channelID):
-        test.name = channelID
-        test.active = True
-        print('Reseting variable values in the cloud')
-        test.bounces = 0
-        test.torque = []
-        test.pv = 0
-        test.time = []
-        # Set up channels
-        test.cntrl_channel = test_channels[channelID]['cntrl']
-        test.input_channel = test_channels[channelID]['FK_On']
-        test.input_off_channel = test_channels[channelID]['FK_Off']
-        test.output_channel = test_channels[channelID]['torq']
-        print('setting dac')
-        dac.write_dac(test.cntrl_channel, 0*step) # Set brake to 0
-        print('Brake set to 0.')
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-        # store current switch states for later
-        open_switch = test_channels[channelID]['FK_On']
-        closed_switch = test_channels[channelID]['FK_Off']
-        test.open_last_state = GPIO.input(open_switch)
-        test.closed_last_state = GPIO.input(closed_switch)
-
-def brakeOn(test, channelID):
-        setpnt = test.convertSig()
-        test.cntrl_channel = test_channels[channelID]['cntrl']
-        dac.write_dac(test.cntrl_channel, int(setpnt * step)) # Set brake to desired value
-        print('Brake set to', setpnt, 'V')
-
-def brakeOff(test, channelID):
-    '''
-    power brake off gradually to avoid cogging
-    '''
-    setpnt = test.convertSig()
-    test.cntrl_channel = test_channels[channelID]['cntrl']
-    for i in range(1, 6):
-        dac.write_dac(test.cntrl_channel, int(step*setpnt*(5-i)/5))
-        print(setpnt*(5-i)/5) # debugging
-        time.sleep(2)
-    power_down(channelID)
-    print('brake ', channelID, 'powered off')
+wb = Workbook() # create xl workbook
+sheet = wb.add_sheet('Torque setting {} in-lbs', test[0].control) #create sheet
+# ADD headers
+sheet.write(0,0, 'Time (s)')
+sheet.write(1,0, 'Voltage Reading (V)')
+sheet.write(2,0, 'Torque (in-lbs)')
+sheet.write(3,0, 'Average Voltage (V)')
+sheet.wrtie(4,0, 'Average Torque (in-lbs)')
 
 def torqueMeasurement(input):
     # Collect 10 data point readings across 1 second
     setData = []
+    y = test[0].pv
     for i in range (0, 10):
         raw_channels = ads.read_oneshot(input)
+        vo = float(raw_channels*astep) # Convert raw value to voltage
+        # write to excel sheet
+        sheet.write(0, i+1+10*y, time.time()-test[0].cycle_start)
+        sheet.write(1, i+1+10*y, vo)
+        print(vo)
+        torq = torqueConvert(vo) # Convert voltage value to torque value
+        sheet.write(2, i+1+10*y, torq)
         time.sleep(0.1)
         setData.append(raw_channels)
     # Remove max and min values
     setData.remove(max(setData)) 
     setData.remove(min(setData))
     rawVal = float(sum(setData)/len(setData)) # Average everything else
-
     voltage = float(rawVal*astep) # Convert raw value to voltage
+    sheet.write(3, y*10, voltage)
     print('voltage reading: ', voltage) # for troubleshooting/calibration
     torque = torqueConvert(voltage) # Convert voltage value to torque value
+    sheet.write(4, y*10, torque)
     print('torque reading:', torque)
     return torque
 
@@ -247,48 +202,84 @@ def switchCheck(test, testIndex):
     else:
         pass
 
-def onOff_measurement(inputs):
+# prevents issues with shutdown (cogging etc)
+def shut_down():
+    tcf.running_off() # Turn off test running LED
+    for i, value in enumerate(test):
+        if test[i].active == True:
+            tcf.brakeOff(test[i], i)
+    tcf.killDaemons()
 
-    # Read the input voltages from the current and brake control inputs on the ADC. 
-    # Voltages are converted from raw integer inputs using convert functions in this library
-    
-    raw_channels = ads.read_sequence(inputs)
-    cntrl = raw_channels[0]
-    curr = raw_channels[1]
-    return(cntrl, curr)  
+print('Starting test set-up')
 
-def killDaemons():
-    print('sacrificing IO daemons') # Kill the IO daemon process
-    bash = "sudo killall pigpiod" 
-    process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-    output, error = process.communicate()
+while True:
+    if (i >= len(chan)): # exit the loop if the test channels are full
+        break
+    
+    print('Add new test on {}? (yes/no) '.format(chan[i]))
+    prompt = input() # prompt the user to see if they want to add a new test
 
-def logCheck(testChannel):
-    if (time.time() - testChannel.last_log) < (testChannel.print_rate):
-        pass
-    
-    elif testChannel.active == False:
-        pass
-    
-    elif testChannel.active == True:
-        testChannel.update_db()
-        testChannel.last_log = time.time()
-    
+    if prompt not in yes_no: # If the input isn't recognized, try again
+        print('Input error, please enter yes or no ')
+        tcf.warning_on()
+
+    elif prompt in no: # If they enter no, exit the loop
+        tcf.warning_off()
+        i += 1
+        nos += 1
+
+    elif prompt in yes: # If they answer yes, run the test creation functions
+        tcf.warning_off()
+        test.append(gcpc.define_test()) # Creates a new gcp test class
+        test[i-nos].create_on_off_test() # Loads the test parameters
+        test[i-nos].parameter_check() # Checks that the parameters are within normal working ranges
+        tcf.set_on_off(test[i-nos], (i + nos)) # Sets up the IO pins to work for torque tests
+        tcf.brakeOn(test[i-nos], (i-nos)) # Turn brake on to setpoint value
+        i += 1 # Increment the test channel counter to track the number of active tests
+
     else:
-        warning_on()
-        killDaemons()
-        raise Warning("You didn't catch all of the cases")
+        tcf.warning_on()
+        shut_down()
+        raise Warning('Something went wrong, check your work ') # If the test case isn't caught by the above, something's wrong
 
-def power_down(testindex):
-    print('powering down dac')
-    test = tests[testindex]
-    dac.power_down(CH_Out[test], MODE_POWER_DOWN_100K)
+wait = 0.5 # A small waiting period is necessary, otherwise the switch input reads each cycle multiple times
+print('Running test(s)')
+tcf.running_on() # Turn on test running LED
+stamp = time.time()
 
+while True: # Start a loop to run the torque tests
+    for i, value in enumerate(test): # Loop through each test class one by one
 
+        if ((time.time() - stamp) < (wait)): # Check to see if it's time to check the switch inputs again
+            pass
 
+        elif tess[i].active != True: # Check to see if the test is still active
+            pass
 
+        else: 
+            switchCheck(test[i], i) # Run a check of the current switch state, add 1 to pv if valid
+            tcf.logCheck(test[i]) # Check to see if it's time to log data
+            stamp = time.time()
 
+    state = False
+    for i, value in enumerate(test): # Loop through each test class and see if they're all inactive
+        state = (state | test[i].active)
 
+    if state == False: # If all the test states are inactive, exit the loop
+        break
+        
+    else:
+        pass
 
+if len(test) > 0:
+    for i, value in enumerate(test[i]): # Log each test data one by one
+        test[i].update_db()
+else:
+    pass
 
+# Save excel sheet
+wb.save('xlwt measurements.xls')
 
+shut_down()
+
+print("Test exited with a clean status")
