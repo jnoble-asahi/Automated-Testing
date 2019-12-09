@@ -4,6 +4,7 @@ import sys
 import math as mt
 import numpy as np
 import subprocess
+import json
 
 import pigpio as io # pigpio daemon
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
@@ -92,7 +93,7 @@ def jsonUpdate():
 
     name = test[0].control + 'in_lbs.txt'
     with open(name, 'w') as json_file:
-    json.dump(jDict, json_file)
+        json.dump(jDict, json_file)
     print('json.dump')
 
 def torqueMeasurement(input):
