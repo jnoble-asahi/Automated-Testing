@@ -30,14 +30,6 @@ yes = ('YES', 'yes', 'y', 'Ye', 'Y')
 no = ('NO','no', 'n', 'N', 'n')
 yes_no = ('YES', 'yes', 'y', 'Ye', 'Y', 'NO','no', 'n', 'N', 'n')
 
-# LED pins
-red = gz.LED(26) # Using wirinpi pin numbers
-blue = gz.LED(20) # Using wiringpi pin numbers
-
-# Make sure LEDs are off to start
-red.on() 
-blue.on() 
-
 # DAC/ADS setup
 ads = ADS1256()
 ads.cal_self() 
@@ -205,18 +197,6 @@ def switchCheck(test, testIndex):
             test.active = False
     else:
         pass
-
-def warning_on():
-    red.off() # off function because LED is wired NO
-
-def warning_off():
-    red.on()
-
-def running_on():
-    blue.off() # off function because LED is wired NO
-
-def running_off():
-    blue.on()
 
 # prevents issues with shutdown (cogging etc)
 def shut_down():
