@@ -83,7 +83,7 @@ def jsonUpdate():
     jDict = {u'Time' : vtime, u'Voltage' : vData, u'Torque' : torque, u'Voltage Average' : vAverage, u'Torque Average' : tAverage,
     u'PV' : test[0].pv, u'Bounces' : test[0].bounces, u'Description' : test[0].description}
 
-    name = test[0].control + 'in_lbs.txt'
+    name = str(test[0].control) + 'in_lbs.txt'
     with open(name, 'w') as json_file:
         json.dump(jDict, json_file)
     print('json.dump')
