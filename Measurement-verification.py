@@ -129,9 +129,9 @@ def torqueConvert(volt):
     return(torqueVal)
 
 def switchCheck(test, testIndex):
-    '''
+    
     Read the state of the actuator limit switch inputs
-    If they changed, do some stuff, if they haven't changed, then do nothing '''
+    If they changed, do some stuff, if they haven't changed, then do nothing
 
     if test.active == True:
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
