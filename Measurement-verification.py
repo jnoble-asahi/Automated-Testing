@@ -129,8 +129,6 @@ def torqueMeasurement(input):
     print('voltage reading: ', voltage) # for troubleshooting/calibration
     sheet.cell(row=(y-1)*10+2, column = 4).value = voltage
     to = torqueConvert(voltage) # Convert voltage value to torque value
-    #for# i in range (0, 10): # append average 10 times (to align with rest of data)
-        tAverage.append(to)
     sheet.cell(row=(y-1)*10+2, column=5).value = to
     print('torque reading:', to)
     return to
