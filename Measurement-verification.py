@@ -115,7 +115,6 @@ def torqueMeasurement(input):
         sheet.cell(row=i+2+(y-1)*10, column=2).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
         sheet.cell(row=i+2+(y-1)*10, column=3).value = torq
-        torque.append(torq)
         time.sleep(0.1)
     # Remove max and min values
     setData.remove(max(setData)) 
