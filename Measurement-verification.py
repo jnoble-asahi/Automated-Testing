@@ -85,23 +85,19 @@ state = True
 #create xl workbook
 wb = Workbook()
 sheet = wb.active
-headers = [('Time (s)', 'Voltage (V)', 'Torque (in-lbs)', 'Average Voltage (V)', 'Average Torque (in-lbs)')]
+headers = [('Time (s)', 'Voltage (V)', 'Torque (in-lbs)', 'Average Voltage (V)', 'Average Torque (in-lbs)', 'Constant torque at 80 mA')]
 for row in headers:
     sheet.append(row)
-'''sheet.cell['A1'] = 'Time (s)'
-sheet.cell['B1'] = 'Voltage (V)'
-sheet.cell['C1'] = 'Torque (in-lbs)'
-sheet.cell['D1'] = 'Average Voltage (V)'
-sheet.cell['E1'] = 'Average Torque (in-lbs)'''
 
-def jsonUpdate():
+
+'''def jsonUpdate():
     jDict = {u'Time' : vtime, u'Voltage' : vData, u'Torque' : torque, u'Voltage Average' : vAverage, u'Torque Average' : tAverage,
     u'PV' : test[0].pv, u'Bounces' : test[0].bounces, u'Description' : test[0].description}
 
     name = str(test[0].control) + 'in_lbs.txt'
     with open(name, 'w') as json_file:
         json.dump(jDict, json_file)
-    print('json.dump')
+    print('json.dump')'''
 
 def torqueMeasurement(input):
     # Collect 10 data point readings across 1 second
@@ -166,7 +162,6 @@ def switchCheck(test, testIndex):
                             # wait 1/3 of cycle time or 1/cyclepoints
                             if (time.time() - test.cycle_start) > (((y)/test.cycle_points)*test.cycle_time):
                                 torqueMeasurement(test_channels[testIndex]['torq'])
-                                jsonUpdate()
                                 break
                 else:
                     test.bounces = test.bounces + 1
@@ -188,7 +183,6 @@ def switchCheck(test, testIndex):
                         while True:
                             if (time.time() - test.cycle_start) > (((y)/test.cycle_points)*test.cycle_time):
                                 torqueMeasurement(test_channels[testIndex]['torq'])
-                                #jsonUpdate()
                                 break
                 else:
                     test.bounces = test.bounces + 1
