@@ -84,9 +84,13 @@ tAverage = []
 #create xl workbook
 wb = Workbook()
 sheet = wb.active
+sheet.cell['A1'] = 'Time (s)'
+sheet.cell['B1'] = 'Voltage (V)'
+sheet.cell['C1'] = 'Torque (in-lbs)'
+sheet.cell['D1'] = 'Average Voltage (V)'
+sheet.cell['E1'] = 'Average Torque (in-lbs)'
 
-
-'''def jsonUpdate():
+def jsonUpdate():
     jDict = {u'Time' : vtime, u'Voltage' : vData, u'Torque' : torque, u'Voltage Average' : vAverage, u'Torque Average' : tAverage,
     u'PV' : test[0].pv, u'Bounces' : test[0].bounces, u'Description' : test[0].description}
 
@@ -108,6 +112,8 @@ def torqueMeasurement(input):
         vData.append(vo)
         setData.append(vo)
         print(vo)
+        sheet.cell(row=1, column = i+2+y*10).value = t
+        sheet.cell(row=2, column=i+2+y*10).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
         torque.append(torq)
         time.sleep(0.1)
@@ -119,9 +125,11 @@ def torqueMeasurement(input):
     for i in range (0, 10): # append average 10 times (to align with rest of data)
         vAverage.append(voltage)
     print('voltage reading: ', voltage) # for troubleshooting/calibration
+    sheet.cell(row=4, column = y*10).value = voltage
     to = torqueConvert(voltage) # Convert voltage value to torque value
     for i in range (0, 10): # append average 10 times (to align with rest of data)
         tAverage.append(to)
+    sheet.cell(row=5, column=y*10).value = to
     print('torque reading:', to)
     return to
 
@@ -130,9 +138,9 @@ def torqueConvert(volt):
     return(torqueVal)
 
 def switchCheck(test, testIndex):
-    
+    '''
     Read the state of the actuator limit switch inputs
-    If they changed, do some stuff, if they haven't changed, then do nothing
+    If they changed, do some stuff, if they haven't changed, then do nothing'''
 
     if test.active == True:
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
@@ -279,10 +287,11 @@ while True: # Start a loop to run the torque tests
 
     test[0].update_db()
 else:
-    pass'''
-sheet['A1']=1
+    pass
+
+#save excel sheet
 wb.save('data.xlsx')
 
-'''shut_down()
+shut_down()
 
 print("Test exited with a clean status")'''
