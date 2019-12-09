@@ -291,7 +291,7 @@ else:
     pass
 
 #save excel sheet
-wb.save('{} in-lbs.xlsx', str(test[0].control))
+wb.save('{} in-lbs.xlsx'.format(test[0].control))
 
 shut_down()
 
