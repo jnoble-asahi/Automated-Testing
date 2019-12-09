@@ -286,6 +286,8 @@ else:
 
 #save excel sheet
 wb.save('{} in-lbs.xlsx'.format(test[0].control))
+print('excel file saved')
+time.sleep(5)
 
 shut_down()
 
