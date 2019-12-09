@@ -83,6 +83,7 @@ tAverage = []
 
 #create xl workbook
 wb = Workbook()
+sheet = wb.active
 
 
 '''def jsonUpdate():
