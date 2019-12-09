@@ -80,6 +80,7 @@ torque = []
 vAverage = []
 tAverage = []
 
+state = True
 
 #create xl workbook
 wb = Workbook()
