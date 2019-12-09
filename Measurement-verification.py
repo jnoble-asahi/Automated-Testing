@@ -84,11 +84,14 @@ tAverage = []
 #create xl workbook
 wb = Workbook()
 sheet = wb.active
-sheet.cell['A1'] = 'Time (s)'
+headers = [('Time (s)', 'Voltage (V)', 'Torque (in-lbs)', 'Average Voltage (V)', 'Average Torque (in-lbs)')]
+for row in headers:
+    sheet.append(row)
+'''sheet.cell['A1'] = 'Time (s)'
 sheet.cell['B1'] = 'Voltage (V)'
 sheet.cell['C1'] = 'Torque (in-lbs)'
 sheet.cell['D1'] = 'Average Voltage (V)'
-sheet.cell['E1'] = 'Average Torque (in-lbs)'
+sheet.cell['E1'] = 'Average Torque (in-lbs)'''
 
 def jsonUpdate():
     jDict = {u'Time' : vtime, u'Voltage' : vData, u'Torque' : torque, u'Voltage Average' : vAverage, u'Torque Average' : tAverage,
