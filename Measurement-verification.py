@@ -276,6 +276,8 @@ while True: # Start a loop to run the torque tests
     else: 
         switchCheck(test[i], i) # Run a check of the current switch state, add 1 to pv if valid
         stamp = time.time()
+        
+        test[0].update_db()
 
         if test[i].pv >= test[i].target:
             state = False
@@ -289,7 +291,6 @@ while True: # Start a loop to run the torque tests
         pass
 
 
-    test[0].update_db()
 else:
     pass
 
