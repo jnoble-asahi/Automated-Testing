@@ -294,4 +294,4 @@ wb.save('{} in-lbs.xlsx', str(test[0].control))
 
 shut_down()
 
-print("Test exited with a clean status")'''
+print("Test exited with a clean status")
