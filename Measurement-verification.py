@@ -112,11 +112,9 @@ def torqueMeasurement(input):
         vo = float(raw_channels*astep) # Convert raw value to voltage
         t = time.time()-test[0].cycle_start
         # append data
-        #vtime.append(t)
-        #vData.append(vo)
         setData.append(vo)
         print(vo)
-        sheet.cell(row=i+2+(y-1)*10, column =2.value = t
+        sheet.cell(row=i+2+(y-1)*10, column =2).value = t
         sheet.cell(row=i+2+(y-1)*10, column=3).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
         torque.append(torq)
