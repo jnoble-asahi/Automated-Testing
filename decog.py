@@ -46,7 +46,7 @@ test_channels = {0: CH1_Loc,
 
 gain = 40 
 channel = 0 
-cont = 600 # highest brake setpoint since it started cogging (in-lbs)
+cont = 500 # highest brake setpoint since it started cogging (in-lbs)
 cycletime = 32 #seconds
 
 time.sleep(2) # time delay for pigpiod to connect
@@ -81,7 +81,7 @@ def brakeOff(channelID, control):
     setpnt = convertSig(control)
     cntrl_channel = test_channels[channelID]['cntrl']
     pnt = setpnt + 0.275 # in volts
-    cy = cycletime - 5
+    cy = cycletime - 4
     t = 0.5
     while pnt > setpnt/cy:
         dac.write_dac(cntrl_channel, int(step*pnt))
