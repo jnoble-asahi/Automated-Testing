@@ -13,7 +13,6 @@ import RPi.GPIO as GPIO # Using GPIO instead of wiringpi for reading digital inp
 from ADS1256_definitions import * #Configuration file for the ADC settings
 import dac8552.dac8552 as dac1
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
-import Tconfigs as tcf 
 
 # DAC setup
 dac = DAC8552()
