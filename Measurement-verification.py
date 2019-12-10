@@ -159,7 +159,7 @@ def switchCheck(test, testIndex):
                         while True:
                             # wait 1/3 of cycle time or 1/cyclepoints
                             if (time.time() - test.cycle_start) > (((y)/test.cycle_points)*test.cycle_time):
-                                torqueMeasurement(test_channels[testIndex]['torq'])
+                                torqueMeasurement(test_channels[testIndex]['torq'], y)
                                 break
                 else:
                     test.bounces = test.bounces + 1
