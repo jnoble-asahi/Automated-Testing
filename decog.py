@@ -49,7 +49,7 @@ channel = 0
 cont = 500 # highest brake setpoint since it started cogging (in-lbs)
 cycletime = 8 #seconds
 
-time.sleep(2) # time delay for pigpiod to connect
+time.sleep(3) # time delay for pigpiod to connect
 
 # DAC setup
 dac = DAC8552()

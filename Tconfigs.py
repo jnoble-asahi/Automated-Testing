@@ -120,12 +120,14 @@ def brakeOff(test, channelID):
     '''
     setpnt = test.convertSig()
     test.cntrl_channel = test_channels[channelID]['cntrl']
-    pnt = setpnt - 0.11 # in volts
-    while pnt > 0.11:
+    pnt = setpnt + 0.27 # in volts
+    cy = test.cycle_time -1
+    t = 0.5 # time between each new torque setpoint
+    while pnt > setpnt/cy:
         dac.write_dac(test.cntrl_channel, int(step*pnt))
         print(pnt) # debugging
-        time.sleep(0.1)
-        pnt = pnt - 0.11
+        time.sleep(t)
+        pnt = pnt - t*setpnt/cy
     power_down(channelID)
     print('brake ', channelID, 'powered off')
 
