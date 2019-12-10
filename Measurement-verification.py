@@ -109,19 +109,19 @@ def torqueMeasurement(input, cyclepoint):
         # append data
         setData.append(vo)
         print(vo)
-        sheet.cell(row=i+2+(y-1)*10+cyclepoint*10, column =1).value = t
-        sheet.cell(row=i+2+(y-1)*10+cyclepoint*10, column=2).value = vo
+        sheet.cell(row=i+2+10*cyclepoint+50*y, column =1).value = t
+        sheet.cell(row=i+2+10*cyclepoint+50*y, column=2).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
-        sheet.cell(row=i+2+(y-1)*10, column=3).value = torq
+        sheet.cell(row=i+2+10*cyclepoint+50*y, column=3).value = torq
         time.sleep(0.1)
     # Remove max and min values
     setData.remove(max(setData)) 
     setData.remove(min(setData))
     voltage = float(sum(setData)/len(setData)) # Average everything else
     print('voltage reading: ', voltage) # for troubleshooting/calibration
-    sheet.cell(row=(y-1)*10+2*cyclepoint, column = 4).value = voltage
+    sheet.cell(row=11+10*cyclepoint+50*y, column = 4).value = voltage
     to = torqueConvert(voltage) # Convert voltage value to torque value
-    sheet.cell(row=(y-1)*10+2*cyclepoint, column=5).value = to
+    sheet.cell(row=11+10*cyclepoint+50*y, column=5).value = to
     print('torque reading:', to)
     return to
 
