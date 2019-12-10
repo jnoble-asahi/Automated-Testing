@@ -47,8 +47,9 @@ test_channels = {0: CH1_Loc,
 gain = 40 
 channel = 0 
 cont = 600 # highest brake setpoint since it started cogging (in-lbs)
+cycletime = 32 #seconds
 
-time.sleep(3) #debug
+time.sleep(2) # time delay for pigpiod to connect
 
 # DAC setup
 dac = DAC8552()
@@ -73,12 +74,6 @@ def convertSig(control):
             print ('Brake setpoint', control, 'in-lbs')
         return fiveV
 
-def brakeOn(channelID, control):
-        setpnt = convertSig(control)
-        cntrl_channel = test_channels[channelID]['cntrl']
-        dac.write_dac(cntrl_channel, int(setpnt * step)) # Set brake to desired value
-        print('Brake set to', setpnt, 'V')
-
 def brakeOff(channelID, control):
     '''
     power brake off gradually to avoid cogging
@@ -86,15 +81,15 @@ def brakeOff(channelID, control):
     setpnt = convertSig(control)
     cntrl_channel = test_channels[channelID]['cntrl']
     pnt = setpnt + 0.275 # in volts
-    while pnt > 0.11:
+    cy = cycletime - 5
+    while pnt > setpnt/cy:
         dac.write_dac(cntrl_channel, int(step*pnt))
         print(pnt) # debugging
-        time.sleep(0.1)
-        pnt = pnt - 0.11
+        time.sleep(1)
+        pnt = pnt - setpnt/cy
     power_down(channelID)
     print('brake ', channelID, 'powered off')
 
-#brakeOn(channel, cont)
 brakeOff(channel, cont)
 
 print('sacrificing IO daemons') # Kill the IO daemon process
