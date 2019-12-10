@@ -48,7 +48,7 @@ gain = 40
 channel = 0 
 cont = 600 # highest brake setpoint since it started cogging (in-lbs)
 
-time.time(2) #debug
+time.sleep(3) #debug
 
 # DAC setup
 dac = DAC8552()
