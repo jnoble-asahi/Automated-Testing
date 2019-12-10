@@ -82,11 +82,12 @@ def brakeOff(channelID, control):
     cntrl_channel = test_channels[channelID]['cntrl']
     pnt = setpnt + 0.275 # in volts
     cy = cycletime - 5
+    t = 0.5
     while pnt > setpnt/cy:
         dac.write_dac(cntrl_channel, int(step*pnt))
         print(pnt) # debugging
-        time.sleep(1)
-        pnt = pnt - setpnt/cy
+        time.sleep(t)
+        pnt = pnt - t*setpnt/cy
     power_down(channelID)
     print('brake ', channelID, 'powered off')
 
