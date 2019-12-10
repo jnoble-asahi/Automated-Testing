@@ -81,6 +81,7 @@ vAverage = []
 tAverage = []'''
 
 state = True
+tstart = time.time()
 
 #create xl workbook
 wb = Workbook()
@@ -105,11 +106,11 @@ def torqueMeasurement(input, cyclepoint):
     for i in range (0, 10):
         raw_channels = ads.read_oneshot(input)
         vo = float(raw_channels*astep) # Convert raw value to voltage
-        t = time.time()-stamp
+        ti = time.time()-tstart
         # append data
         setData.append(vo)
         print(vo)
-        sheet.cell(row=i+2+10*cyclepoint+50*(y-1), column =1).value = t
+        sheet.cell(row=i+2+10*cyclepoint+50*(y-1), column =1).value = ti
         sheet.cell(row=i+2+10*cyclepoint+50*(y-1), column=2).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
         sheet.cell(row=i+2+10*cyclepoint+50*(y-1), column=3).value = torq
@@ -119,9 +120,9 @@ def torqueMeasurement(input, cyclepoint):
     setData.remove(min(setData))
     voltage = float(sum(setData)/len(setData)) # Average everything else
     print('voltage reading: ', voltage) # for troubleshooting/calibration
-    sheet.cell(row=11+10*cyclepoint+50*y, column = 4).value = voltage
+    sheet.cell(row=11+10*cyclepoint+50*(y-1), column = 4).value = voltage
     to = torqueConvert(voltage) # Convert voltage value to torque value
-    sheet.cell(row=11+10*cyclepoint+50*y, column=5).value = to
+    sheet.cell(row=11+10*cyclepoint+50*(y-1), column=5).value = to
     print('torque reading:', to)
     return to
 
@@ -148,8 +149,8 @@ def switchCheck(test, testIndex):
                 length = time.time() - test.cycle_start # Calculate the length of the last duty cycle
 
                 if (length > (test.duty_cycle*.49)):
-                    test.cycle_start = time.time() # update cycle start time
-                    print('cycle start updated to: ', test.cycle_start) # debugging
+                    #test.cycle_start = time.time() # update cycle start time
+                    #print('cycle start updated to: ', test.cycle_start) # debugging
                     test.pv+= 1 # Increment the pv counter if the switch changed
                     print('test.pv: ', test.pv)
                     print("Switch {} confirmed. Actuator is closing.".format(test.name))
