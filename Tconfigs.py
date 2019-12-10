@@ -120,10 +120,12 @@ def brakeOff(test, channelID):
     '''
     setpnt = test.convertSig()
     test.cntrl_channel = test_channels[channelID]['cntrl']
-    for i in range(1, 6):
-        dac.write_dac(test.cntrl_channel, int(step*setpnt*(5-i)/5))
-        print(setpnt*(5-i)/5) # debugging
-        time.sleep(2)
+    pnt = setpnt - 0.11 # in volts
+    while pnt > 0.11:
+        dac.write_dac(test.cntrl_channel, int(step*pnt))
+        print(pnt) # debugging
+        time.sleep(0.1)
+        pnt = pnt - 0.11
     power_down(channelID)
     print('brake ', channelID, 'powered off')
 
