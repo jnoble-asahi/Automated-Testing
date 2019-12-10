@@ -14,6 +14,12 @@ from ADS1256_definitions import * #Configuration file for the ADC settings
 import dac8552.dac8552 as dac1
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 
+# Start the pigpio daemon 
+print('summoning IO daemons')
+bash = "sudo pigpiod" 
+process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
+
 # DAC setup
 dac = DAC8552()
 dac.v_ref = 5
@@ -86,5 +92,10 @@ def brakeOff(channelID, control):
     power_down(channelID)
     print('brake ', channelID, 'powered off')
 
-brakeOn(channel, cont)
+#brakeOn(channel, cont)
 brakeOff(channel, cont)
+
+print('sacrificing IO daemons') # Kill the IO daemon process
+bash = "sudo killall pigpiod" 
+process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
+output, error = process.communicate()
