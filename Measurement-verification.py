@@ -98,7 +98,7 @@ for row in headers:
         json.dump(jDict, json_file)
     print('json.dump')'''
 
-def torqueMeasurement(input):
+def torqueMeasurement(input, cyclepoint):
     # Collect 10 data point readings across 1 second
     y = test[0].pv
     setData=[] #array for average torque calculation
@@ -109,8 +109,8 @@ def torqueMeasurement(input):
         # append data
         setData.append(vo)
         print(vo)
-        sheet.cell(row=i+2+(y-1)*10, column =1).value = t
-        sheet.cell(row=i+2+(y-1)*10, column=2).value = vo
+        sheet.cell(row=i+2+(y-1)*10*cyclepoint, column =1).value = t
+        sheet.cell(row=i+2+(y-1)*10*cyclepoint, column=2).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
         sheet.cell(row=i+2+(y-1)*10, column=3).value = torq
         time.sleep(0.1)
@@ -119,9 +119,9 @@ def torqueMeasurement(input):
     setData.remove(min(setData))
     voltage = float(sum(setData)/len(setData)) # Average everything else
     print('voltage reading: ', voltage) # for troubleshooting/calibration
-    sheet.cell(row=(y-1)*10+2, column = 4).value = voltage
+    sheet.cell(row=(y-1)*10+2*cyclepoint, column = 4).value = voltage
     to = torqueConvert(voltage) # Convert voltage value to torque value
-    sheet.cell(row=(y-1)*10+2, column=5).value = to
+    sheet.cell(row=(y-1)*10+2*cyclepoint, column=5).value = to
     print('torque reading:', to)
     return to
 
@@ -180,7 +180,7 @@ def switchCheck(test, testIndex):
                         # wait 1/3 of cycle time or 1/cyclepoints
                         while True:
                             if (time.time() - test.cycle_start) > (((y)/test.cycle_points)*test.cycle_time):
-                                torqueMeasurement(test_channels[testIndex]['torq'])
+                                torqueMeasurement(test_channels[testIndex]['torq'], y)
                                 break
                 else:
                     test.bounces = test.bounces + 1

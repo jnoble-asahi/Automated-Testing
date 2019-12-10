@@ -8,7 +8,6 @@ import google.cloud
 import firebase_admin as fa
 from firebase_admin import firestore
 from firebase_admin import credentials
-from openpyxl import Workbook
 
 import Tconfigs as tcf
 
@@ -27,6 +26,7 @@ OUTPUT = binary['OUTPUT']
 INPUT = binary['INPUT']
 LOW = binary['LOW']
 HIGH = binary['HIGH']
+
 
 class define_test():
     '''
@@ -124,7 +124,6 @@ class define_test():
             self.chan_state = HIGH
             self.cycle_points = y['CyclePoints']
             self.update_db()
-            #self.cycleTimeNow = float(0)
 
     def setCycleTime(self):
         '''
@@ -175,9 +174,11 @@ class define_test():
         if self.control not in range(0, 6373):
             tcf.warning_on()
             tcf.killDaemons()
-            raise ValueError('Torque setpoints must be between 0 and 6372 in-lbs')
+            raise ValueError('Torque setpoints must be between 0 and 6372 in-lbs.')
         else:
-            print('Torque setpoint created')
+            if self.control < 600:
+                warnings.warn('Brake setpoint outside of transducer range. Torque readings may be inacurrate.')
+            print('Torque setpoint created.')
 
     def setGain(self):
         choices = [200, 100, 50, 40, 25, 20] #mA/V
