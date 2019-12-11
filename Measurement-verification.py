@@ -236,7 +236,13 @@ while True:
         test.append(gcpc.define_test()) # Creates a new gcp test class
         test[i-nos].create_on_off_test() # Loads the test parameters
 
-        print('taking initial measurements at 0')
+        print('1.taking initial measurements at 0')
+        raw_channels = ads.read_oneshot(DAC_A)
+        vo = float(raw_channels*astep) # Convert raw value to voltage
+        ti = time.time()-tstart
+        print(vo)
+        time.sleep(0.1)
+
         raw_channels = ads.read_oneshot(DAC_A)
         vo = float(raw_channels*astep) # Convert raw value to voltage
         ti = time.time()-tstart
