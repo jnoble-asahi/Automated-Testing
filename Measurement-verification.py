@@ -86,7 +86,7 @@ tstart = time.time()
 #create xl workbook
 wb = Workbook()
 sheet = wb.active
-headers = [('Time (s)', 'Voltage (V)', 'Torque (in-lbs)', 'Average Voltage (V)', 'Average Torque (in-lbs)', 'Constant torque at 1 mA')]
+headers = [('Time (s)', 'Voltage (V)', 'Torque (in-lbs)', 'Average Voltage (V)', 'Average Torque (in-lbs)', 'Constant torque')]
 for row in headers:
     sheet.append(row)
 
