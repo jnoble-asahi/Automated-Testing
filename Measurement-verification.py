@@ -251,7 +251,7 @@ while True:
         sheet.cell(row=2, column=7).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
         sheet.cell(row=2, column=8).value = torq
-        time.sleep(0.1)
+        time.sleep(2)
 
         raw_channels = ads.read_oneshot(DAC_A)
         vo = float(raw_channels*astep) # Convert raw value to voltage
