@@ -235,8 +235,20 @@ while True:
         tcf.warning_off()
         test.append(gcpc.define_test()) # Creates a new gcp test class
         test[i-nos].create_on_off_test() # Loads the test parameters
+
         print('taking initial measurement at 0')
-        torqueMeasurement(DAC_A, 4)
+        raw_channels = ads.read_oneshot(DAC_A)
+        vo = float(raw_channels*astep) # Convert raw value to voltage
+        ti = time.time()-tstart
+        # append data
+        setData.append(vo)
+        print(vo)
+        sheet.cell(row=2, column =6).value = ti
+        sheet.cell(row=2, column=7).value = vo
+        torq = torqueConvert(vo) # Convert voltage value to torque value
+        sheet.cell(row=2, column=8).value = torq
+        time.sleep(0.1)
+
         test[i-nos].parameter_check() # Checks that the parameters are within normal working ranges
         tcf.set_on_off(test[i-nos], (i + nos)) # Sets up the IO pins to work for torque tests
         tcf.brakeOn(test[i-nos], (i-nos)) # Turn brake on to setpoint value
