@@ -240,8 +240,6 @@ while True:
         raw_channels = ads.read_oneshot(DAC_A)
         vo = float(raw_channels*astep) # Convert raw value to voltage
         ti = time.time()-tstart
-        # append data
-        setData.append(vo)
         print(vo)
         sheet.cell(row=2, column =6).value = ti
         sheet.cell(row=2, column=7).value = vo
