@@ -125,7 +125,6 @@ def brakeOff(test, channelID):
     t = 0.5 # time between each new torque setpoint
     while pnt > setpnt/cy:
         dac.write_dac(test.cntrl_channel, int(step*pnt))
-        print(pnt) # debugging
         time.sleep(t)
         pnt = pnt - t*setpnt/cy
     power_down(channelID)

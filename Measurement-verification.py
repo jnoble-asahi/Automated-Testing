@@ -156,11 +156,12 @@ def switchCheck(test, testIndex):
                     print("Switch {} confirmed. Actuator is closing.".format(test.name))
 
                     # collect "cycle_points" amount of points in cycle
-                    for y in range (test.cycle_points):
+                    w = 0
+                    for w in range (test.cycle_points):
                         while True:
                             # wait 1/3 of cycle time or 1/cyclepoints
-                            if (time.time() - test.cycle_start) > (((y)/test.cycle_points)*test.cycle_time):
-                                torqueMeasurement(test_channels[testIndex]['torq'], y)
+                            if (time.time() - test.cycle_start) > (((w)/test.cycle_points)*test.cycle_time):
+                                torqueMeasurement(test_channels[testIndex]['torq'], w)
                                 break
                 else:
                     test.bounces = test.bounces + 1
@@ -177,11 +178,12 @@ def switchCheck(test, testIndex):
                     print("Switch {} confirmed. Actuator is opening.".format(test.name))
 
                     # collect "cycle_points" amount of points in cycle
-                    for y in range (test.cycle_points):
+                    w=0
+                    for w in range (test.cycle_points):
                         # wait 1/3 of cycle time or 1/cyclepoints
                         while True:
-                            if (time.time() - test.cycle_start) > (((y)/test.cycle_points)*test.cycle_time):
-                                torqueMeasurement(test_channels[testIndex]['torq'], y)
+                            if (time.time() - test.cycle_start) > (((w)/test.cycle_points)*test.cycle_time):
+                                torqueMeasurement(test_channels[testIndex]['torq'], w)
                                 break
                 else:
                     test.bounces = test.bounces + 1
