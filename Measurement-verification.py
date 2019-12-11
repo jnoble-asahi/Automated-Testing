@@ -236,7 +236,7 @@ while True:
         test.append(gcpc.define_test()) # Creates a new gcp test class
         test[i-nos].create_on_off_test() # Loads the test parameters
         print('taking initial measurement at 0')
-        torqueMeasurement(test_channels[0], 4)
+        torqueMeasurement(DAC_A, 4)
         test[i-nos].parameter_check() # Checks that the parameters are within normal working ranges
         tcf.set_on_off(test[i-nos], (i + nos)) # Sets up the IO pins to work for torque tests
         tcf.brakeOn(test[i-nos], (i-nos)) # Turn brake on to setpoint value
