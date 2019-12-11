@@ -297,6 +297,13 @@ while True:
         sheet.cell(row=6, column=8).value = torq
         time.sleep(0.1)
 
+        for g in range(0, 10):
+            raw_channels = ads.read_oneshot(DAC_A)
+            vo = float(raw_channels*astep) # Convert raw value to voltage
+            ti = time.time()-tstart
+            print(vo)
+            time.sleep(.5)
+
         tcf.brakeOn(test[i-nos], (i-nos)) # Turn brake on to setpoint value
         i += 1 # Increment the test channel counter to track the number of active tests
 
@@ -330,6 +337,12 @@ torq = torqueConvert(vo) # Convert voltage value to torque value
 sheet.cell(row=8, column=8).value = torq
 time.sleep(0.1)
 
+for f in range (0,10):
+    raw_channels = ads.read_oneshot(DAC_A)
+    vo = float(raw_channels*astep) # Convert raw value to voltage
+    ti = time.time()-tstart
+    print(vo)
+    time.sleep(.5)
 
 while True: # Start a loop to run the torque tests
     # Loop through each test class one by one
