@@ -59,6 +59,7 @@ CH_Out = {'1' : DAC_A ,
           '2' : DAC_B}
 
 tests = ('1', '2')
+test = []
 
 test_channels = {0: CH1_Loc,
                  1: CH2_Loc}
