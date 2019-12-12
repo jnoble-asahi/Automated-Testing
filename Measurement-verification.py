@@ -172,7 +172,7 @@ def switchCheck(test, testIndex):
             elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # Check if changed from fully closed position to opening (moving)
                 test.closed_last_state = HIGH # Reset the "closed last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last duty cycle
-                print('pv', test[0].pv, 'target', test[0].target)
+                print('pv', test.pv, 'target', test.target)
 
                 if (length > (test.duty_cycle*.49)):
                     test.cycle_start = time.time() # Update cycle start time
