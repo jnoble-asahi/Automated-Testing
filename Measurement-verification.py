@@ -147,6 +147,7 @@ def switchCheck(test, testIndex):
             if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # Check if changed from fully open position to closing (moving)
                 test.open_last_state = HIGH # Reset the "open last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last duty cycle
+                print('pv', test[0].pv, 'target', test[0].target)
 
                 if (length > (test.duty_cycle*.49)):
                     test.cycle_start = time.time() # update cycle start time
@@ -170,6 +171,7 @@ def switchCheck(test, testIndex):
             elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # Check if changed from fully closed position to opening (moving)
                 test.closed_last_state = HIGH # Reset the "closed last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last duty cycle
+                print('pv', test[0].pv, 'target', test[0].target)
 
                 if (length > (test.duty_cycle*.49)):
                     test.cycle_start = time.time() # Update cycle start time
@@ -285,7 +287,6 @@ while True: # Start a loop to run the torque tests
     else: 
         switchCheck(test[i], i) # Run a check of the current switch state, add 1 to pv if valid
         stamp = time.time()
-        print('pv', test[0].pv, 'target', test[0].target)
         if test[i].pv >= test[i].target:
             state = False
         # Loop through each test class and see if they're all inactive
