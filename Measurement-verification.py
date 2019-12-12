@@ -237,72 +237,21 @@ while True:
         test[i-nos].create_on_off_test() # Loads the test parameters
 
         print('1.taking initial measurements at 0')
-        raw_channels = ads.read_oneshot(DAC_A)
-        vo = float(raw_channels*astep) # Convert raw value to voltage
-        ti = time.time()-tstart
-        print(vo)
-        time.sleep(0.1)
-
-        raw_channels = ads.read_oneshot(DAC_A)
-        vo = float(raw_channels*astep) # Convert raw value to voltage
-        ti = time.time()-tstart
-        print(vo)
-        sheet.cell(row=2, column =6).value = ti
-        sheet.cell(row=2, column=7).value = vo
-        torq = torqueConvert(vo) # Convert voltage value to torque value
-        sheet.cell(row=2, column=8).value = torq
-        time.sleep(2)
-
-        raw_channels = ads.read_oneshot(DAC_A)
-        vo = float(raw_channels*astep) # Convert raw value to voltage
-        ti = time.time()-tstart
-        print(vo)
-        sheet.cell(row=3, column =6).value = ti
-        sheet.cell(row=3, column=7).value = vo
-        torq = torqueConvert(vo) # Convert voltage value to torque value
-        sheet.cell(row=2, column=8).value = torq
-        time.sleep(0.1)
-
-        raw_channels = ads.read_oneshot(DAC_A)
-        vo = float(raw_channels*astep) # Convert raw value to voltage
-        ti = time.time()-tstart
-        print(vo)
-        sheet.cell(row=4, column =6).value = ti
-        sheet.cell(row=4, column=7).value = vo
-        torq = torqueConvert(vo) # Convert voltage value to torque value
-        sheet.cell(row=2, column=8).value = torq
-        time.sleep(0.1)
+        for s in range(0,10):
+            raw_channels = ads.read_oneshot(INPUTS_ADDRESS[0])
+            vo = float(raw_channels*astep) # Convert raw value to voltage
+            print(vo)
+            time.sleep(0.1)
 
         test[i-nos].parameter_check() # Checks that the parameters are within normal working ranges
         tcf.set_on_off(test[i-nos], (i + nos)) # Sets up the IO pins to work for torque tests
 
         print('2. taking initial measurements at 0')
-        raw_channels = ads.read_oneshot(DAC_A)
-        vo = float(raw_channels*astep) # Convert raw value to voltage
-        ti = time.time()-tstart
-        print(vo)
-        sheet.cell(row=5, column =6).value = ti
-        sheet.cell(row=5, column=7).value = vo
-        torq = torqueConvert(vo) # Convert voltage value to torque value
-        sheet.cell(row=5, column=8).value = torq
-        time.sleep(0.1)
-        
-        raw_channels = ads.read_oneshot(DAC_A)
-        vo = float(raw_channels*astep) # Convert raw value to voltage
-        ti = time.time()-tstart
-        print(vo)
-        sheet.cell(row=6, column =6).value = ti
-        sheet.cell(row=6, column=7).value = vo
-        torq = torqueConvert(vo) # Convert voltage value to torque value
-        sheet.cell(row=6, column=8).value = torq
-        time.sleep(0.1)
-
-        for g in range(0, 10):
-            raw_channels = ads.read_oneshot(DAC_A)
+        for s in range(0,10):
+            raw_channels = ads.read_oneshot(INPUTS_ADDRESS[0])
             vo = float(raw_channels*astep) # Convert raw value to voltage
-            ti = time.time()-tstart
             print(vo)
-            time.sleep(.5)
+            time.sleep(0.1)
 
         tcf.brakeOn(test[i-nos], (i-nos)) # Turn brake on to setpoint value
         i += 1 # Increment the test channel counter to track the number of active tests
@@ -318,31 +267,11 @@ tcf.running_on() # Turn on test running LED
 stamp = time.time()
 
 print('3. taking initial measurements at 0')
-raw_channels = ads.read_oneshot(DAC_A)
-vo = float(raw_channels*astep) # Convert raw value to voltage
-ti = time.time()-tstart
-print(vo)
-sheet.cell(row=7, column =6).value = ti
-sheet.cell(row=7, column=7).value = vo
-torq = torqueConvert(vo) # Convert voltage value to torque value
-sheet.cell(row=7, column=8).value = torq
-time.sleep(0.1)
-raw_channels = ads.read_oneshot(DAC_A)
-vo = float(raw_channels*astep) # Convert raw value to voltage
-ti = time.time()-tstart
-print(vo)
-sheet.cell(row=8, column =6).value = ti
-sheet.cell(row=8, column=7).value = vo
-torq = torqueConvert(vo) # Convert voltage value to torque value
-sheet.cell(row=8, column=8).value = torq
-time.sleep(0.1)
-
-for f in range (0,10):
-    raw_channels = ads.read_oneshot(DAC_A)
+for s in range(0,10):
+    raw_channels = ads.read_oneshot(INPUTS_ADDRESS[0])
     vo = float(raw_channels*astep) # Convert raw value to voltage
-    ti = time.time()-tstart
     print(vo)
-    time.sleep(.5)
+    time.sleep(0.1)
 
 while True: # Start a loop to run the torque tests
     # Loop through each test class one by one
