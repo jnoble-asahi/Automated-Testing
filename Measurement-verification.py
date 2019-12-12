@@ -147,15 +147,15 @@ def switchCheck(test, testIndex):
             
             if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # Check if changed from fully open position to closing (moving)
                 test.open_last_state = HIGH # Reset the "open last state" of the switch
-                length = time.time() - test.cycle_start # Calculate the length of the last duty cycle
+                length = time.time() - test.cycle_start - test.cycle_time # Calculate the length of the last duty cycle
                 print('pv', test.pv, 'target', test.target)
 
-                if (length > (test.duty_cycle*.49)):
+                if (length > (test.duty_cycle*.5)):
+                    print("Switch {} confirmed. Actuator is closing.".format(test.name))
                     test.cycle_start = time.time() # update cycle start time
                     print('cycle start updated to: ', test.cycle_start) # debugging
                     test.pv+= 1 # Increment the pv counter if the switch changed
                     print('test.pv: ', test.pv)
-                    print("Switch {} confirmed. Actuator is closing.".format(test.name))
 
                     # collect "cycle_points" amount of points in cycle
                     w = 0
@@ -171,14 +171,14 @@ def switchCheck(test, testIndex):
 
             elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # Check if changed from fully closed position to opening (moving)
                 test.closed_last_state = HIGH # Reset the "closed last state" of the switch
-                length = time.time() - test.cycle_start # Calculate the length of the last duty cycle
+                length = time.time() - test.cycle_start - test.cycle_time # Calculate the length of the last duty cycle
                 print('pv', test.pv, 'target', test.target)
 
-                if (length > (test.duty_cycle*.49)):
+                if (length > (test.duty_cycle*.5)):
+                    print("Switch {} confirmed. Actuator is opening.".format(test.name))
                     test.cycle_start = time.time() # Update cycle start time
                     test.pv+= 1 # Increment the pv counter if the switch changed
                     print('test.pv: ', test.pv)
-                    print("Switch {} confirmed. Actuator is opening.".format(test.name))
 
                     # collect "cycle_points" amount of points in cycle
                     w=0
@@ -305,6 +305,10 @@ else:
 wb.save('{} in-lbs_{}.xlsx'.format(test[0].control, test[0].description))
 print('excel file saved')
 
+print('about to power down') # in case cycle time was set too short
+time.sleep(5)
+
+print('powering down')
 shut_down()
 
 print("Test exited with a clean status")
