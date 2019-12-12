@@ -149,8 +149,8 @@ def switchCheck(test, testIndex):
                 length = time.time() - test.cycle_start # Calculate the length of the last duty cycle
 
                 if (length > (test.duty_cycle*.49)):
-                    #test.cycle_start = time.time() # update cycle start time
-                    #print('cycle start updated to: ', test.cycle_start) # debugging
+                    test.cycle_start = time.time() # update cycle start time
+                    print('cycle start updated to: ', test.cycle_start) # debugging
                     test.pv+= 1 # Increment the pv counter if the switch changed
                     print('test.pv: ', test.pv)
                     print("Switch {} confirmed. Actuator is closing.".format(test.name))
@@ -192,12 +192,12 @@ def switchCheck(test, testIndex):
             elif (open_last_state == HIGH) & (open_state == LOW) & (closed_state == HIGH): # Check to see if recently in fully open position
                 print("Switch {} changed. Actuator is in fully open position.".format(testIndex))
                 test.open_last_state = LOW # Update last switch state
-                print('test.cycle_time updated to: ', test.cycle_time)
+                #print('test.cycle_time updated to: ', test.cycle_time)
 
             elif (closed_last_state == HIGH) & (closed_state == LOW) & (open_state == HIGH): # Check to see if recently in fully closed position
                 print("Switch {} changed. Actuator is in fully closed position.".format(testIndex))
                 test.closed_last_state = LOW # Update last switch state
-                print('test.cycle_time updated to: ', test.cycle_time)
+                #print('test.cycle_time updated to: ', test.cycle_time)
 
             else:
                 pass
@@ -285,7 +285,7 @@ while True: # Start a loop to run the torque tests
     else: 
         switchCheck(test[i], i) # Run a check of the current switch state, add 1 to pv if valid
         stamp = time.time()
-
+        print('pv', test[0].pv, 'target', test[0].target)
         if test[i].pv >= test[i].target:
             state = False
         # Loop through each test class and see if they're all inactive
