@@ -104,7 +104,7 @@ def torqueMeasurement(input, cyclepoint):
     # Collect 10 data point readings across 1 second
     y = test[0].pv
     setData=[] #array for average torque calculation
-    for i in range (0, 10):
+    for i in range (0, 20):
         raw_channels = ads.read_oneshot(input)
         vo = float(raw_channels*astep) # Convert raw value to voltage
         ti = time.time()-tstart
@@ -115,10 +115,11 @@ def torqueMeasurement(input, cyclepoint):
         sheet.cell(row=i+2+10*cyclepoint+50*(y-1), column=2).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
         sheet.cell(row=i+2+10*cyclepoint+50*(y-1), column=3).value = torq
-        time.sleep(0.1)
-    # Remove max and min values
-    setData.remove(max(setData)) 
-    setData.remove(min(setData))
+        time.sleep(0.05)
+    # Remove 3 max and min values
+    for x in range (0,3):
+        setData.remove(max(setData)) 
+        setData.remove(min(setData))
     voltage = float(sum(setData)/len(setData)) # Average everything else
     print('voltage reading: ', voltage) # for troubleshooting/calibration
     sheet.cell(row=11+10*cyclepoint+50*(y-1), column = 4).value = voltage
@@ -171,7 +172,7 @@ def switchCheck(test, testIndex):
 
             elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # Check if changed from fully closed position to opening (moving)
                 test.closed_last_state = HIGH # Reset the "closed last state" of the switch
-                length = time.time() - test.cycle_start - test.cycle_time # Calculate the length of the last duty cycle
+                length = time.time() - test.cycle_time # Calculate the length of the last duty cycle
                 print('pv', test.pv, 'target', test.target)
 
                 if (length > (test.duty_cycle*.5)):

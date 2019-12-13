@@ -133,13 +133,14 @@ def brakeOff(test, channelID):
 def torqueMeasurement(input):
     # Collect 10 data point readings across 1 second
     setData = []
-    for i in range (0, 10):
+    for i in range (0, 20):
         raw_channels = ads.read_oneshot(input)
-        time.sleep(0.1)
+        time.sleep(0.05)
         setData.append(raw_channels)
-    # Remove max and min values
-    setData.remove(max(setData)) 
-    setData.remove(min(setData))
+    # Remove 3 max and min values
+    for x in range(0,3):
+        setData.remove(max(setData)) 
+        setData.remove(min(setData))
     rawVal = float(sum(setData)/len(setData)) # Average everything else
 
     voltage = float(rawVal*astep) # Convert raw value to voltage
