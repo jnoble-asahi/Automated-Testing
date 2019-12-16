@@ -116,8 +116,8 @@ def torqueMeasurement(input, cyclepoint):
         torq = torqueConvert(vo) # Convert voltage value to torque value
         sheet.cell(row=i+2+10*cyclepoint+50*(y-1), column=3).value = torq
         time.sleep(0.05)
-    # Remove 3 max and min values
-    for x in range (0,3):
+    # Remove 4 max and min values
+    for x in range (0,4):
         setData.remove(max(setData)) 
         setData.remove(min(setData))
     voltage = float(sum(setData)/len(setData)) # Average everything else

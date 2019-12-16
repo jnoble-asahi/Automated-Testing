@@ -190,7 +190,17 @@ class define_test():
             tcf.killDaemons()
             raise ValueError('Gain value not valid.')
         else:
-            print('Gain set')
+            print('Gain set to {}.' .format(self.gain))
+
+    def setCyclePoints(self):
+        '''Confirm cycle_time seconds is >= than the amount of cycle points. Otherwise, torque readings may be taken after the actuator has stopped.
+        '''
+        if self.cycle_time < self.cycle_points:
+            tcf.warning_on()
+            tcf.killDaemons()
+            raise ValueError('Too many cycle points for length of cycle.')
+        else:
+            print('Cycle points set to {}.' .format(self.cycle_points))
 
     def convertSig(self):
     #convert in/lbs control setpoint to current value for brake signal
@@ -212,13 +222,12 @@ class define_test():
         self.setGain()
         self.setDuty()
         self.setTime()
+        self.setCyclePoints()
 
     def update_db(self):
         try:
             ref = db.collection(self.test_center).document(self.testID)
             ref.update({u'timestamp' : self.last_log})
-            #ref.update({u'temps': self.temps})
-            #ref.update({u'currents': self.currents})
             ref.update({u'PV' : self.pv})
             ref.update({u'time' : self.time})
             ref.update({u'Bounces' : self.bounces})
@@ -230,7 +239,7 @@ class define_test():
             jDict = {u'testID' : self.testID, u'timestamp' : self.last_log,
             u'PV' : self.pv, u'Bounces' : self.bounces, u'Shots' : self.shot_count, u'Description' : self.description, 
             u'Type' : self.type, u'DutyCycle' : self.duty_cycle, u'Target' : self.target,
-            u'CycleTime' : self.cycle_time, u'Torque' : self.torque, u'time' : self.time } #u'temps': self.temps, u'currents': self.currents,
+            u'CycleTime' : self.cycle_time, u'Torque' : self.torque, u'time' : self.time }
 
             name = self.testID + '.txt'
             with open(name, 'w') as json_file:
