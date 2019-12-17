@@ -98,44 +98,54 @@ def brakeOff(channelID, control):
     open_state = GPIO.input(open_switch)
     open_last_state = open_state # Store the last FK_On switch state in a temp variable
     closed_last_state = closed_state # Store the last FK_Off switch state in temp variable
-
-    setpnt = convertSig(control)
-    cntrl_channel = test_channels[channelID]['cntrl']
-    pnt = setpnt + 0.275 # in volts
-    t = cycletime/25
-    while pnt > 0.275:
-        time.sleep(t)
-        dac.write_dac(cntrl_channel, int(step*pnt))
-        print(pnt) # debugging
-        print ('Waiting for actuator to start cycle')
-        while True:
-            if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # if actuator just started to move
-                time.sleep(5)
+    print ('Waiting for actuator to start cycle')
+    print(last_state) 
+    print(open_state)
+    while True:
+        if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # if actuator just started to move
+            time.sleep(7)
+            setpnt = convertSig(control)
+            cntrl_channel = test_channels[channelID]['cntrl']
+            pnt = setpnt + 0.275 # in volts
+            t = cycletime/25
+            while pnt > 0.275:
+                time.sleep(t)
+                dac.write_dac(cntrl_channel, int(step*pnt))
+                print(pnt) # debugging
                 pnt = pnt - (setpnt + 0.275)/25
                 print(pnt)
                 open_last_state = HIGH
                 closed_last_state = HIGH
                 break
-            elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # if actuator just started to move
-                time.sleep(5)
+            break
+        elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # if actuator just started to move
+            time.sleep(7)
+            setpnt = convertSig(control)
+            cntrl_channel = test_channels[channelID]['cntrl']
+            pnt = setpnt + 0.275 # in volts
+            t = cycletime/25
+            while pnt > 0.275:
+                time.sleep(t)
+                dac.write_dac(cntrl_channel, int(step*pnt))
+                print(pnt) # debugging
                 pnt = pnt - (setpnt + 0.275)/25
                 print(pnt)
                 open_last_state = HIGH
                 closed_last_state = HIGH
                 break
-            elif (open_last_state == HIGH) & (open_state == LOW) & (closed_state == HIGH):
-                open_last_state = LOW
-                closed_last_state = HIGH
-                print('change direction')
-            elif (closed_last_state == HIGH) & (closed_state == LOW) & (open_state == HIGH):
-                open_last_state = HIGH
-                closed_last_state = LOW
-                print('change direction')
-
-    power_down(channelID)
-    print('brake ', channelID, 'powered off')
+            break
+        elif (open_last_state == HIGH) & (open_state == LOW) & (closed_state == HIGH):
+            open_last_state = LOW
+            closed_last_state = HIGH
+            print('change direction')
+        elif (closed_last_state == HIGH) & (closed_state == LOW) & (open_state == HIGH):
+            open_last_state = HIGH
+            closed_last_state = LOW
+            print('change direction')
 
 brakeOff(channel, cont)
+power_down(channelID)
+print('brake ', channelID, 'powered off')
 
 print('sacrificing IO daemons') # Kill the IO daemon process
 bash = "sudo killall pigpiod" 
