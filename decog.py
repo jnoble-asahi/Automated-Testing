@@ -149,8 +149,8 @@ def brakeOff(channelID, control):
             print('change direction')
 
 brakeOff(channel, cont)
-power_down(channelID)
-print('brake ', channelID, 'powered off')
+power_down(channel)
+print('brake ', channel, 'powered off')
 
 print('sacrificing IO daemons') # Kill the IO daemon process
 bash = "sudo killall pigpiod" 
