@@ -67,6 +67,8 @@ time.sleep(3) # time delay for pigpiod to connect
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+closed_switch = test_channels[channelID]['FK_Off']
+open_switch = test_channels[channelID]['FK_On']
 
 i = 0
 g = time.time()
