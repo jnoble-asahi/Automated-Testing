@@ -68,7 +68,15 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-# store current switch states for later
+for i in range (0,1000)
+    closed_state = GPIO.input(closed_switch)
+    open_state = GPIO.input(open_switch)
+
+    print(closed_state)
+    print(open_state)
+    i=i+1
+
+'''# store current switch states for later
 open_switch = test_channels[channel]['FK_On']
 closed_switch = test_channels[channel]['FK_Off']
 open_last_state = GPIO.input(open_switch)
@@ -90,7 +98,7 @@ def convertSig(control):
 
 def brakeOff(channelID, control):
     '''
-    power brake off gradually to avoid cogging
+    #power brake off gradually to avoid cogging
     '''
     print ('Waiting for actuator to start cycle')
     closed_switch = test_channels[channelID]['FK_Off']
@@ -155,4 +163,4 @@ print('brake ', channel, 'powered off')
 print('sacrificing IO daemons') # Kill the IO daemon process
 bash = "sudo killall pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()
+output, error = process.communicate()'''
