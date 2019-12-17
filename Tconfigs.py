@@ -45,12 +45,12 @@ INPUTS_ADDRESS = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7, EXT8)
 CH1_Loc = {'cntrl' : DAC_A,
            'torq' : INPUTS_ADDRESS[0],
            'FK_On': 6,
-           'FK_Off' : 13} #GPIO pin numbers
+           'FK_Off' : 13} # GPIO pin numbers
 
 CH2_Loc = {'cntrl' : DAC_B,
            'torq' : INPUTS_ADDRESS[3],
            'FK_On': 19,
-           'FK_Off' : 26} #GPIO pin numbers
+           'FK_Off' : 26} # GPIO pin numbers
 
 CH_Out = {'1' : DAC_A ,
           '2' : DAC_B}
@@ -118,17 +118,25 @@ def brakeOff(test, channelID):
     '''
     power brake off gradually to avoid cogging
     '''
-    setpnt = test.convertSig()
+    setpnt = convertSetPoint(test.control)
     test.cntrl_channel = test_channels[channelID]['cntrl']
     pnt = setpnt + 0.27 # in volts
-    cy = test.cycle_time -2
-    t = 0.5 # time between each new torque setpoint
-    while pnt > setpnt/cy:
+    t = test.cycle_time/25 # time between each new torque setpoint
+    while pnt > (setpnt + 0.27)/25:
         dac.write_dac(test.cntrl_channel, int(step*pnt))
         time.sleep(t)
-        pnt = pnt - t*setpnt/cy
+        pnt = pnt - setpnt/25
     power_down(channelID)
     print('brake ', channelID, 'powered off')
+
+def convertSetPoint(test):
+    #convert in/lbs control setpoint to current value for brake signal
+    ftlbs = test.control/12.0 #desired brake torque in ftlbs
+    mA = 8.6652e-11*ftlbs**5 - 1.1637e-7*ftlbs**4 + 5.9406e-5*ftlbs**3 - 0.013952*ftlbs**2 + 1.9321*ftlbs + 46.644 # mA needed for brake
+    tenV = mA/test.gain # 0-10vdc signal
+    fiveV = tenV/2.0 # 0-5vdc signal
+    print ('Brake setpoint:', test.control, 'in-lbs')
+    return fiveV
 
 def torqueMeasurement(input):
     # Collect 20 data point readings across 1 seconds
@@ -146,7 +154,7 @@ def torqueMeasurement(input):
     voltage = float(rawVal*astep) # Convert raw value to voltage
     print('voltage reading: ', voltage) # for troubleshooting/calibration
     torque = torqueConvert(voltage) # Convert voltage value to torque value
-    print('torque reading:', torque)
+    print('torque reading: ', torque)
     return torque
 
 def torqueConvert(volt):
@@ -278,6 +286,26 @@ def power_down(testindex):
     print('powering down dac')
     test = tests[testindex]
     dac.power_down(CH_Out[test], MODE_POWER_DOWN_100K)
+
+# prevents issues with shutdown (cogging etc)
+def shut_down(test, testIndex):
+    running_off() # Turn off test running LED
+    open_switch = test_channels[testIndex]['FK_On']
+    closed_switch = test_channels[testIndex]['FK_Off']
+    open_state = GPIO.input(open_switch)
+    closed_state = GPIO.input(closed_switch)
+    open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
+    closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
+    print('Waiting for actuator to move.')
+    while True:
+        if (open_state == HIGH) and (closed_state == HIGH) and ((closed_last_state == LOW) or (open_last_state == LOW)): # Start decogging when actuator begins new cycle
+            print('uncogging')
+            brakeOff(test, testIndex)
+            break
+        else:
+            pass
+    warning_off()
+
 
 
 

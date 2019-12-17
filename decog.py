@@ -51,7 +51,7 @@ binary = {'INPUT' : 0,
 
 gain = 40 
 channel = 0 
-cont = 200 # highest brake setpoint since it started cogging (in-lbs)
+cont = 50 # highest brake setpoint since it started cogging (in-lbs)
 cycletime = 10 # seconds
 
 time.sleep(3) # time delay for pigpiod to connect
@@ -81,16 +81,12 @@ def power_down(testindex):
 
 def convertSig(control):
     # convert in/lbs control setpoint to current value for brake signal
-        ftlbs = control/12.0 #desired brake torque in ftlbs
-        if ftlbs <= 10:
-            fiveV = 0
-            print('Brake setpoint set to minimum torque of 120 in-lbs')
-        else: 
-            mA = 8.6652e-11*ftlbs**5 - 1.1637e-7*ftlbs**4 + 5.9406e-5*ftlbs**3 - 0.013952*ftlbs**2 + 1.9321*ftlbs + 46.644 #mA needed for brake
-            tenV = mA/gain # 0-10vdc signal
-            fiveV = tenV/2.0 # 0-5vdc signal
-            print ('Brake setpoint', control, 'in-lbs')
-        return fiveV
+    ftlbs = control/12.0 #desired brake torque in ftlbs
+    mA = 8.6652e-11*ftlbs**5 - 1.1637e-7*ftlbs**4 + 5.9406e-5*ftlbs**3 - 0.013952*ftlbs**2 + 1.9321*ftlbs + 46.644 #mA needed for brake
+    tenV = mA/gain # 0-10vdc signal
+    fiveV = tenV/2.0 # 0-5vdc signal
+    print ('Brake setpoint', control, 'in-lbs')
+    return fiveV
 
 def brakeOff(channelID, control):
     '''
@@ -106,18 +102,19 @@ def brakeOff(channelID, control):
     setpnt = convertSig(control)
     cntrl_channel = test_channels[channelID]['cntrl']
     pnt = setpnt + 0.275 # in volts
-    while pnt > 0.276:
-        time.sleep(0.5)
+    t = cycletime/25
+    while pnt > 0.275:
+        time.sleep(t)
         dac.write_dac(cntrl_channel, int(step*pnt))
         print(pnt) # debugging
         while True:
             if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # if actuator just started to move
-                pnt = pnt - 0.275
+                pnt = pnt - (setpnt + 0.275)/25
                 open_last_state = HIGH
                 closed_last_state = HIGH
                 break
             elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # if actuator just started to move
-                pnt = pnt - 0.275
+                pnt = pnt - (setpnt + 0.275)/25
                 open_last_state = HIGH
                 closed_last_state = HIGH
                 break

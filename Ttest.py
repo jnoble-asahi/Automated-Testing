@@ -24,14 +24,6 @@ yes = ('YES', 'yes', 'y', 'Ye', 'Y')
 no = ('NO','no', 'n', 'N', 'n')
 yes_no = ('YES', 'yes', 'y', 'Ye', 'Y', 'NO','no', 'n', 'N', 'n')
 
-# prevents issues with shutdown (cogging etc)
-def shut_down():
-    tcf.running_off() # Turn off test running LED
-    for i, value in enumerate(tests):
-        if tests[i].active == True:
-            tcf.brakeOff(tests[i], i)
-    tcf.killDaemons()
-
 print('Starting test set-up')
 
 while True:
@@ -61,7 +53,8 @@ while True:
 
     else:
         tcf.warning_on()
-        shut_down()
+        tcf.shut_down()
+        tcf.killDaemons()
         raise Warning('Something went wrong, check your work ') # If the test case isn't caught by the above, something's wrong
 
 wait = 0.5 # A small waiting period is necessary, otherwise the switch input reads each cycle multiple times
@@ -99,7 +92,11 @@ if len(tests) > 0:
 else:
     pass
 
-shut_down()
+# Power down
+for i, value in enumerate(tests):
+    if tests[i].active == True:
+        tcf.shut_down(tests[i], i)
+tcf.killDaemons()
 
 print("Test exited with a clean status")
 
