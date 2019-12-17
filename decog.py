@@ -102,7 +102,7 @@ def convertSig(control):
 def brakeOff(channelID, control):
     '''
     #power brake off gradually to avoid cogging
-    '''
+'''
     print ('Waiting for actuator to start cycle')
     closed_switch = test_channels[channelID]['FK_Off']
     open_switch = test_channels[channelID]['FK_On']
