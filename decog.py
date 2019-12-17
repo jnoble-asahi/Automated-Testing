@@ -68,7 +68,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-
+i = 0
 while i < 1000:
     g = time.time()
     if time.time()-g > 3:
