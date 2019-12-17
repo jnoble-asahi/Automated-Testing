@@ -121,7 +121,6 @@ def brakeOff(channelID, control):
                 print(pnt)
                 open_last_state = HIGH
                 closed_last_state = HIGH
-                break
             break
         elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # if actuator just started to move
             time.sleep(7)
