@@ -102,7 +102,7 @@ def set_on_off(test, channelID):
         GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-        # store current switch states for later
+        # Store current switch states for later
         open_switch = test_channels[channelID]['FK_On']
         closed_switch = test_channels[channelID]['FK_Off']
         test.open_last_state = GPIO.input(open_switch)

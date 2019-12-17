@@ -9,7 +9,7 @@ import subprocess
 import gpiozero as gz # Library for using the GPIO with python
 import pandas as pd
 import RPi.GPIO as GPIO # Using GPIO instead of wiringpi for reading digital inputs
-
+from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 from ADS1256_definitions import * # Configuration file for the ADC settings
 import dac8552.dac8552 as dac1
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K # Library for using the DAC
@@ -19,6 +19,14 @@ print('summoning IO daemons')
 bash = "sudo pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()
+
+# DAC/ADS setup
+ads = ADS1256()
+ads.cal_self() 
+astep = ads.v_per_digit
+dac = DAC8552()
+dac.v_ref = 5
+step = dac.digit_per_v
 
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
 EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
@@ -44,10 +52,10 @@ tests = ('1', '2')
 test_channels = {0: CH1_Loc,
                  1: CH2_Loc}
 
-binary = {'INPUT' : 0,
-          'OUTPUT': 1,
-          'LOW' : 0,
-          'HIGH' : 1}
+INPUT = 0
+OUTPUT = 1
+LOW = 0
+HIGH = 1
 
 gain = 40 
 channel = 0 
@@ -56,21 +64,13 @@ cycletime = 10 # seconds
 
 time.sleep(3) # time delay for pigpiod to connect
 
-# DAC setup
-dac = DAC8552()
-dac.v_ref = 5
-step = dac.digit_per_v
-ads = ADS1256()
-ads.cal_self() 
-astep = ads.v_per_digit
-
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 # store current switch states for later
-open_switch = test_channels[channelID]['FK_On']
-closed_switch = test_channels[channelID]['FK_Off']
+open_switch = test_channels[channel]['FK_On']
+closed_switch = test_channels[channel]['FK_Off']
 open_last_state = GPIO.input(open_switch)
 closed_last_state = GPIO.input(closed_switch)
 
