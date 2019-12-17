@@ -107,8 +107,8 @@ def brakeOff(channelID, control):
         time.sleep(t)
         dac.write_dac(cntrl_channel, int(step*pnt))
         print(pnt) # debugging
+        print ('Waiting for actuator to start cycle')
         while True:
-            print ('Waiting for actuator to start cycle')
             if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # if actuator just started to move
                 time.sleep(5)
                 pnt = pnt - (setpnt + 0.275)/25
