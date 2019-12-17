@@ -37,7 +37,7 @@ INPUTS_ADDRESS = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7, EXT8)
 CH1_Loc = {'cntrl' : DAC_A,
            'torq' : INPUTS_ADDRESS[0],
            'FK_On': 6,
-           'FK_Off' : 19} # GPIO pin numbers
+           'FK_Off' : 13} # GPIO pin numbers
 
 CH2_Loc = {'cntrl' : DAC_B,
            'torq' : INPUTS_ADDRESS[3],
