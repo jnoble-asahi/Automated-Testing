@@ -110,11 +110,13 @@ def brakeOff(channelID, control):
         while True:
             print ('Waiting for actuator to start cycle')
             if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # if actuator just started to move
+                time.sleep(5)
                 pnt = pnt - (setpnt + 0.275)/25
                 open_last_state = HIGH
                 closed_last_state = HIGH
                 break
             elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # if actuator just started to move
+                time.sleep(5)
                 pnt = pnt - (setpnt + 0.275)/25
                 open_last_state = HIGH
                 closed_last_state = HIGH
