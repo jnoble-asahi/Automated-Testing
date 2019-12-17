@@ -77,7 +77,7 @@ while i < 1000:
         closed_state = GPIO.input(closed_switch)
         open_state = GPIO.input(open_switch)
 
-        print(closed_state)
+        print('closed' , closed_state)
         print(open_state)
         g = time.time()
         i=i+1
