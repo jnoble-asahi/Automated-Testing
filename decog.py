@@ -36,8 +36,8 @@ INPUTS_ADDRESS = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7, EXT8)
 
 CH1_Loc = {'cntrl' : DAC_A,
            'torq' : INPUTS_ADDRESS[0],
-           'FK_On': 19,
-           'FK_Off' : 6} # GPIO pin numbers
+           'FK_On': 6,
+           'FK_Off' : 19} # GPIO pin numbers
 
 CH2_Loc = {'cntrl' : DAC_B,
            'torq' : INPUTS_ADDRESS[3],
@@ -73,7 +73,7 @@ GPIO.setup(open_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 i = 0
 g = time.time()
 while i < 1000:
-    if time.time()-g > 3:
+    if time.time()-g > 1:
         closed_state = GPIO.input(closed_switch)
         open_state = GPIO.input(open_switch)
 
