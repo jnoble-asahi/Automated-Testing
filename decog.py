@@ -92,10 +92,10 @@ def brakeOff(channelID, control):
     '''
     power brake off gradually to avoid cogging
     '''
-    open_switch = test_channels[channelID['FK_On']
     closed_switch = test_channels[channelID]['FK_Off']
-    open_state = GPIO.input(open_switch)
+    open_switch = test_channels[channelID]['FK_On']
     closed_state = GPIO.input(closed_switch)
+    open_state = GPIO.input(open_switch)
     open_last_state = open_last_state # Store the last FK_On switch state in a temp variable
     closed_last_state = closed_last_state # Store the last FK_Off switch state in temp variable
 
