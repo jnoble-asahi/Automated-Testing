@@ -92,16 +92,21 @@ def brakeOff(channelID, control):
     '''
     power brake off gradually to avoid cogging
     '''
+    print ('Waiting for actuator to start cycle')
     closed_switch = test_channels[channelID]['FK_Off']
     open_switch = test_channels[channelID]['FK_On']
     closed_state = GPIO.input(closed_switch)
     open_state = GPIO.input(open_switch)
     open_last_state = open_state # Store the last FK_On switch state in a temp variable
     closed_last_state = closed_state # Store the last FK_Off switch state in temp variable
-    print ('Waiting for actuator to start cycle')
+
     print(closed_state) 
     print(open_state)
     while True:
+        closed_state = GPIO.input(closed_switch)
+        open_state = GPIO.input(open_switch)
+        print(closed_state) 
+        print(open_state)
         if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # if actuator just started to move
             time.sleep(7)
             setpnt = convertSig(control)
