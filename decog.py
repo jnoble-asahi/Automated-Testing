@@ -99,7 +99,7 @@ def brakeOff(channelID, control):
     open_last_state = open_state # Store the last FK_On switch state in a temp variable
     closed_last_state = closed_state # Store the last FK_Off switch state in temp variable
     print ('Waiting for actuator to start cycle')
-    print(last_state) 
+    print(closed_state) 
     print(open_state)
     while True:
         if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # if actuator just started to move
