@@ -77,9 +77,6 @@ HIGH = binary['HIGH']
 # Set up arrays
 vData = []
 vtime = []
-'''torque = []
-vAverage = []
-tAverage = []'''
 
 state = True
 tstart = time.time()
@@ -91,40 +88,32 @@ headers = [('Time (s)', 'Voltage (V)', 'Torque (in-lbs)', 'Average Voltage (V)',
 for row in headers:
     sheet.append(row)
 
-'''def jsonUpdate():
-    jDict = {u'Time' : vtime, u'Voltage' : vData, u'Torque' : torque, u'Voltage Average' : vAverage, u'Torque Average' : tAverage,
-    u'PV' : test[0].pv, u'Bounces' : test[0].bounces, u'Description' : test[0].description}
-
-    name = str(test[0].control) + 'in_lbs.txt'
-    with open(name, 'w') as json_file:
-        json.dump(jDict, json_file)
-    print('json.dump')'''
-
 def torqueMeasurement(input, cyclepoint):
     # Collect 10 data point readings across 1 second
     y = test[0].pv
     setData=[] #array for average torque calculation
-    for i in range (0, 20):
+    h = 25
+    for i in range (0, h):
         raw_channels = ads.read_oneshot(input)
         vo = float(raw_channels*astep) # Convert raw value to voltage
         ti = time.time()-tstart
         # append data
         setData.append(vo)
         print(vo)
-        sheet.cell(row=i+2+10*cyclepoint+50*(y-1), column =1).value = ti
-        sheet.cell(row=i+2+10*cyclepoint+50*(y-1), column=2).value = vo
+        sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoints)*(y-1), column =1).value = ti
+        sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoints)*(y-1), column=2).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
-        sheet.cell(row=i+2+10*cyclepoint+50*(y-1), column=3).value = torq
+        sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoints)*(y-1), column=3).value = torq
         time.sleep(0.05)
-    # Remove 4 max and min values
-    for x in range (0,4):
+    # Remove 6 max and min values
+    for x in range (0,6):
         setData.remove(max(setData)) 
         setData.remove(min(setData))
     voltage = float(sum(setData)/len(setData)) # Average everything else
     print('voltage reading: ', voltage) # for troubleshooting/calibration
-    sheet.cell(row=11+10*cyclepoint+50*(y-1), column = 4).value = voltage
+    sheet.cell(row=11+h*cyclepoint+(h*cyclepoints)*(y-1), column = 4).value = voltage
     to = torqueConvert(voltage) # Convert voltage value to torque value
-    sheet.cell(row=11+10*cyclepoint+50*(y-1), column=5).value = to
+    sheet.cell(row=11+h*cyclepoint+(h*cyclepoints)*(y-1), column=5).value = to
     print('torque reading:', to)
     return to
 
@@ -250,13 +239,6 @@ while True:
         test[i-nos].parameter_check() # Checks that the parameters are within normal working ranges
         tcf.set_on_off(test[i-nos], (i + nos)) # Sets up the IO pins to work for torque tests
 
-        print('2. taking initial measurements at 0')
-        for s in range(0,10):
-            raw_channels = ads.read_oneshot(INPUTS_ADDRESS[0])
-            vo = float(raw_channels*astep) # Convert raw value to voltage
-            print(vo)
-            time.sleep(0.1)
-
         tcf.brakeOn(test[i-nos], (i-nos)) # Turn brake on to setpoint value
         i += 1 # Increment the test channel counter to track the number of active tests
 
@@ -269,13 +251,6 @@ wait = 0.5 # A small waiting period is necessary, otherwise the switch input rea
 print('Running test(s)')
 tcf.running_on() # Turn on test running LED
 stamp = time.time()
-
-print('3. taking initial measurements at 0')
-for s in range(0,10):
-    raw_channels = ads.read_oneshot(INPUTS_ADDRESS[0])
-    vo = float(raw_channels*astep) # Convert raw value to voltage
-    print(vo)
-    time.sleep(0.1)
 
 while True: # Start a loop to run the torque tests
     # Loop through each test class one by one

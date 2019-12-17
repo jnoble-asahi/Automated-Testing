@@ -131,14 +131,14 @@ def brakeOff(test, channelID):
     print('brake ', channelID, 'powered off')
 
 def torqueMeasurement(input):
-    # Collect 10 data point readings across 1 second
+    # Collect 20 data point readings across 1 seconds
     setData = []
-    for i in range (0, 20):
+    for i in range (0, 25):
         raw_channels = ads.read_oneshot(input)
         time.sleep(0.05)
         setData.append(raw_channels)
-    # Remove 4 max and min values
-    for x in range(0,4):
+    # Remove 6 max and min values
+    for x in range(0,6):
         setData.remove(max(setData)) 
         setData.remove(min(setData))
     rawVal = float(sum(setData)/len(setData)) # Average everything else
@@ -203,7 +203,7 @@ def switchCheck(test, testIndex):
                 test.closed_last_state = HIGH # Reset the "closed last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last duty cycle
 
-                if (length > (test.duty_cycle*.49)):
+                if (length > (test.duty_cycle*.5)):
                     test.cycle_start = time.time() # Update cycle start time
                     test.pv+= 1 # Increment the pv counter if the switch changed
                     print('test.pv: ', test.pv)
