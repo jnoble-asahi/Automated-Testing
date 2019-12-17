@@ -71,7 +71,7 @@ GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 for i in range (0,1000):
     g = time.time()
-    if time.time()-g > 3
+    if time.time()-g > 3:
         closed_state = GPIO.input(closed_switch)
         open_state = GPIO.input(open_switch)
 
