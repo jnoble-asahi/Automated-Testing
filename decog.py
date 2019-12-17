@@ -68,13 +68,16 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-for i in range (0,1000)
-    closed_state = GPIO.input(closed_switch)
-    open_state = GPIO.input(open_switch)
 
-    print(closed_state)
-    print(open_state)
-    i=i+1
+for i in range (0,1000):
+    g = time.time()
+    if time.time()-g > 3
+        closed_state = GPIO.input(closed_switch)
+        open_state = GPIO.input(open_switch)
+
+        print(closed_state)
+        print(open_state)
+        i=i+1
 
 '''# store current switch states for later
 open_switch = test_channels[channel]['FK_On']
