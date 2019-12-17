@@ -136,7 +136,6 @@ def brakeOff(channelID, control):
                 print(pnt)
                 open_last_state = HIGH
                 closed_last_state = HIGH
-                break
             break
         elif (open_last_state == HIGH) & (open_state == LOW) & (closed_state == HIGH):
             open_last_state = LOW
