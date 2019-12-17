@@ -69,14 +69,20 @@ closed_switch = test_channels[channel]['FK_Off']
 open_switch = test_channels[channel]['FK_On']
 GPIO.setup(closed_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(open_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+last_closed_state = GPIO.input(closed_switch)
+last_open_state = GPIO.input(open_switch)
 
 i = 0
 g = time.time()
 while i < 1000:
-    if time.time()-g > 1:
         closed_state = GPIO.input(closed_switch)
         open_state = GPIO.input(open_switch)
-
+    if (last_closed_state == HIGH) & (closed_state == LOW):
+        print('closed' , closed_state)
+        print('open', open_state)
+        g = time.time()
+        i=i+1
+    elif (last_closed_state == LOW) & (closed_state == HIGH):
         print('closed' , closed_state)
         print('open', open_state)
         g = time.time()
