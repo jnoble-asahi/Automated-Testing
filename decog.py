@@ -105,10 +105,10 @@ def brakeOff(channelID, control):
     while True:
         closed_state = GPIO.input(closed_switch)
         open_state = GPIO.input(open_switch)
-        print(closed_state) 
-        print(open_state)
         if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # if actuator just started to move
-            time.sleep(7)
+            print(closed_state) 
+            print(open_state)
+            time.sleep(6)
             setpnt = convertSig(control)
             cntrl_channel = test_channels[channelID]['cntrl']
             pnt = setpnt + 0.275 # in volts
@@ -123,7 +123,9 @@ def brakeOff(channelID, control):
                 closed_last_state = HIGH
             break
         elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # if actuator just started to move
-            time.sleep(7)
+            print(closed_state) 
+            print(open_state)
+            time.sleep(6)
             setpnt = convertSig(control)
             cntrl_channel = test_channels[channelID]['cntrl']
             pnt = setpnt + 0.275 # in volts
