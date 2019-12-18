@@ -180,7 +180,7 @@ def brakeOff(channelID, control):
             open_last_state = HIGH
             closed_last_state = LOW
             print('change direction')
-        dac.write_dac(cntrl_channel, int(0))
+dac.write_dac(cntrl_channel, int(0))
 
 brakeOff(channel, cont)
 power_down(channel)
