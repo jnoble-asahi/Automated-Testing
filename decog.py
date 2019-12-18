@@ -59,7 +59,7 @@ HIGH = 1
 
 gain = 40 
 channel = 0 
-cont = 50 # highest brake setpoint since it started cogging (in-lbs)
+cont = 30 # highest brake setpoint since it started cogging (in-lbs)
 cycletime = 33 # seconds
 
 time.sleep(2) # wait for pigpiod to connect
@@ -69,6 +69,7 @@ closed_switch = test_channels[channel]['FK_Off']
 open_switch = test_channels[channel]['FK_On']
 GPIO.setup(closed_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(open_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
 
 '''
 # Deubgging limit switches
@@ -180,6 +181,7 @@ def brakeOff(channelID, control):
             open_last_state = HIGH
             closed_last_state = LOW
             print('change direction')
+        dac.write_dac(cntrl_channel, int(0))
 
 brakeOff(channel, cont)
 power_down(channel)
