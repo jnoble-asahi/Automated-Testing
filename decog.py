@@ -59,7 +59,7 @@ HIGH = 1
 
 gain = 40 
 channel = 0 
-cont = 30 # highest brake setpoint since it started cogging (in-lbs)
+cont = 2000 # highest brake setpoint since it started cogging (in-lbs)
 cycletime = 33 # seconds
 
 time.sleep(2) # wait for pigpiod to connect
