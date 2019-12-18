@@ -89,7 +89,7 @@ open_switch = test_channels[channel]['FK_On']
 GPIO.setup(closed_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(open_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-'''
+###########################################################
 # Deubgging limit switches
 last_closed_state = GPIO.input(closed_switch)
 last_open_state = GPIO.input(open_switch)
@@ -103,24 +103,40 @@ i = 0
 while i < 1000:
     closed_state = GPIO.input(closed_switch)
     open_state = GPIO.input(open_switch)
-    if (last_closed_state == HIGH) & (closed_state == LOW):
+    if (last_closed_state == HIGH) & (closed_state == LOW) & (open_state == HIGH): # actuator just closed
         print('closed' , closed_state)
         print('open', open_state)
+        last_closed_state == LOW
+        last_open_state == HIGH
         i+=1
         time.sleep(1)
     
-    elif (last_closed_state == LOW) & (closed_state == HIGH):
+    elif (last_closed_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # actuator is moving
         print('closed' , closed_state)
         print('open', open_state)
+        last_closed_state == HIGH
+        last_open_state == HIGH
         i+=1
         time.sleep(1)
-    elif (last_open_state == HIGH) & (open_state == LOW):
+
+    elif (last_open_state == HIGH) & (closed_state == HIGH) & (open_state == LOW): # actuator just opened
         print('closed' , closed_state)
         print('open', open_state)
+        last_closed_state == HIGH
+        last_open_state == LOW
         i+=1
-        time.sleep(1) '''
+        time.sleep(1)
 
-# store current switch states for later
+    elif (last_open_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # actuator is moving
+        print('closed' , closed_state)
+        print('open', open_state)
+        last_closed_state == HIGH
+        last_open_state == HIGH
+        i+=1
+        time.sleep(1)
+######################################################################################
+
+'''# store current switch states for later
 open_switch = test_channels[channel]['FK_On']
 closed_switch = test_channels[channel]['FK_Off']
 open_last_state = GPIO.input(open_switch)
@@ -203,7 +219,7 @@ def brakeOff(channelID, control):
 
 brakeOff(channel, cont)
 power_down(channel)
-print('brake ', channel, 'powered off')
+print('brake ', channel, 'powered off')'''
 
 print('sacrificing IO daemons') # Kill the IO daemon process
 bash = "sudo killall pigpiod" 
