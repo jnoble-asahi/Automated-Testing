@@ -69,6 +69,9 @@ closed_switch = test_channels[channel]['FK_Off']
 open_switch = test_channels[channel]['FK_On']
 GPIO.setup(closed_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(open_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+'''
+# Deubgging limit switches
 last_closed_state = GPIO.input(closed_switch)
 last_open_state = GPIO.input(open_switch)
 closed_state = GPIO.input(closed_switch)
@@ -86,6 +89,7 @@ while i < 1000:
         print('open', open_state)
         i+=1
         time.sleep(1)
+    
     elif (last_closed_state == LOW) & (closed_state == HIGH):
         print('closed' , closed_state)
         print('open', open_state)
@@ -95,9 +99,9 @@ while i < 1000:
         print('closed' , closed_state)
         print('open', open_state)
         i+=1
-        time.sleep(1)
+        time.sleep(1) '''
 
-'''# store current switch states for later
+# store current switch states for later
 open_switch = test_channels[channel]['FK_On']
 closed_switch = test_channels[channel]['FK_Off']
 open_last_state = GPIO.input(open_switch)
@@ -119,15 +123,15 @@ def convertSig(control):
 
 def brakeOff(channelID, control):
     '''
-    #power brake off gradually to avoid cogging
+    power brake off gradually to avoid cogging
 '''
-    print ('Waiting for actuator to start cycle')
     closed_switch = test_channels[channelID]['FK_Off']
     open_switch = test_channels[channelID]['FK_On']
     closed_state = GPIO.input(closed_switch)
     open_state = GPIO.input(open_switch)
     open_last_state = open_state # Store the last FK_On switch state in a temp variable
     closed_last_state = closed_state # Store the last FK_Off switch state in temp variable
+    print ('Waiting for actuator to start cycle')
 
     print(closed_state) 
     print(open_state)
@@ -184,4 +188,4 @@ print('brake ', channel, 'powered off')
 print('sacrificing IO daemons') # Kill the IO daemon process
 bash = "sudo killall pigpiod" 
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
-output, error = process.communicate()'''
+output, error = process.communicate()
