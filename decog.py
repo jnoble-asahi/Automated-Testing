@@ -62,21 +62,21 @@ channel = 0
 
 print('Gain set to 40 mA/V. Channel set to 0.')
 print('Enter max brake setpoint since cogging (in-lbs)')
-cont = input()
+cont = int(input())
 while True:
     if (cont > 6000) | (cont < 0) :
         print('Choose torque setpoint between 0 and 6000 in-lbs')
     else:
         break
 print('Enter cycle time of actuator (s)')
-cycletime = input()
+cycletime = int(input())
 while True:
     if (cycletime <= 0) :
         print('Enter a positive number greater than 0')
     else:
         break
 print ('Enter delay time (length of time actuator takes to start moving after limit switch is tripped).')
-delay = input()
+delay = int(input())
 while True:
     if (delay < 0) :
         print('Enter a positive number')
