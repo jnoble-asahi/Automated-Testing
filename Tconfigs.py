@@ -20,6 +20,8 @@ bash = "sudo pigpiod"
 process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
 output, error = process.communicate()
 
+time.sleep(1) # give time for pigpio to start up
+
 # LED pins
 red = gz.LED(26) # Using wirinpi pin numbers
 blue = gz.LED(20) # Using wiringpi pin numbers
@@ -170,7 +172,7 @@ def switchCheck(test, testIndex):
             open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
             closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
             print('open state: ', open_state)
-            print('closed state: ', closed state)
+            print('closed state: ', closed_state)
             
             if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # Check if changed from fully open position to closing (moving)
                 test.open_last_state = HIGH # Reset the "open last state" of the switch
@@ -183,7 +185,7 @@ def switchCheck(test, testIndex):
                     print('test.pv: ', test.pv)
                     print("Switch {} confirmed. Actuator is closing.".format(test.name))
                     print('open state: ', open_state)
-                    print('closed state: ', closed state)
+                    print('closed state: ', closed_state)
 
                     # collect "cycle_points" amount of points in cycle
                     for y in range (test.cycle_points):
@@ -203,7 +205,7 @@ def switchCheck(test, testIndex):
                 test.closed_last_state = HIGH # Reset the "closed last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last duty cycle
                 print('open state: ', open_state)
-                print('closed state: ', closed state)
+                print('closed state: ', closed_state)
 
                 if (length > (test.duty_cycle*.5)):
                     test.cycle_start = time.time() # Update cycle start time
