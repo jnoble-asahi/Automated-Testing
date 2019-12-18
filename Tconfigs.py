@@ -233,7 +233,7 @@ def switchCheck(test, testIndex):
                 test.cycle_time = time.time() - test.cycle_start # Update cycle_time
                 print('test.cycle_time updated to: ', test.cycle_time)
                 print('open state: ', open_state)
-                print('closed state: ', closed state)
+                print('closed state: ', closed_state)
 
             elif (closed_last_state == HIGH) & (closed_state == LOW) & (open_state == HIGH): # Check to see if recently in fully closed position
                 print("Switch {} changed. Actuator is in fully closed position.".format(testIndex))
