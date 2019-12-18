@@ -103,6 +103,8 @@ i = 0
 while i < 1000:
     closed_state = GPIO.input(closed_switch)
     open_state = GPIO.input(open_switch)
+    print('closed: ', closed_state)
+    print('open: ', open_state)
     if (last_closed_state == HIGH) & (closed_state == LOW) & (open_state == HIGH): # actuator just closed
         print('closed' , closed_state)
         print('open', open_state)
