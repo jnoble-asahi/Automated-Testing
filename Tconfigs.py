@@ -169,6 +169,8 @@ def switchCheck(test, testIndex):
             closed_state = GPIO.input(closed_switch)
             open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
             closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
+            print('open state: ', open_state)
+            print('closed state: ', closed state)
             
             if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # Check if changed from fully open position to closing (moving)
                 test.open_last_state = HIGH # Reset the "open last state" of the switch
@@ -180,6 +182,8 @@ def switchCheck(test, testIndex):
                     test.pv+= 1 # Increment the pv counter if the switch changed
                     print('test.pv: ', test.pv)
                     print("Switch {} confirmed. Actuator is closing.".format(test.name))
+                    print('open state: ', open_state)
+                    print('closed state: ', closed state)
 
                     # collect "cycle_points" amount of points in cycle
                     for y in range (test.cycle_points):
@@ -198,6 +202,8 @@ def switchCheck(test, testIndex):
             elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # Check if changed from fully closed position to opening (moving)
                 test.closed_last_state = HIGH # Reset the "closed last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last duty cycle
+                print('open state: ', open_state)
+                print('closed state: ', closed state)
 
                 if (length > (test.duty_cycle*.5)):
                     test.cycle_start = time.time() # Update cycle start time
@@ -224,12 +230,16 @@ def switchCheck(test, testIndex):
                 test.open_last_state = LOW # Update last switch state
                 test.cycle_time = time.time() - test.cycle_start # Update cycle_time
                 print('test.cycle_time updated to: ', test.cycle_time)
+                print('open state: ', open_state)
+                print('closed state: ', closed state)
 
             elif (closed_last_state == HIGH) & (closed_state == LOW) & (open_state == HIGH): # Check to see if recently in fully closed position
                 print("Switch {} changed. Actuator is in fully closed position.".format(testIndex))
                 test.closed_last_state = LOW # Update last switch state
                 test.cycle_time = time.time() - test.cycle_start # Update cycle_time
                 print('test.cycle_time updated to: ', test.cycle_time)
+                print('open state: ', open_state)
+                print('closed state: ', closed state)
 
             else:
                 pass
