@@ -143,7 +143,7 @@ def brakeOff(channelID, control):
         if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # if actuator just started to move
             print(closed_state) 
             print(open_state)
-            time.sleep(7)
+            time.sleep(8)
             setpnt = convertSig(control)
             pnt = setpnt + 0.275 # in volts
             t = cycletime/25
@@ -159,7 +159,7 @@ def brakeOff(channelID, control):
         elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # if actuator just started to move
             print(closed_state) 
             print(open_state)
-            time.sleep(7)
+            time.sleep(8)
             setpnt = convertSig(control)
             pnt = setpnt + 0.275 # in volts
             t = cycletime/25
