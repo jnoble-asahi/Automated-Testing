@@ -171,8 +171,6 @@ def switchCheck(test, testIndex):
             closed_state = GPIO.input(closed_switch)
             open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
             closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
-            print('open state: ', open_state)
-            print('closed state: ', closed_state)
             
             if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # Check if changed from fully open position to closing (moving)
                 test.open_last_state = HIGH # Reset the "open last state" of the switch
@@ -184,8 +182,6 @@ def switchCheck(test, testIndex):
                     test.pv+= 1 # Increment the pv counter if the switch changed
                     print('test.pv: ', test.pv)
                     print("Switch {} confirmed. Actuator is closing.".format(test.name))
-                    print('open state: ', open_state)
-                    print('closed state: ', closed_state)
 
                     # collect "cycle_points" amount of points in cycle
                     for y in range (test.cycle_points):
@@ -250,16 +246,6 @@ def switchCheck(test, testIndex):
     else:
         pass
 
-'''def onOff_measurement(inputs):
-
-    # Read the input voltages from the current and brake control inputs on the ADC. 
-    # Voltages are converted from raw integer inputs using convert functions in this library
-    
-    raw_channels = ads.read_sequence(inputs)
-    cntrl = raw_channels[0]
-    curr = raw_channels[1]
-    return(cntrl, curr)  '''
-
 def killDaemons():
     print('sacrificing IO daemons') # Kill the IO daemon process
     bash = "sudo killall pigpiod" 
@@ -292,14 +278,15 @@ def shut_down(test, testIndex):
     open_switch = test_channels[testIndex]['FK_On']
     closed_switch = test_channels[testIndex]['FK_Off']
 
-    open_state = GPIO.input(open_switch) # read limit switch
-    closed_state = GPIO.input(closed_switch) # read limit switch
+    open_state = GPIO.input(open_switch) # Read limit switch
+    closed_state = GPIO.input(closed_switch) # Read limit switch
     open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
     closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
 
     print('Waiting for actuator to start cycle.')
     print('closed state', closed_state) 
     print('open state', open_state)
+
     while True:
         closed_state = GPIO.input(closed_switch)
         open_state = GPIO.input(open_switch)
@@ -315,7 +302,6 @@ def shut_down(test, testIndex):
                 time.sleep(t)
                 print(pnt) # debugging
                 pnt = pnt - (setpnt + 0.275)/25
-                print(pnt)
                 open_last_state = HIGH
                 closed_last_state = HIGH
             break
@@ -331,15 +317,14 @@ def shut_down(test, testIndex):
                 time.sleep(t)
                 print(pnt) # debugging
                 pnt = pnt - (setpnt + 0.275)/25
-                print(pnt)
                 open_last_state = HIGH
                 closed_last_state = HIGH
             break
-        elif (open_last_state == HIGH) & (open_state == LOW) & (closed_state == HIGH): # if actuator is already moving wait until new cycle begins
+        elif (open_last_state == HIGH) & (open_state == LOW) & (closed_state == HIGH): # actuator just stopped moving. wait until new cycle begins
             open_last_state = LOW
             closed_last_state = HIGH
             print('change direction')
-        elif (closed_last_state == HIGH) & (closed_state == LOW) & (open_state == HIGH): # if actuator is already moving wait until new cycle begins
+        elif (closed_last_state == HIGH) & (closed_state == LOW) & (open_state == HIGH): # actuator just stopped moving. wait until new cycle begins
             open_last_state = HIGH
             closed_last_state = LOW
             print('change direction')
