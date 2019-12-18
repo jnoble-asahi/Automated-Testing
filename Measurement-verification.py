@@ -203,7 +203,7 @@ def switchCheck(test, testIndex):
 def shut_down():
     tcf.running_off() # Turn off test running LED
     for i, value in enumerate(test):
-        tcf.brakeOff(test[0], 0)
+        poer_down(test[0], 0)
     tcf.killDaemons()
 
 print('Starting test set-up')

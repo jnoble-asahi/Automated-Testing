@@ -53,7 +53,11 @@ while True:
 
     else:
         tcf.warning_on()
-        tcf.shut_down()
+        for i in enumerate(tests):
+            if tests[i].active == True:
+                tcf.shut_down(tests[i], i)
+            else:
+                pass
         tcf.killDaemons()
         raise Warning('Something went wrong, check your work ') # If the test case isn't caught by the above, something's wrong
 

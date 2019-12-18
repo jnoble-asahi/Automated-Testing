@@ -45,11 +45,11 @@ INPUTS_ADDRESS = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7, EXT8)
 CH1_Loc = {'cntrl' : DAC_A,
            'torq' : INPUTS_ADDRESS[0],
            'FK_On': 6,
-           'FK_Off' : 13} # GPIO pin numbers
+           'FK_Off' : 19} # GPIO pin numbers
 
 CH2_Loc = {'cntrl' : DAC_B,
            'torq' : INPUTS_ADDRESS[3],
-           'FK_On': 19,
+           'FK_On': 13,
            'FK_Off' : 26} # GPIO pin numbers
 
 CH_Out = {'1' : DAC_A ,
@@ -90,17 +90,20 @@ def set_on_off(test, channelID):
         test.torque = []
         test.pv = 0
         test.time = []
+
         # Set up channels
         test.cntrl_channel = test_channels[channelID]['cntrl']
         test.input_channel = test_channels[channelID]['FK_On']
         test.input_off_channel = test_channels[channelID]['FK_Off']
         test.output_channel = test_channels[channelID]['torq']
+
         print('setting dac')
         dac.write_dac(test.cntrl_channel, 0*step) # Set brake to 0
         print('Brake set to 0.')
+
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(test.input_channel, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(test.input_off_channel, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         # Store current switch states for later
         open_switch = test_channels[channelID]['FK_On']
@@ -113,21 +116,6 @@ def brakeOn(test, channelID):
         test.cntrl_channel = test_channels[channelID]['cntrl']
         dac.write_dac(test.cntrl_channel, int(setpnt * step)) # Set brake to desired value
         print('Brake set to', setpnt, 'V')
-
-def brakeOff(test, channelID):
-    '''
-    power brake off gradually to avoid cogging
-    '''
-    setpnt = convertSetPoint(test.control)
-    test.cntrl_channel = test_channels[channelID]['cntrl']
-    pnt = setpnt + 0.27 # in volts
-    t = test.cycle_time/25 # time between each new torque setpoint
-    while pnt > (setpnt + 0.27)/25:
-        dac.write_dac(test.cntrl_channel, int(step*pnt))
-        time.sleep(t)
-        pnt = pnt - setpnt/25
-    power_down(channelID)
-    print('brake ', channelID, 'powered off')
 
 def convertSetPoint(test):
     #convert in/lbs control setpoint to current value for brake signal
@@ -250,7 +238,7 @@ def switchCheck(test, testIndex):
     else:
         pass
 
-def onOff_measurement(inputs):
+'''def onOff_measurement(inputs):
 
     # Read the input voltages from the current and brake control inputs on the ADC. 
     # Voltages are converted from raw integer inputs using convert functions in this library
@@ -258,13 +246,14 @@ def onOff_measurement(inputs):
     raw_channels = ads.read_sequence(inputs)
     cntrl = raw_channels[0]
     curr = raw_channels[1]
-    return(cntrl, curr)  
+    return(cntrl, curr)  '''
 
 def killDaemons():
     print('sacrificing IO daemons') # Kill the IO daemon process
     bash = "sudo killall pigpiod" 
     process = subprocess.Popen(bash.split(), stdout=subprocess.PIPE)
     output, error = process.communicate()
+    return (output, error)
 
 def logCheck(testChannel):
     if (time.time() - testChannel.last_log) < (testChannel.print_rate):
@@ -282,28 +271,70 @@ def logCheck(testChannel):
         killDaemons()
         raise Warning("You didn't catch all of the cases")
 
-def power_down(testindex):
-    print('powering down dac')
-    test = tests[testindex]
-    dac.power_down(CH_Out[test], MODE_POWER_DOWN_100K)
-
-# prevents issues with shutdown (cogging etc)
+# prevents issues with shutdown (cogging etc) - for quarter turn actuator (change 25 for 50 for half turn)
 def shut_down(test, testIndex):
     running_off() # Turn off test running LED
+
+    # Define channels
+    cntrl_channel = test_channels[testIndex]['cntrl'] # DAC
     open_switch = test_channels[testIndex]['FK_On']
     closed_switch = test_channels[testIndex]['FK_Off']
-    open_state = GPIO.input(open_switch)
-    closed_state = GPIO.input(closed_switch)
+
+    open_state = GPIO.input(open_switch) # read limit switch
+    closed_state = GPIO.input(closed_switch) # read limit switch
     open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
     closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
-    print('Waiting for actuator to move.')
+
+    print('Waiting for actuator to start cycle.')
+    print('closed state', closed_state) 
+    print('open state', open_state)
     while True:
-        if (open_state == HIGH) and (closed_state == HIGH) and ((closed_last_state == LOW) or (open_last_state == LOW)): # Start decogging when actuator begins new cycle
-            print('uncogging')
-            brakeOff(test, testIndex)
+        closed_state = GPIO.input(closed_switch)
+        open_state = GPIO.input(open_switch)
+        if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # if actuator just started to move
+            print(closed_state) 
+            print(open_state)
+            time.sleep(test.delay)
+            setpnt = convertSetPoint(test)
+            pnt = setpnt + 0.275 # in volts
+            t = (test.cycle_time - 1)/25
+            while pnt > 0.275:
+                dac.write_dac(cntrl_channel, int(step*pnt))
+                time.sleep(t)
+                print(pnt) # debugging
+                pnt = pnt - (setpnt + 0.275)/25
+                print(pnt)
+                open_last_state = HIGH
+                closed_last_state = HIGH
             break
-        else:
-            pass
+        elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # if actuator just started to move
+            print(closed_state) 
+            print(open_state)
+            time.sleep(test.delay)
+            setpnt = convertSetPoint(test)
+            pnt = setpnt + 0.275 # in volts
+            t = (test.cycle_time-1)/25
+            while pnt > 0.275:
+                dac.write_dac(cntrl_channel, int(step*pnt))
+                time.sleep(t)
+                print(pnt) # debugging
+                pnt = pnt - (setpnt + 0.275)/25
+                print(pnt)
+                open_last_state = HIGH
+                closed_last_state = HIGH
+            break
+        elif (open_last_state == HIGH) & (open_state == LOW) & (closed_state == HIGH): # if actuator is already moving wait until new cycle begins
+            open_last_state = LOW
+            closed_last_state = HIGH
+            print('change direction')
+        elif (closed_last_state == HIGH) & (closed_state == LOW) & (open_state == HIGH): # if actuator is already moving wait until new cycle begins
+            open_last_state = HIGH
+            closed_last_state = LOW
+            print('change direction')
+
+    dac.write_dac(cntrl_channel, int(0))
+    print('Powering down DAC')
+    dac.power_down(CH_Out[test], MODE_POWER_DOWN_100K)
     warning_off()
 
 

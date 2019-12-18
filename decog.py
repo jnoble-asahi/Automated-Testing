@@ -59,17 +59,35 @@ HIGH = 1
 
 gain = 40 
 channel = 0 
-cont = 1000 # highest brake setpoint since it started cogging (in-lbs)
-cycletime = 32 # seconds
 
-time.sleep(4) # wait for pigpiod to connect
+print('Gain set to 40 mA/V. Channel set to 0.')
+print('Enter max brake setpoint since cogging (in-lbs)')
+cont = input()
+while True:
+    if (cont > 6000) | (cont < 0) :
+        print('Choose torque setpoint between 0 and 6000 in-lbs')
+    else:
+        break
+print('Enter cycle time of actuator (s)')
+cycletime = input()
+while True:
+    if (cycletime <= 0) :
+        print('Enter a positive number greater than 0')
+    else:
+        break
+print ('Enter delay time (length of time actuator takes to start moving after limit switch is tripped).')
+delay = input()
+while True:
+    if (delay < 0) :
+        print('Enter a positive number')
+    else:
+        break
 
 GPIO.setmode(GPIO.BCM)
 closed_switch = test_channels[channel]['FK_Off']
 open_switch = test_channels[channel]['FK_On']
 GPIO.setup(closed_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(open_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
 
 '''
 # Deubgging limit switches
@@ -135,15 +153,15 @@ def brakeOff(channelID, control):
     cntrl_channel = test_channels[channelID]['cntrl'] # DAC
     print ('Waiting for actuator to start cycle')
 
-    print(closed_state) 
-    print(open_state)
+    print('closed state', closed_state) 
+    print('open state', open_state)
     while True:
         closed_state = GPIO.input(closed_switch)
         open_state = GPIO.input(open_switch)
         if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # if actuator just started to move
             print(closed_state) 
             print(open_state)
-            time.sleep(7.5)
+            time.sleep(delay)
             setpnt = convertSig(control)
             pnt = setpnt + 0.275 # in volts
             t = cycletime/25
@@ -159,7 +177,7 @@ def brakeOff(channelID, control):
         elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # if actuator just started to move
             print(closed_state) 
             print(open_state)
-            time.sleep(7.5)
+            time.sleep(delay)
             setpnt = convertSig(control)
             pnt = setpnt + 0.275 # in volts
             t = cycletime/25

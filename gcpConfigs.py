@@ -114,17 +114,15 @@ class define_test():
             self.bounces = y['Bounces']
             self.shot_count = y['Shots']
             self.input = []
-            self.time = ['time']
+            self.time = y['time']
             self.active = False
             self.cycle_start = time.time()
             self.last_log = time.time()
-            self.print_rate = 30
-            self.open_last_state = HIGH
-            self.closed_last_state = LOW
-            self.chan_state = HIGH
+            self.print_rate = y['Print Rate']
             self.cycle_points = y['CyclePoints']
             self.update_db()
             self.description = y['Description']
+            self.delay = y['Start Delay']
 
     def setCycleTime(self):
         '''
