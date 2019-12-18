@@ -241,7 +241,7 @@ def switchCheck(test, testIndex):
                 test.cycle_time = time.time() - test.cycle_start # Update cycle_time
                 print('test.cycle_time updated to: ', test.cycle_time)
                 print('open state: ', open_state)
-                print('closed state: ', closed state)
+                print('closed state: ', closed_state)
 
             else:
                 pass
