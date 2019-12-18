@@ -84,15 +84,15 @@ while i < 1000:
     if (last_closed_state == HIGH) & (closed_state == LOW):
         print('closed' , closed_state)
         print('open', open_state)
-        i=i+1
+        i+=1
     elif (last_closed_state == LOW) & (closed_state == HIGH):
         print('closed' , closed_state)
-        print('open', open_state
-        i=i+1
+        print('open', open_state)
+        i+=1
     elif (last_open_state == HIGH) & (open_state == LOW):
         print('closed' , closed_state)
         print('open', open_state)
-        i=i+1
+        i+=1
 
 '''# store current switch states for later
 open_switch = test_channels[channel]['FK_On']
