@@ -62,7 +62,7 @@ channel = 0
 cont = 2000 # highest brake setpoint since it started cogging (in-lbs)
 cycletime = 33 # seconds
 
-time.sleep(2) # wait for pigpiod to connect
+time.sleep(3) # wait for pigpiod to connect
 
 GPIO.setmode(GPIO.BCM)
 closed_switch = test_channels[channel]['FK_Off']
