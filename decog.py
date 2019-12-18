@@ -60,7 +60,7 @@ HIGH = 1
 gain = 40 
 channel = 0 
 cont = 1400 # highest brake setpoint since it started cogging (in-lbs)
-cycletime = 33 # seconds
+cycletime = 32 # seconds
 
 time.sleep(4) # wait for pigpiod to connect
 
@@ -143,7 +143,7 @@ def brakeOff(channelID, control):
         if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # if actuator just started to move
             print(closed_state) 
             print(open_state)
-            time.sleep(8)
+            time.sleep(7.5)
             setpnt = convertSig(control)
             pnt = setpnt + 0.275 # in volts
             t = cycletime/25
@@ -159,7 +159,7 @@ def brakeOff(channelID, control):
         elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # if actuator just started to move
             print(closed_state) 
             print(open_state)
-            time.sleep(8)
+            time.sleep(7.5)
             setpnt = convertSig(control)
             pnt = setpnt + 0.275 # in volts
             t = cycletime/25
