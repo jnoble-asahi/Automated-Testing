@@ -132,6 +132,7 @@ def brakeOff(channelID, control):
     open_state = GPIO.input(open_switch)
     open_last_state = open_state # Store the last FK_On switch state in a temp variable
     closed_last_state = closed_state # Store the last FK_Off switch state in temp variable
+    cntrl_channel = test_channels[channelID]['cntrl'] # DAC
     print ('Waiting for actuator to start cycle')
 
     print(closed_state) 
@@ -144,7 +145,6 @@ def brakeOff(channelID, control):
             print(open_state)
             time.sleep(7)
             setpnt = convertSig(control)
-            cntrl_channel = test_channels[channelID]['cntrl']
             pnt = setpnt + 0.275 # in volts
             t = cycletime/25
             while pnt > 0.275:
@@ -161,7 +161,6 @@ def brakeOff(channelID, control):
             print(open_state)
             time.sleep(7)
             setpnt = convertSig(control)
-            cntrl_channel = test_channels[channelID]['cntrl']
             pnt = setpnt + 0.275 # in volts
             t = cycletime/25
             while pnt > 0.275:
