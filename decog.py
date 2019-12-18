@@ -62,7 +62,7 @@ channel = 0
 cont = 50 # highest brake setpoint since it started cogging (in-lbs)
 cycletime = 33 # seconds
 
-time.sleep(3) # time delay for pigpiod to connect
+time.sleep(2) # wait for pigpiod to connect
 
 GPIO.setmode(GPIO.BCM)
 closed_switch = test_channels[channel]['FK_Off']
@@ -71,21 +71,27 @@ GPIO.setup(closed_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(open_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 last_closed_state = GPIO.input(closed_switch)
 last_open_state = GPIO.input(open_switch)
+closed_state = GPIO.input(closed_switch)
+open_state = GPIO.input(open_switch)
+print('closed' , closed_state)
+print('open', open_state)
 
 i = 0
-g = time.time()
+
 while i < 1000:
-        closed_state = GPIO.input(closed_switch)
-        open_state = GPIO.input(open_switch)
+    closed_state = GPIO.input(closed_switch)
+    open_state = GPIO.input(open_switch)
     if (last_closed_state == HIGH) & (closed_state == LOW):
         print('closed' , closed_state)
         print('open', open_state)
-        g = time.time()
         i=i+1
     elif (last_closed_state == LOW) & (closed_state == HIGH):
         print('closed' , closed_state)
+        print('open', open_state
+        i=i+1
+    elif (last_open_state == HIGH) & (open_state == LOW):
+        print('closed' , closed_state)
         print('open', open_state)
-        g = time.time()
         i=i+1
 
 '''# store current switch states for later
