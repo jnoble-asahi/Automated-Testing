@@ -141,14 +141,14 @@ def brakeOff(channelID, control):
         if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # if actuator just started to move
             print(closed_state) 
             print(open_state)
-            time.sleep(6)
+            time.sleep(7)
             setpnt = convertSig(control)
             cntrl_channel = test_channels[channelID]['cntrl']
             pnt = setpnt + 0.275 # in volts
             t = cycletime/25
             while pnt > 0.275:
-                time.sleep(t)
                 dac.write_dac(cntrl_channel, int(step*pnt))
+                time.sleep(t)
                 print(pnt) # debugging
                 pnt = pnt - (setpnt + 0.275)/25
                 print(pnt)
@@ -158,14 +158,14 @@ def brakeOff(channelID, control):
         elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # if actuator just started to move
             print(closed_state) 
             print(open_state)
-            time.sleep(6)
+            time.sleep(7)
             setpnt = convertSig(control)
             cntrl_channel = test_channels[channelID]['cntrl']
             pnt = setpnt + 0.275 # in volts
             t = cycletime/25
             while pnt > 0.275:
-                time.sleep(t)
                 dac.write_dac(cntrl_channel, int(step*pnt))
+                time.sleep(t)
                 print(pnt) # debugging
                 pnt = pnt - (setpnt + 0.275)/25
                 print(pnt)
