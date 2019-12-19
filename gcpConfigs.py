@@ -120,6 +120,8 @@ class define_test():
             self.cycle_points = y['Cycle Points']
             self.update_db()
             self.delay = y['Start Delay']
+            self.open_last_state = HIGH
+            self.closed_last_state = LOW
 
     def setCycleTime(self):
         '''
