@@ -1,3 +1,7 @@
+'''
+Takes torque measurements and saves it directly to an excel file in Automated-Testing folder with the torque setpoint and description as the file name.
+'''
+
 import os
 import time
 import sys
@@ -100,10 +104,10 @@ def torqueMeasurement(input, cyclepoint):
         # append data
         setData.append(vo)
         print(vo)
-        sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoints)*(y-1), column =1).value = ti
-        sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoints)*(y-1), column=2).value = vo
+        sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoint)*(y-1), column =1).value = ti
+        sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoint)*(y-1), column=2).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
-        sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoints)*(y-1), column=3).value = torq
+        sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoint)*(y-1), column=3).value = torq
         time.sleep(0.05)
     # Remove 6 max and min values
     for x in range (0,6):
@@ -111,9 +115,9 @@ def torqueMeasurement(input, cyclepoint):
         setData.remove(min(setData))
     voltage = float(sum(setData)/len(setData)) # Average everything else
     print('voltage reading: ', voltage) # for troubleshooting/calibration
-    sheet.cell(row=11+h*cyclepoint+(h*cyclepoints)*(y-1), column = 4).value = voltage
+    sheet.cell(row=11+h*cyclepoint+(h*cyclepoint)*(y-1), column = 4).value = voltage
     to = torqueConvert(voltage) # Convert voltage value to torque value
-    sheet.cell(row=11+h*cyclepoint+(h*cyclepoints)*(y-1), column=5).value = to
+    sheet.cell(row=11+h*cyclepoint+(h*cyclepoint)*(y-1), column=5).value = to
     print('torque reading:', to)
     return to
 
@@ -203,7 +207,7 @@ def switchCheck(test, testIndex):
 def shut_down():
     tcf.running_off() # Turn off test running LED
     for i, value in enumerate(test):
-        poer_down(test[0], 0)
+        power_down(test[0], 0)
     tcf.killDaemons()
 
 print('Starting test set-up')

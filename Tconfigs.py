@@ -191,7 +191,7 @@ def switchCheck(test, testIndex):
                                 tor = torqueMeasurement(test_channels[testIndex]['torq'])
                                 test.torque.append(tor) # store torque reading measurement
                                 # store other values
-                                test.time.append(time.time())
+                                test.time.append(time.time()-test.cycleStart)
                                 break
                 else:
                     test.bounces = test.bounces + 1
@@ -217,7 +217,7 @@ def switchCheck(test, testIndex):
                                 tor = torqueMeasurement(test_channels[testIndex]['torq'])
                                 test.torque.append(tor) # store torque reading measurement
                                 # store other values
-                                test.time.append(time.time())
+                                test.time.append(time.time()-test.cycleStart)
                                 break
                 else:
                     test.bounces = test.bounces + 1

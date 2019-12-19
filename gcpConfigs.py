@@ -40,7 +40,6 @@ class define_test():
         If the docs query returns an empty list, have the user double check their ID input
         '''
         while True:
-            #x = sys.stdin.readline('Please enter test center ID ')
             y = db.collection(u'testCenter1')
             docs = y.stream()
             z = []
@@ -105,23 +104,21 @@ class define_test():
             self.torque = y['Torque']
             self.description = y['Description']
             self.control = y['Control']
-            self.gain = y['GainFactor']
+            self.gain = y['Gain Factor']
             self.pv = y['PV']
             self.target = y['Target']
-            self.type = y['Type']
-            self.duty_cycle = y['DutyCycle']
-            self.cycle_time = y['CycleTime']
+            self.duty_cycle = y['Duty Cycle']
+            self.cycle_time = y['Cycle Time']
             self.bounces = y['Bounces']
             self.shot_count = y['Shots']
             self.input = []
-            self.time = y['time']
+            self.time = y['Time']
             self.active = False
             self.cycle_start = time.time()
             self.last_log = time.time()
             self.print_rate = y['Print Rate']
-            self.cycle_points = y['CyclePoints']
+            self.cycle_points = y['Cycle Points']
             self.update_db()
-            self.description = y['Description']
             self.delay = y['Start Delay']
 
     def setCycleTime(self):
@@ -231,13 +228,14 @@ class define_test():
             ref.update({u'Bounces' : self.bounces})
             ref.update({u'Shots' : self.shot_count})
             ref.update({u'Torque' : self.torque})
+            ref.update({u'Cycle Time' : self.cycle_time})
             print('updates written to gcp')
         except:
             warnings.warn('GCP connectivity error, dumping to JSON')
-            jDict = {u'testID' : self.testID, u'timestamp' : self.last_log,
+            jDict = {u'testID' : self.testID, u'Control' : self.control, u'Cycle Points' : self.cycle_points, u'Gain Factor' : self.gain, u'timestamp' : self.last_log,
             u'PV' : self.pv, u'Bounces' : self.bounces, u'Shots' : self.shot_count, u'Description' : self.description, 
-            u'Type' : self.type, u'DutyCycle' : self.duty_cycle, u'Target' : self.target,
-            u'CycleTime' : self.cycle_time, u'Torque' : self.torque, u'time' : self.time }
+            u'Duty Cycle' : self.duty_cycle, u'Target' : self.target,
+            u'Cycle Time' : self.cycle_time, u'Torque' : self.torque, u'time' : self.time }
 
             name = self.testID + '.txt'
             with open(name, 'w') as json_file:
