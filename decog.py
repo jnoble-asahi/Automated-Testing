@@ -91,7 +91,7 @@ GPIO.setup(open_switch, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 ###########################################################
 # Deubgging limit switches
-last_closed_state = GPIO.input(closed_switch)
+'''last_closed_state = GPIO.input(closed_switch)
 last_open_state = GPIO.input(open_switch)
 closed_state = GPIO.input(closed_switch)
 open_state = GPIO.input(open_switch)
@@ -135,10 +135,10 @@ while i < 1000:
         last_closed_state == HIGH
         last_open_state == HIGH
         i+=1
-        time.sleep(1)
+        time.sleep(1)'''
 ######################################################################################
 
-'''# store current switch states for later
+# store current switch states for later
 open_switch = test_channels[channel]['FK_On']
 closed_switch = test_channels[channel]['FK_Off']
 open_last_state = GPIO.input(open_switch)
@@ -221,7 +221,7 @@ def brakeOff(channelID, control):
 
 brakeOff(channel, cont)
 power_down(channel)
-print('brake ', channel, 'powered off')'''
+print('brake ', channel, 'powered off')
 
 print('sacrificing IO daemons') # Kill the IO daemon process
 bash = "sudo killall pigpiod" 
