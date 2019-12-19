@@ -133,7 +133,7 @@ def torqueMeasurement(input):
     setData = []
     for i in range (0, 25):
         raw_channels = ads.read_oneshot(input)
-        time.sleep(0.05)
+        time.sleep(0.04)
         setData.append(raw_channels)
     # Remove 6 max and min values
     for x in range(0,6):
