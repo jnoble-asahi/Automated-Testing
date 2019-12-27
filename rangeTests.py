@@ -39,10 +39,10 @@ ads = ADS1256()
 dac = DAC8552()
 ads.cal_self()
 
-dac.write_dac(DAC_A, an.dac.v_ref) # Set DAC0 to full open
+dac.write_dac(DAC_A, 5) # Set DAC0 to full open
 print('DAC_A to HIGH')
 
-dac.write_dac(DAC_B, an.dac.v_ref) # Set DAC1 to full open
+dac.write_dac(DAC_B, 5) # Set DAC1 to full open
 print('DAC_B to HIGH')
 
 chan = ('1', '2')
@@ -52,7 +52,7 @@ i = 0
 while i < len(chan):
     tests.append(an.modSample()) # Create a new instance of modSample
     tests[i].newTest(chan[i]) # Create a new test instance under modSample
-    prompt = raw_input("Activate test on channel {}? (Y/N)".format(chan[i])) # Prompt the user to select whether this test channel should be active
+    prompt = input("Activate test on channel {}? (Y/N)".format(chan[i])) # Prompt the user to select whether this test channel should be active
     if prompt == "Y":
         i += 1 # If Y, do nothing as the test instance is defaulted to be active
     elif prompt == "N":
