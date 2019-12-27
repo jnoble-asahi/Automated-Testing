@@ -57,7 +57,7 @@ CLKIN_FREQUENCY = 7680000
 
 ##############  ADS1256 Default Runtime Adjustable Properties  #################
 # Analog reference voltage between VREFH and VREFN pins
-v_ref = 2.5
+v_ref = 5
 # Gain seting of the integrated programmable amplifier. This value must be
 # one of (GAIN_1, GAIN_2, GAIN_4, GAIN_8, GAIN_16, GAIN_32, GAIN_64).
 # Gain = 1, V_ref = 2.5V ==> full-scale input voltage = 5.00V, corresponding
