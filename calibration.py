@@ -96,7 +96,7 @@ chanDict = {1 : EXT1, 2 : EXT2}
 aOutDict = {1 : DAC_A, 2 : DAC_B}
 validChans = list(chanDict.keys())
 
-channel = input('Please enter the channel # ')
+channel = int(input('Please enter the channel # '))
 chan = chanDict[channel]
 out = aOutDict[channel]
 
