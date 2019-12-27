@@ -92,7 +92,7 @@ class define_test():
         self.last_state = HIGH
         self.chan_state = HIGH
 
-    def json_read(self):
+    def json_read(self): # Need to write to a temporary location, test files can be overwritten very easily
         cwd = os.getcwd()
         name = self.testID + '.txt'
         if name not in cwd:
