@@ -326,9 +326,9 @@ def shut_down(test, testIndex):
             closed_last_state = LOW
             print('change direction')
 
-    dac.write_dac(cntrl_channel, int(0))
     print('Powering down DAC')
-    dac.power_down(CH_Out[test], MODE_POWER_DOWN_100K)
+    dac.write_dac(cntrl_channel, int(0))
+    #dac.power_down(CH_Out[test], MODE_POWER_DOWN_100K)
     warning_off()
 
 
