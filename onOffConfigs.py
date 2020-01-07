@@ -131,7 +131,7 @@ class on_off:
         self.setDuty(dutyCycle)
         self.setTorque(torque)
     
-        prompt = raw_input("Activate test on channel {}? (Y/N)".format(self.name))
+        prompt = input("Activate test on channel {}? (Y/N)".format(self.name))
         i = 0
         while i < 1:
             if prompt == "Y":
