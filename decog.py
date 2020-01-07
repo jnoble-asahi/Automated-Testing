@@ -136,7 +136,7 @@ while i < 1000:
         last_open_state == HIGH
         i+=1
         time.sleep(1)'''
-######################################################################################
+#######################################################################################
 
 # store current switch states for later
 open_switch = test_channels[channel]['FK_On']
