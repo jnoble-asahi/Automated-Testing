@@ -97,7 +97,6 @@ if (len(tests) > 0):
 
     # Power down
     for i in range(0, len(tests)):
-        if tests[i].active == True:
             tcf.shut_down(tests[i], i)
     tcf.killDaemons()
 else:
