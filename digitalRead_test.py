@@ -10,12 +10,9 @@ import RPi.GPIO as GPIO
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(6, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(13, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-m = 2
+GPIO.setup(19, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
 while True:
-    m = GPIO.input(6)
-    t = GPIO.input(13)
-    print ('input 6:', m)
-    print ('input 13:', t)
+    print ('input 6:', GPIO.input(6))
+    print ('input 13:', GPIO.input(19))
     time.sleep(2)
