@@ -169,8 +169,6 @@ def switchCheck(test, testIndex):
             closed_switch = test_channels[testIndex]['FK_Off']
             open_state = GPIO.input(open_switch)
             closed_state = GPIO.input(closed_switch)
-            open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
-            closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
             
             if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # Check if changed from fully open position to closing (moving)
                 test.open_last_state = HIGH # Reset the "open last state" of the switch
