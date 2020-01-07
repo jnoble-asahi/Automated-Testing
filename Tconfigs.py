@@ -99,10 +99,6 @@ def set_on_off(test, channelID):
         test.input_off_channel = test_channels[channelID]['FK_Off']
         test.output_channel = test_channels[channelID]['torq']
 
-        print('setting dac')
-        dac.write_dac(test.cntrl_channel, 0*step) # Set brake to 0
-        print('Brake set to 0.')
-
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(test.input_channel, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.setup(test.input_off_channel, GPIO.IN, pull_up_down=GPIO.PUD_UP)

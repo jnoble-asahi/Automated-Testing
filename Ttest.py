@@ -91,15 +91,19 @@ while True: # Start a loop to run the torque tests
         pass
 
 if len(tests) > 0:
-    for i, value in enumerate(tests[i]): # Log each test data one by one
+    # Log each test data one by one
+    for i <= len(tests):
         tests[i].update_db()
+        i += 1
 else:
     pass
 
 # Power down
-for i, value in enumerate(tests):
+i = 0
+for i <= len(tests):
     if tests[i].active == True:
         tcf.shut_down(tests[i], i)
+        i += 1
 tcf.killDaemons()
 
 print("Test exited with a clean status")
