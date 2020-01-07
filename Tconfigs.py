@@ -164,13 +164,16 @@ def switchCheck(test, testIndex):
     If they changed, do some stuff, if they haven't changed, then do nothing '''
 
     if test.active == True:
+
+        open_switch = test_channels[testIndex]['FK_On']
+        closed_switch = test_channels[testIndex]['FK_Off']
+
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
-            open_switch = test_channels[testIndex]['FK_On']
-            closed_switch = test_channels[testIndex]['FK_Off']
+
             open_state = GPIO.input(open_switch)
             closed_state = GPIO.input(closed_switch)
             
-            if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # Check if changed from fully open position to closing (moving)
+            if (test.open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # Check if changed from fully open position to closing (moving)
                 test.open_last_state = HIGH # Reset the "open last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last duty cycle
 
@@ -195,7 +198,7 @@ def switchCheck(test, testIndex):
                     test.bounces = test.bounces + 1
                     print("Switch {} bounced. Bounce count: {}.".format(testIndex, test.bounces))
 
-            elif (closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # Check if changed from fully closed position to opening (moving)
+            elif (test.closed_last_state == LOW) & (closed_state == HIGH) & (open_state == HIGH): # Check if changed from fully closed position to opening (moving)
                 test.closed_last_state = HIGH # Reset the "closed last state" of the switch
                 length = time.time() - test.cycle_start # Calculate the length of the last duty cycle
                 print('open state: ', open_state)
@@ -221,7 +224,7 @@ def switchCheck(test, testIndex):
                     test.bounces = test.bounces + 1
                     print("Switch {} bounced. Bounce count: {}.".format(testIndex, test.bounces))
 
-            elif (open_last_state == HIGH) & (open_state == LOW) & (closed_state == HIGH): # Check to see if recently in fully open position
+            elif (test.open_last_state == HIGH) & (open_state == LOW) & (closed_state == HIGH): # Check to see if recently in fully open position
                 print("Switch {} changed. Actuator is in fully open position.".format(testIndex))
                 test.open_last_state = LOW # Update last switch state
                 test.cycle_time = time.time() - test.cycle_start # Update cycle_time
@@ -229,7 +232,7 @@ def switchCheck(test, testIndex):
                 print('open state: ', open_state)
                 print('closed state: ', closed_state)
 
-            elif (closed_last_state == HIGH) & (closed_state == LOW) & (open_state == HIGH): # Check to see if recently in fully closed position
+            elif (test.closed_last_state == HIGH) & (closed_state == LOW) & (open_state == HIGH): # Check to see if recently in fully closed position
                 print("Switch {} changed. Actuator is in fully closed position.".format(testIndex))
                 test.closed_last_state = LOW # Update last switch state
                 test.cycle_time = time.time() - test.cycle_start # Update cycle_time
