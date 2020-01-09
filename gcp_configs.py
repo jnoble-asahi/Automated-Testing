@@ -57,7 +57,7 @@ class define_test():
     def test_check(self):
         while True:
             print(' Please enter test ID ')
-            x = raw_input()
+            x = input()
             if x not in self.docs:
                 print('Invalid test id, please select from this list:')
                 print(self.docs)

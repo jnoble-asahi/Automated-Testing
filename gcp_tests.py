@@ -32,7 +32,7 @@ while True:
         break
     
     print('Add new test on {}? (yes/no) '.format(chan[i]))
-    prompt = raw_input() # prompt the user to see if they want to add a new test
+    prompt = input() # prompt the user to see if they want to add a new test
 
     if prompt not in yes_no: # If the input isn't recognized, try again
         print(' Input error, please enter yes or no ')
@@ -45,7 +45,7 @@ while True:
         tests.append(gcpf.define_test()) # creates a new gcp test class
         tests[i-nos].create_on_off_test() # Loads the test parameters
         tests[i-nos].parameter_check() # Checks that the parameters are within normal working ranges
-        tcf.set_on_off(tests[i-nos], (i + nos)) # Sets up the IO pins to work for on/off tests
+        tcf.set_on_off(tests[i-nos], (i + nos + 1)) # Sets up the IO pins to work for on/off tests
         i += 1 # Increment the test channel counter to track the number of active tests
 
     else:
