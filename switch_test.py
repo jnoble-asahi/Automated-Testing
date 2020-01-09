@@ -27,8 +27,5 @@ while True:
         pass
     else:
         for item in inputs:
-            switchCheck(inputs[item])
+            print(item.value)
             last = time.time()
-
-i = 0
-#change
