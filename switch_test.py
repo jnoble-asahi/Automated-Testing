@@ -29,3 +29,6 @@ while True:
         for item in inputs:
             switchCheck(inputs[item])
             last = time.time()
+
+i = 0
+#change
