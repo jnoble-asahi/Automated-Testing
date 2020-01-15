@@ -22,10 +22,12 @@ def switchCheck(channel):
 
 last = time.time()
 wait = 3
+i = 0
 while True:
     if time.time() - last < wait:
         pass
     else:
         for item in inputs:
-            print(item.value)
+            print('Channel {} is currently {}, check # {}'.format(item, item.value, i))
             last = time.time()
+            i += 1
