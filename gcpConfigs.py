@@ -209,7 +209,7 @@ class define_test():
             mA = 8.6652e-11*ftlbs**5 - 1.1637e-7*ftlbs**4 + 5.9406e-5*ftlbs**3 - 0.013952*ftlbs**2 + 1.9321*ftlbs + 46.644 #mA needed for brake
             tenV = mA/self.gain #0-10vdc signal
             fiveV = tenV/2.0 #0-5vdc signal
-            print ('Brake setpoint:', self.control, 'in-lbs', fiveV, 'V/5V')
+            print ('Brake setpoint:', self.control, 'in-lbs')
         return fiveV
 
     def parameter_check(self):
