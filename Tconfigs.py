@@ -115,6 +115,15 @@ def brakeOn(test, channelID):
         dac.write_dac(test.cntrl_channel, int(setpnt * step)) # Set brake to desired value
         print('Brake set to', setpnt, 'V')
 
+def convertSetPoint(test):
+    #convert in/lbs control setpoint to current value for brake signal
+    ftlbs = test.control/12.0 #desired brake torque in ftlbs
+    mA = 8.6652e-11*ftlbs**5 - 1.1637e-7*ftlbs**4 + 5.9406e-5*ftlbs**3 - 0.013952*ftlbs**2 + 1.9321*ftlbs + 46.644 # mA needed for brake
+    tenV = mA/test.gain # 0-10vdc signal
+    fiveV = tenV/2.0 # 0-5vdc signal
+    print ('Brake setpoint:', test.control, 'in-lbs, ', fiveV, "V/5V")
+    return fiveV
+    
 def torqueMeasurement(input):
     # Collect 20 data point readings across 1 seconds
     setData = []
