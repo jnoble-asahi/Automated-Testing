@@ -125,7 +125,30 @@ def torqueConvert(volt):
     torqueVal = (volt - 2.5)*6000/2.5 #convert reading to torque value in in-lbs
     return(torqueVal)
 
-def switchCheck(test, testIndex):
+def noSwitchCheck(test, testIndex): # Use this switchCheck if not hooked up to limit switches
+    '''
+    Read the state of the actuator limit switch inputs
+    If they changed, do some stuff, if they haven't changed, then do nothing'''
+
+    if test.active == True:
+        if (test.pv < test.target): # Check to see if the current cycle count is less than the target
+            # collect "cycle_points" amount of points in cycle
+            w = 0
+            for w in range (test.cycle_points):
+                while True:
+                # wait 1/3 of cycle time or 1/cyclepoints
+                    if (time.time() - test.cycle_start) > (((w)/test.cycle_points)*test.cycle_time):
+                        torqueMeasurement(test_channels[testIndex]['torq'], w)
+                        break
+            test.pv+= 1 # Increment the pv counter if the switch changed
+            print('test.pv: ', test.pv)
+            sleep(2)
+        else:
+            test.active = False
+    else:
+        pass
+
+def switchCheck(test, testIndex): #Use this switchCheck if hooked up to actuator with limit switches
     '''
     Read the state of the actuator limit switch inputs
     If they changed, do some stuff, if they haven't changed, then do nothing'''
@@ -212,6 +235,7 @@ def shut_down():
 
 print('Starting test set-up')
 
+#############################################Use if hooked up to limit switches############################################################
 while True:
     if (i >= len(chan)): # exit the loop if the test channels are full
         break
@@ -280,6 +304,82 @@ while True: # Start a loop to run the torque tests
         pass
 else:
     pass
+
+##################################################### end code block for limit switches####################################################
+
+############################################ Use if pi not hooked up to limit switches#####################################################
+
+while True:
+    if (i >= len(chan)): # exit the loop if the test channels are full
+        break
+    
+    print('Add new test on {}? (yes/no) '.format(chan[i]))
+    prompt = input() # prompt the user to see if they want to add a new test
+
+    if prompt not in yes_no: # If the input isn't recognized, try again
+        print('Input error, please enter yes or no ')
+        tcf.warning_on()
+
+    elif prompt in no: # If they enter no, exit the loop
+        tcf.warning_off()
+        i += 1
+        nos += 1
+
+    elif prompt in yes: # If they answer yes, run the test creation functions
+        tcf.warning_off()
+        test.append(gcpc.define_test()) # Creates a new gcp test class
+        test[i-nos].create_on_off_test() # Loads the test parameters
+
+        print('1.taking initial measurements at 0')
+        for s in range(0,10):
+            raw_channels = ads.read_oneshot(INPUTS_ADDRESS[0])
+            vo = float(raw_channels*astep) # Convert raw value to voltage
+            print(vo)
+            time.sleep(0.1)
+
+        test[i-nos].parameter_check() # Checks that the parameters are within normal working ranges
+        tcf.set_on_off(test[i-nos], (i + nos)) # Sets up the IO pins to work for torque tests
+
+        tcf.brakeOn(test[i-nos], (i-nos)) # Turn brake on to setpoint value
+        i += 1 # Increment the test channel counter to track the number of active tests
+
+    else:
+        tcf.warning_on()
+        shut_down()
+        raise Warning('Something went wrong, check your work ') # If the test case isn't caught by the above, something's wrong
+
+wait = 0.5 # A small waiting period is necessary, otherwise the switch input reads each cycle multiple times
+print('Running test(s)')
+tcf.running_on() # Turn on test running LED
+stamp = time.time()
+
+while True: # Start a loop to run the torque tests
+    # Loop through each test class one by one
+    i = 0
+    if ((time.time() - stamp) < (wait)): # Check to see if it's time to check the switch inputs again
+        pass
+
+    elif test[i].active != True: # Check to see if the test is still active
+        pass
+
+    else: 
+        switchCheck(test[i], i) # Run a check of the current switch state, add 1 to pv if valid
+        stamp = time.time()
+        if test[i].pv >= test[i].target:
+            state = False
+        # Loop through each test class and see if they're all inactive
+        state = (state | test[i].active)
+
+    if state == False: # If all the test states are inactive, exit the loop
+        break
+        
+    else:
+        pass
+else:
+    pass
+
+
+########################################### end of code blcok for no limit switches #######################################################
 
 #save excel sheet
 wb.save('{} in-lbs_{}.xlsx'.format(test[0].control, test[0].description))
