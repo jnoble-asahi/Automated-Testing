@@ -277,7 +277,7 @@ tcf.running_on() # Turn on test running LED
 stamp = time.time()
 
 
-#############################################Use if hooked up to limit switches############################################################
+'''#############################################Use if hooked up to limit switches############################################################
 
 while True: # Start a loop to run the torque tests
     # Loop through each test class one by one
@@ -304,7 +304,7 @@ while True: # Start a loop to run the torque tests
 else:
     pass
 
-##################################################### end code block for limit switches####################################################
+##################################################### end code block for limit switches####################################################'''
 
 
 ############################################ Use if pi not hooked up to limit switches#####################################################
