@@ -122,7 +122,7 @@ def torqueMeasurement(input, cyclepoint):
     return to
 
 def torqueConvert(volt):
-    torqueVal = (volt - 2.5)*6000/2.5 #convert reading to torque value in in-lbs
+    torqueVal = (volt - 2.5)*6000/2.5 # Convert reading to torque value in in-lbs
     return(torqueVal)
 
 def noSwitchCheck(test, testIndex): # Use this switchCheck if not hooked up to limit switches
@@ -226,8 +226,9 @@ def switchCheck(test, testIndex): #Use this switchCheck if hooked up to actuator
 # prevents issues with shutdown (cogging etc)
 def shut_down():
     tcf.running_off() # Turn off test running LED
-    for i, value in enumerate(test):
-        power_down(test[0], 0)
+    i = 0
+    for i, in enumerate(test):
+        dac.power_down(test[0], 0)
     tcf.killDaemons()
 
 print('Starting test set-up')
@@ -277,7 +278,7 @@ tcf.running_on() # Turn on test running LED
 stamp = time.time()
 
 
-'''#############################################Use if hooked up to limit switches############################################################
+'''############################################# Use if hooked up to limit switches ############################################################
 
 while True: # Start a loop to run the torque tests
     # Loop through each test class one by one
@@ -304,18 +305,16 @@ while True: # Start a loop to run the torque tests
 else:
     pass
 
-##################################################### end code block for limit switches####################################################'''
+##################################################### end code block for limit switches ####################################################'''
 
 
-############################################ Use if pi not hooked up to limit switches#####################################################
+############################################ Use if pi not hooked up to limit switches #####################################################
 
 while True: # Start a loop to run the torque tests
     # Loop through each test class one by one
     i = 0
-    if ((time.time() - stamp) < (wait)): # Check to see if it's time to check the switch inputs again
-        pass
 
-    elif test[i].active != True: # Check to see if the test is still active
+    if test[i].active != True: # Check to see if the test is still active
         pass
 
     else: 
@@ -344,7 +343,13 @@ print('excel file saved')
 print('about to power down') # in case cycle time was set too short
 time.sleep(5)
 
+'''##################Use with limit switches######################
 print('powering down')
 shut_down()
+############################################################'''
+
+############use without limit switches###########################
+tcf.killDaemons()
+#############################################################
 
 print("Test exited with a clean status")
