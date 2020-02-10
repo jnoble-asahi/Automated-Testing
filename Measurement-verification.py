@@ -323,7 +323,7 @@ while True: # Start a loop to run the torque tests
             print('wait ', t)
             t+=1
             time.sleep(1)
-        noSwitchCheck(test[i], i) # Run a check of the current switch state, add 1 to pv if valid
+        noSwitchCheck(test[i], i)
         stamp = time.time()
         if test[i].pv >= test[i].target:
             state = False
