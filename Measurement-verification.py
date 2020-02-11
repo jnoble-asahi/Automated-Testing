@@ -134,13 +134,14 @@ def noSwitchCheck(test, testIndex): # Use this switchCheck if not hooked up to l
     if test.active == True:
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
             # collect "cycle_points" amount of points in cycle
+            print('test.pv: ', test.pv)
             w = 0
             for w in range (test.cycle_points):
+                print('w = ', w)
                 torqueMeasurement(test_channels[testIndex]['torq'], w)
                 time.sleep(1)
                 break
-            test[0].pv+= 1 # Increment the pv counter if the switch changed
-            print('test.pv: ', test.pv)
+            test.pv+= 1 # Increment the pv counter if the switch changed
         else:
             test.active = False
     else:
@@ -271,7 +272,7 @@ while True:
     else:
         tcf.warning_on()
         shut_down()
-        raise Warning('Something went wrong, check your work ') # If the test case isn't caught by the above, something's wrong
+        raise Warning('Something went wrong :(') # If the test case isn't caught by the above, something's wrong
 
 wait = 0.5 # A small waiting period is necessary, otherwise the switch input reads each cycle multiple times
 print('Running test(s)')
