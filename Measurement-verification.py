@@ -137,7 +137,7 @@ def noSwitchCheck(test, testIndex): # Use this switchCheck if not hooked up to l
             # collect "cycle_points" amount of points in cycle
             print('test.pv: ', test.pv)
             w = 0
-            while w > (test.cycle_points):
+            while w < (test.cycle_points):
                 print('w = ', w)
                 torqueMeasurement(test_channels[testIndex]['torq'], w)
                 time.sleep(1)
@@ -322,7 +322,8 @@ while True: # Start a loop to run the torque tests
         pass
 
     else: 
-        print('else statement ')
+        print('wait ')
+        time.sleep(2)
         noSwitchCheck(test[i], i)
         stamp = time.time()
         if test[i].pv >= test[i].target:
