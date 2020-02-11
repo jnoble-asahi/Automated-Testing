@@ -137,14 +137,15 @@ def noSwitchCheck(test, testIndex): # Use this switchCheck if not hooked up to l
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
             # collect "cycle_points" amount of points in cycle
             print('test.pv: ', test.pv)
-            w = 0
+            w = 1
             while w < (test.cycle_points):
                 print('w = ', w)
                 torqueMeasurement(test_channels[testIndex]['torq'], w, test.pv)
                 time.sleep(1)
+                w +=1
                 break
             test.pv+= 1 # Increment the pv counter if the switch changed
-            w +=1
+
         else:
             test.active = False
     else:
