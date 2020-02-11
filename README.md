@@ -66,6 +66,9 @@ The sensor and relay boards communicate with the Raspberry Pi via the SPI Bus. A
     - run "sudo make install"
 
 # Assemble the Pi with the external hardware and enclosure
+-Change jumpers:
+    - move 3v3 to VCC jumper and put across 5v and VCC
+    - take off AD0 to ADJ and AD1 to LDR jumpers
 
 # Set the zero off-set and span of the current - voltage converters
 
