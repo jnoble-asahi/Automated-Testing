@@ -95,6 +95,7 @@ for row in headers:
 def torqueMeasurement(input, cyclepoint):
     # Collect 10 data point readings across 1 second
     y = test[0].pv
+    print('pv = ', y)
     setData=[] #array for average torque calculation
     h = 25
     for i in range (0, h):
@@ -138,7 +139,7 @@ def noSwitchCheck(test, testIndex): # Use this switchCheck if not hooked up to l
                 torqueMeasurement(test_channels[testIndex]['torq'], w)
                 time.sleep(1)
                 break
-            test.pv+= 1 # Increment the pv counter if the switch changed
+            test[0].pv+= 1 # Increment the pv counter if the switch changed
             print('test.pv: ', test.pv)
         else:
             test.active = False
