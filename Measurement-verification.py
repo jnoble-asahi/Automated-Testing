@@ -93,12 +93,11 @@ for row in headers:
     sheet.append(row)
 
 def torqueMeasurement(input, cyclepoint):
+    print('torqueMeasurement')
     # Collect 10 data point readings across 1 second
     y = test[0].pv
-    print('pv = ', y)
     setData=[] #array for average torque calculation
     h = 25
-    i = 0
     for i in range (0, h):
         raw_channels = ads.read_oneshot(input)
         vo = float(raw_channels*astep) # Convert raw value to voltage
@@ -133,6 +132,7 @@ def noSwitchCheck(test, testIndex): # Use this switchCheck if not hooked up to l
     If they changed, do some stuff, if they haven't changed, then do nothing'''
 
     if test.active == True:
+        print('noSwitchCheck')
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
             # collect "cycle_points" amount of points in cycle
             print('test.pv: ', test.pv)
@@ -322,11 +322,7 @@ while True: # Start a loop to run the torque tests
         pass
 
     else: 
-        t = 0
-        while t < 7:
-            print('wait ', t)
-            t+=1
-            time.sleep(1)
+        print('else statement ')
         noSwitchCheck(test[i], i)
         stamp = time.time()
         if test[i].pv >= test[i].target:
