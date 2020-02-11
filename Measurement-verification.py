@@ -105,6 +105,7 @@ def torqueMeasurement(input, cyclepoint):
         # append data
         setData.append(vo)
         print(vo)
+        print('i: ', i, 'h:', h, 'cyclepoint: ', cyclepoint, 'y: ', y, 'row number: ', i+2+h*cyclepoint+(h*cyclepoint)*(y-1))
         sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoint)*(y-1), column =1).value = ti
         sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoint)*(y-1), column=2).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
@@ -147,7 +148,7 @@ def noSwitchCheck(test, testIndex): # Use this switchCheck if not hooked up to l
     else:
         pass
 
-def switchCheck(test, testIndex): #Use this switchCheck if hooked up to actuator with limit switches
+def switchCheck(test, testIndex): # Use this switchCheck if hooked up to actuator with limit switches
     '''
     Read the state of the actuator limit switch inputs
     If they changed, do some stuff, if they haven't changed, then do nothing'''
