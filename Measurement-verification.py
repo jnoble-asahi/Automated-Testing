@@ -92,10 +92,10 @@ headers = [('Time (s)', 'Voltage (V)', 'Torque (in-lbs)', 'Average Voltage (V)',
 for row in headers:
     sheet.append(row)
 
-def torqueMeasurement(input, cyclepoint):
+def torqueMeasurement(input, cyclepoint, pv):
     print('torqueMeasurement')
     # Collect 10 data point readings across 1 second
-    y = test[0].pv
+    y = pv
     setData=[] #array for average torque calculation
     h = 25
     for i in range (0, h):
@@ -105,6 +105,7 @@ def torqueMeasurement(input, cyclepoint):
         # append data
         setData.append(vo)
         print(vo)
+        print('i:', i, 'h:', h, 'cyclepoint:', cyclepoint, 'y', y, 'row:', i+2+h*cyclepoint+(h*cyclepoint)*(y-1))
         sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoint)*(y-1), column =1).value = ti
         sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoint)*(y-1), column=2).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
@@ -139,7 +140,7 @@ def noSwitchCheck(test, testIndex): # Use this switchCheck if not hooked up to l
             w = 0
             while w < (test.cycle_points):
                 print('w = ', w)
-                torqueMeasurement(test_channels[testIndex]['torq'], w)
+                torqueMeasurement(test_channels[testIndex]['torq'], w, test.pv)
                 time.sleep(1)
                 break
             test.pv+= 1 # Increment the pv counter if the switch changed
@@ -181,7 +182,7 @@ def switchCheck(test, testIndex): # Use this switchCheck if hooked up to actuato
                         while True:
                             # wait 1/3 of cycle time or 1/cyclepoints
                             if (time.time() - test.cycle_start) > (((w)/test.cycle_points)*test.cycle_time):
-                                torqueMeasurement(test_channels[testIndex]['torq'], w)
+                                torqueMeasurement(test_channels[testIndex]['torq'], w, test.pv)
                                 break
                 else:
                     test.bounces = test.bounces + 1
@@ -204,7 +205,7 @@ def switchCheck(test, testIndex): # Use this switchCheck if hooked up to actuato
                         # wait 1/3 of cycle time or 1/cyclepoints
                         while True:
                             if (time.time() - test.cycle_start) > (((w)/test.cycle_points)*test.cycle_time):
-                                torqueMeasurement(test_channels[testIndex]['torq'], w)
+                                torqueMeasurement(test_channels[testIndex]['torq'], w, test.pv)
                                 break
                 else:
                     test.bounces = test.bounces + 1
