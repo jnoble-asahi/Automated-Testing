@@ -50,9 +50,13 @@ The sensor and relay boards communicate with the Raspberry Pi via the SPI Bus. A
   - This clones the repository for working with the DAC chip and the SPI bus, originally created by adn05 on github
   - Original repository here - https://github.com/adn05/dac8552 , again we're working with our own copy for version control
     - License: GNU LGPLv2.1 
+    - Copy dac8552 files into Automated-Testing directory (if using a Pi 4 Model B raspberry pi)
     
 # Making the new libraries work correctly
-- First install the wiringpi library
+- First install the GPIO library (if using Raspberry Pi 4B model or newer model)
+  -Run "sudo apt-get update"
+  -Run "sudo apt-get install rpi.gpio"
+- Now install the wiringpi library
   - In directory ./Automated-Testing
     - Run "sudo pip install wiringpi"
     - Run "sudo sed -E -i s/"(#)(dtparam=spi).*"/"\2=on"/ /boot/config.txt" (This activates the SPI bus)
@@ -72,7 +76,7 @@ The sensor and relay boards communicate with the Raspberry Pi via the SPI Bus. A
 
 # Set the zero off-set and span of the current - voltage converters
 
-# Connect one or more modulating actuators and run rangetests.py
+# Connect one or two modulating actuators and run Ttest.py
 
 
 
