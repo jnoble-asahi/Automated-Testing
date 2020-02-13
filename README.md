@@ -53,7 +53,7 @@ The sensor and relay boards communicate with the Raspberry Pi via the SPI Bus. A
     - Copy dac8552 files into Automated-Testing directory (if using a Pi 4 Model B raspberry pi)
     
 # Making the new libraries work correctly
-- First install the GPIO library (if using Raspberry Pi 4B model or newer model)
+- First install the GPIO library (if using Raspberry Pi 4 model B or newer Pi model)
   -Run "sudo apt-get update"
   -Run "sudo apt-get install rpi.gpio"
 - Now install the wiringpi library
