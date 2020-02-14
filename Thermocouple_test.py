@@ -1,4 +1,4 @@
-# This program is for testing the Adafruit Analog Output K-type Thermocouple Amplifier with the Raspberry Pi.
+# This program is for testing the Adafruit Analog Output K-type Thermocouple Amplifier with the Raspberry Pi and as well as the i-v converter with the Raspberry Pi.
 
 import os
 import time
@@ -13,17 +13,25 @@ from ADS1256_definitions import * # Configuration file for the ADC settings
 import subprocess
 
 
-def measure(pin):
-    '''Takes voltage measurement and appends it to array.
+def measure_temp(pin):
+    '''Takes voltage measurement and calculates the temperature.
     '''
     t = time.time()-t_start
     raw_channels = ads.read_oneshot(pin)
     voltage = float(raw_channels*astep)
-    t_data.append(t)
-    v_data.append(voltage)
     c_temp = (voltage - 1.25)/0.005  # Celsius
     f_temp = (c_temp*9/5) + 32  # Fahrenheit
-    print('v:', voltage, f_temp, 'Fahrenheit')
+    print('voltage (V):', voltage, 'temp (F):', f_temp)
+    return(t, voltage)
+
+def measure_current(pin):
+    '''Takes voltage measurement and calculates the current.
+    '''
+    t = time.time()-t_start
+    raw_channels = ads.read_oneshot(pin)
+    voltage = float(raw_channels*astep)
+    current = (voltage-2.5)/0.185  # 0.185V per Amp. 0 A = 2.5 V
+    print('voltage (V): ', voltage, 'current (A): ', current)
     return(t, voltage)
 
 def killDaemons():
@@ -45,14 +53,14 @@ print('Setting up')
 ads = ADS1256()
 ads.cal_self()
 astep = ads.v_per_digit
-v_data = []
-t_data = []
 t_start = time.time()
-inp = EXT1  # Specify pin used
+inp = EXT1  # Specify pin used for thermocouple
+inp2 = EXT2  # Specify pin used for i-v converter
 
 print('Measuring')
 for x in range(0, 50):
-    measure(inp)
+    #measure_temp(inp) # commented out because measuring current right now
+    measure_current(inp2)
     time.sleep(0.5)
     x =+ 1
 
