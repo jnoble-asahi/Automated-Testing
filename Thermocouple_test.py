@@ -21,6 +21,7 @@ def measure(pin):
     voltage = float(raw_channels*astep)
     t_data.append(t)
     v_data.append(voltage)
+    print('voltage: ', voltage)
     return(t, voltage)
 
 def killDaemons():
@@ -37,6 +38,7 @@ def killDaemons():
 EXT1, EXT2, EXT3, EXT4 = POS_AIN0|NEG_AINCOM, POS_AIN1|NEG_AINCOM, POS_AIN2|NEG_AINCOM, POS_AIN3|NEG_AINCOM
 EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_AINCOM, POS_AIN7|NEG_AINCOM
 
+print('Setting up')
 # Set Up
 ads = ADS1256()
 ads.cal_self()
@@ -46,6 +48,7 @@ t_data = []
 t_start = time.time()
 inp = EXT1  # Specify pin used
 
+print('Measuring')
 for x in range(0, 50):
     measure(inp)
     time.sleep(0.5)
