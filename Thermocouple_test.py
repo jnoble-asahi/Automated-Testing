@@ -21,7 +21,7 @@ def measure(pin):
     voltage = float(raw_channels*astep)
     t_data.append(t)
     v_data.append(voltage)
-    c_temp = (voltage - 1.5)/0.005  # Celsius
+    c_temp = (voltage - 1.25)/0.005  # Celsius
     f_temp = (c_temp*9/5) + 32  # Fahrenheit
     print('v:', voltage, f_temp, 'Fahrenheit')
     return(t, voltage)
