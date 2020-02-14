@@ -1,4 +1,4 @@
-# This program is for testing the Adafruit Analog Output K-type Thermocouple Amplifier with the Raspberry Pi and as well as the i-v converter with the Raspberry Pi.
+# This program is for testing the Adafruit Analog Output K-type Thermocouple Amplifier with the Raspberry Pi and as well as the current sensor with the Raspberry Pi.
 
 import os
 import time
