@@ -32,7 +32,7 @@ def measure_current(pin):
     voltage = float(raw_channels*astep)
     current = (voltage-2.5)/0.185  # 0.185V per Amp. 0 A = 2.5 V
     print('voltage (V): ', voltage, 'current (A): ', current)
-    return(t, voltage)
+    return(current)
 
 def killDaemons():
     ''' Kills the IO deamon process.
@@ -55,13 +55,18 @@ ads.cal_self()
 astep = ads.v_per_digit
 t_start = time.time()
 inp = EXT1  # Specify input pin
-
+data_array = []
 print('Measuring')
 for x in range(0, 50):
     #measure_temp(inp)  # commented out because measuring current right now
-    measure_current(inp)
+    data_point = measure_current(inp)
+    data_array.append(data_point)
     time.sleep(0.5)
     x =+ 1
+# Calculate average 
+n = len(data_array)
+average = sum(data_array, n)/n
+print('Average: ', average)
 
 killDaemons()
     
