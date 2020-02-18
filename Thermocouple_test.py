@@ -54,13 +54,12 @@ ads = ADS1256()
 ads.cal_self()
 astep = ads.v_per_digit
 t_start = time.time()
-inp = EXT1  # Specify pin used for thermocouple
-inp2 = EXT2  # Specify pin used for i-v converter
+inp = EXT1  # Specify input pin
 
 print('Measuring')
 for x in range(0, 50):
-    #measure_temp(inp) # commented out because measuring current right now
-    measure_current(inp2)
+    #measure_temp(inp)  # commented out because measuring current right now
+    measure_current(inp)
     time.sleep(0.5)
     x =+ 1
 
