@@ -65,8 +65,11 @@ for x in range(0, 50):
     x =+ 1
 # Calculate average 
 n = len(data_array)
-average = sum(data_array, n)/n
+average = sum(data_array)/n
+high = max(data_array)
+low = min(data_array)
 print('Average: ', average)
+print('Low: ', low, ' High: ', high)
 
 killDaemons()
     
