@@ -30,7 +30,7 @@ def measure_current(pin):
     t = time.time()-t_start
     raw_channels = ads.read_oneshot(pin)
     voltage = float(raw_channels*astep)
-    current = (voltage-2.613)/0.0676  # 0.0676V per Amp. 0 A = 2.613 V (experimental values)
+    current = (voltage-2.6088)/0.0669  # 0.0669V per Amp. 0 A = 2.6088 V (experimental values)
     print('voltage (V): ', voltage, 'current (A): ', current)
     return(voltage)
 
