@@ -19,7 +19,6 @@ def switchCheck(channel):
         state = channel.value
         print(state)
 
-
 last = time.time()
 wait = 3
 i = 0

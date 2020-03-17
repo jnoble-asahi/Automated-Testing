@@ -3,6 +3,7 @@ import time
 import json
 import os
 import warnings
+import system_tools as st
 
 import google.cloud
 import firebase_admin as fa
@@ -16,17 +17,6 @@ cred = credentials.Certificate(r'/home/pi/Downloads/testcenterstorage-3b7a292e37
 fa.initialize_app(cred)
 db = firestore.client()
 print('database request approved')
-
-binary = {'INPUT' : 0,
-          'OUTPUT': 1,
-          'LOW' : 0,
-          'HIGH' : 1}
-
-OUTPUT = binary['OUTPUT']
-INPUT = binary['INPUT']
-LOW = binary['LOW']
-HIGH = binary['HIGH']
-
 
 class define_test():
     '''
@@ -115,6 +105,7 @@ class define_test():
             self.time = y['Time']
             self.active = False
             self.cycle_start = time.time()
+            self.cycle_length = y['cycle length']
             self.last_log = time.time()
             self.print_rate = y['Print Rate']
             self.cycle_points = y['Cycle Points']
