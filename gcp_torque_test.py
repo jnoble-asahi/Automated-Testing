@@ -9,7 +9,7 @@ from ADS1256_definitions import * #Configuration file for the ADC settings
 import system_tools as st
 import test_configs as tcf 
 import Tconfigs as tc
-import gcp_configs as gcpf
+import gcpConfigs as gcpf
 
 print('Starting test set-up')
 
