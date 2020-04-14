@@ -16,6 +16,9 @@ print('Starting test set-up')
 print('Add test locally or remote? (local/remote)')
 prompt = input() # prompt the user to see if they want to add a new test
 
+HIGH = st.binary['HIGH']
+LOW = st.binary['LOW']
+
 responses = ('local', 'remote', 'exit')
 '''
 To start up the test, users are given an option to either pull parameters from a local JSON file, or from parameters stored in our GCP database

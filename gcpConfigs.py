@@ -18,6 +18,9 @@ fa.initialize_app(cred)
 db = firestore.client()
 print('database request approved')
 
+HIGH = st.binary['HIGH']
+LOW = st.binary['LOW']
+
 class define_test():
     '''
     Builds a class that's later used to pass data back and forth to Google Firestore
@@ -121,7 +124,7 @@ class define_test():
         '''
         if self.cycle_time not in range(1, 101, 1):
             tcf.warning_on()
-            tcf.killDaemons()
+            st.killDaemons()
             raise ValueError('Cycle times must be whole number between 1 and 100')
         else:
             print('Test cycle time created')
@@ -133,7 +136,7 @@ class define_test():
         '''
         if self.target not in range(1, 1000000, 1):
             tcf.warning_on()
-            tcf.killDaemons()
+            st.killDaemons()
             raise ValueError('Number of cycles must be a whole number, between 1 and 1,000,000')
         else:
             print('Test cycles set point created')
@@ -145,7 +148,7 @@ class define_test():
         '''
         if self.duty_cycle not in range(0, 100, 1):
             tcf.warning_on()
-            tcf.killDaemons()
+            st.killDaemons()
             raise ValueError('Duty cycle must be a whole number between 1 and 100')
         else:
             print('Test duty cycle created')
@@ -162,7 +165,7 @@ class define_test():
     def setTorque(self):
         if self.control not in range(0, 6373):
             tcf.warning_on()
-            tcf.killDaemons()
+            st.killDaemons()
             raise ValueError('Torque setpoints must be between 0 and 6372 in-lbs.')
         else:
             if self.control < 600:
@@ -175,7 +178,7 @@ class define_test():
             tcf.warning_on()
             print('Gain value not valid. Choose from:')
             print(choices)
-            tcf.killDaemons()
+            st.killDaemons()
             raise ValueError('Gain value not valid.')
         else:
             print('Gain set to {}.' .format(self.gain))
@@ -185,7 +188,7 @@ class define_test():
         '''
         if self.cycle_time < self.cycle_points:
             tcf.warning_on()
-            tcf.killDaemons()
+            st.killDaemons()
             raise ValueError('Too many cycle points for length of cycle.')
         else:
             print('Cycle points set to {}.' .format(self.cycle_points))
