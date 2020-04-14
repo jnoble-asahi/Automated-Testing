@@ -34,7 +34,7 @@ while True:
 
     elif prompt == 'remote':
         test = gcpf.define_test()
-        test.test_check()
+        test.create_on_off_test()
         tc.warning_off()
         break
 
