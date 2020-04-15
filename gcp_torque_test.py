@@ -12,6 +12,7 @@ import Tconfigs as tc
 import gcpConfigs as gcpf
 
 print('Starting test set-up')
+st.start_daemons() #start the pigpio helper daemon
 
 print('Add test locally or remote? (local/remote)')
 prompt = input() # prompt the user to see if they want to add a new test
@@ -38,6 +39,7 @@ while True:
     elif prompt == 'remote':
         test = gcpf.define_test()
         test.create_on_off_test()
+        test.active = True
         tc.warning_off()
         break
 
