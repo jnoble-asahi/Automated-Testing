@@ -60,26 +60,28 @@ stamp = time.time()
 
 tc.brakeOn(test)
 
-while True: # Start a loop to run the torque tests
-    if ((time.time() - stamp) < (wait)): # Check to see if it's time to check the switch inputs again
-        pass
+try: 
+    while True: # Start a loop to run the torque tests
+        if ((time.time() - stamp) < (wait)): # Check to see if it's time to check the switch inputs again
+            pass
 
-    elif test.active != True: # Check to see if the test is still active
-        break
+        elif test.active != True: # Check to see if the test is still active
+            break
 
-    else: 
-        tcf.switchCheck(test) # Run a check of the current switch state, add 1 to pv if valid
-        tcf.logCheck(test) # Check to see if it's time to log data
-        stamp = time.time()
+        else: 
+            tcf.switchCheck(test) # Run a check of the current switch state, add 1 to pv if valid
+            tcf.cycleCheck(test)
+            tcf.logCheck(test) # Check to see if it's time to log data
+            stamp = time.time()
+            
+except KeyboardInterrupt:
+    test.update_db()
 
-    state = False
-    state = (state | test.active)
+    # Power down
+    tc.shut_down(test)
+    st.killDaemons()
 
-    if state == False: # If all the test states are inactive, exit the loop
-        break
-        
-    else:
-        pass
+    print("Test exited with a clean status, shut down by user")
 
 test.update_db()
 
