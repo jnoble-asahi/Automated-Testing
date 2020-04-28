@@ -220,7 +220,7 @@ def read_switch(channel):
 
 def bounced(test):
     length = time.time() - test.cycle_start
-    if length > (test.cycle_length * test.duty_cycle/100 * .25):
+    if length > (test.cycle_time * test.duty_cycle/100 * .25):
         test.cycle_start = time.time()
         test.pv += 1
         print('cycle started. test.pv: ', test.pv)

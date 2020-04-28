@@ -108,7 +108,7 @@ class define_test():
             self.time = y['Time']
             self.active = False
             self.cycle_start = time.time()
-            self.cycle_length = y['cycle length']
+            self.cycle_length = y['cycle length'] # figure out cycle_length and cycle_time, one should be an int, one should be a list
             self.last_log = time.time()
             self.print_rate = y['Print Rate']
             self.cycle_points = y['Cycle Points']
