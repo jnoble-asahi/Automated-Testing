@@ -1,3 +1,8 @@
+import system_tools as st ### Need to dig through the libraries and see where gpio is called before daemons getting started
+# Putting this at the top until I can sort that out
+print('Starting test set-up')
+st.start_daemons() #start the pigpio helper daemon
+
 import os
 import time
 import gpiozero as gz
@@ -6,13 +11,9 @@ import pigpio as io
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 from ADS1256_definitions import * #Configuration file for the ADC settings
 
-import system_tools as st
 import test_configs as tcf 
 import Tconfigs as tc
 import gcpConfigs as gcpf
-
-print('Starting test set-up')
-st.start_daemons() #start the pigpio helper daemon
 
 print('Add test locally or remote? (local/remote)')
 prompt = input() # prompt the user to see if they want to add a new test

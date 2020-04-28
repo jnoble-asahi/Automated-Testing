@@ -19,7 +19,7 @@ OUTPUT, INPUT, HIGH, LOW = st.OUTPUT, st.INPUT, st.HIGH, st.LOW
 maxRaw = [5625100, 5625100] 
 minRaw = [22500, 22500]
 
-def set_on_off(test, channelID):
+def set_on_off(test, channelID): #Add chan_state to track the relay position, find where the tests initializes this state as HIGH
         test.name = channelID
         test.active = True
         print('Reseting variable values in the cloud')
@@ -37,6 +37,7 @@ def set_on_off(test, channelID):
         test.position_channel = CH1_Loc['act_pos']
         test.temp_channel = CH1_Loc['act_temp']
         test.current_channel = CH1_Loc['act_current']
+        test.chan_state = test.relay_chanel.value
 
         # Store current switch states for later
         test.open_last_state = test.input_off_channel.value 
