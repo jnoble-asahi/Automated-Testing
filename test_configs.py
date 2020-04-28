@@ -37,7 +37,7 @@ def set_on_off(test, channelID): #Add chan_state to track the relay position, fi
         test.position_channel = CH1_Loc['act_pos']
         test.temp_channel = CH1_Loc['act_temp']
         test.current_channel = CH1_Loc['act_current']
-        test.chan_state = test.relay_chanel.value
+        test.chan_state = test.relay_channel.value
 
         # Store current switch states for later
         test.open_last_state = test.input_off_channel.value 
