@@ -239,8 +239,8 @@ def switchCheck(test):
         test.active = False
 
     else:
-        open_state = read_switch(test.input_on_channel.value)
-        closed_state = read_switch(test.input_off_channel.value)
+        open_state = read_switch(test.input_on_channel)
+        closed_state = read_switch(test.input_off_channel)
 
         if (test.open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # Check if changed from fully open position to closing (moving)
             test.open_last_state = HIGH # Reset the "open last state" of the switch
