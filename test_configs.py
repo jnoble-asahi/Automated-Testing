@@ -159,7 +159,7 @@ def on_off_measurement(inputs):
     Voltages are converted from raw integer inputs using convert functions in this library
     '''
     raw_channels = ads.read_sequence(inputs)
-    curr, temp, pos = raw_channels[1], raw_channels[2], raw_channels[3]
+    curr, temp, pos = raw_channels[1], raw_channels[2], raw_channels[0]
     return(curr, temp, pos)
 
 def modMeasure(target):
