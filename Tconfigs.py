@@ -106,16 +106,28 @@ def shut_down(test):
     open_switch = CH1_Loc['FK_On']
     closed_switch = CH1_Loc['FK_Off']
 
-    open_state = open_switch.value # Read limit switch
-    closed_state = closed_switch.value # Read limit switch
-    open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
-    closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
+    #open_state = open_switch.value # Read limit switch
+    #closed_state = closed_switch.value # Read limit switch
+    #open_last_state = test.open_last_state # Store the last FK_On switch state in a temp variable
+    #closed_last_state = test.closed_last_state # Store the last FK_Off switch state in temp variable
 
-    print('Waiting for actuator to start cycle.')
-    print('closed state', closed_state) 
-    print('open state', open_state)
+    #print('Waiting for actuator to start cycle.')
+    #print('closed state', closed_state) 
+    #print('open state', open_state)
 
     while True:
+        setpnt = convertSetPoint(test)
+        pnt = setpnt + 0.275 # in volts
+        t = (test.cycle_time - 1)/25
+        while pnt > 0.275:
+            dac.write_dac(cntrl_channel, int(step*pnt))
+            time.sleep(t)
+            print(pnt) # debugging
+            pnt = pnt - (setpnt + 0.275)/25
+            open_last_state = HIGH
+            closed_last_state = HIGH
+        break
+    '''
         closed_state = GPIO.input(closed_switch)
         open_state = GPIO.input(open_switch)
         if (open_last_state == LOW) & (open_state == HIGH) & (closed_state == HIGH): # if actuator just started to move
@@ -156,7 +168,7 @@ def shut_down(test):
             open_last_state = HIGH
             closed_last_state = LOW
             print('change direction')
-
+    '''
     print('Powering down DAC')
     dac.write_dac(cntrl_channel, int(0))
     #dac.power_down(CH_Out[test], MODE_POWER_DOWN_100K)
