@@ -299,7 +299,7 @@ def cycleCheck(test_channel):
             test_channel.shot_count = test_channel.shot_count + 1
             print("Actuator {} opening".format(test_channel.name))
             x = on_off_measurement(CH1_SEQUENCE)
-            test_channel.pos.append(x[0])
+            #test_channel.pos.append(x[0])
             test_channel.currents.append(x[1])
             test_channel.temps.append(x[2])
         
