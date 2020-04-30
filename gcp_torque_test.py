@@ -70,7 +70,7 @@ try:
             break
 
         else: 
-            tcf.switchCheck(test) # Run a check of the current switch state, add 1 to pv if valid
+            #tcf.switchCheck(test) # Run a check of the current switch state, add 1 to pv if valid
             tcf.cycleCheck(test)
             tcf.logCheck(test) # Check to see if it's time to log data
             stamp = time.time()
