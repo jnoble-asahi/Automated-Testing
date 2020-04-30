@@ -116,6 +116,8 @@ class define_test():
             self.delay = y['Start Delay']
             self.open_last_state = HIGH
             self.closed_last_state = LOW
+            self.currents = y['currents']
+            self.temps = y['temps']
 
     def setCycleTime(self):
         '''

@@ -2,6 +2,7 @@ import os
 import time
 import numpy as np
 import system_tools as st
+import Tconfigs as tcf
 from ADS1256_definitions import * #Configuration file for the ADC settings
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
@@ -14,6 +15,7 @@ ads.cal_self()
 CH1_Loc = st.CH1_Loc
 
 CH1_SEQUENCE = (CH1_Loc['act_pos'], CH1_Loc['act_current'], CH1_Loc['act_temp']) #Position, Current, Temperature channels
+torq = CH1_Loc['torq']
 OUTPUT, INPUT, HIGH, LOW = st.OUTPUT, st.INPUT, st.HIGH, st.LOW
 
 maxRaw = [5625100, 5625100] 
@@ -289,6 +291,7 @@ def cycleCheck(test_channel):
             test_channel.relay_channel.off()
             test_channel.chan_state = LOW
             test_channel.cycle_start = time.time()
+            tcf.torqueMeasurement(torq)
             print("actuator {} closing".format(test_channel.name))
             time.sleep(0.1)
         
@@ -302,6 +305,8 @@ def cycleCheck(test_channel):
             #test_channel.pos.append(x[0])
             test_channel.currents.append(x[1])
             test_channel.temps.append(x[2])
+            tcf.torqueMeasurement(torq)
+
         
         else:
             print("Something's done messed up") # If the switch states don't match the top two conditions, somehow it went wrong
