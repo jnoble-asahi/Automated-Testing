@@ -285,13 +285,23 @@ def cycleCheck(test_channel):
     elif (test_channel.pv > test_channel.target): # Check to see if the current cycle count is less than the target
         test_channel.active = False # If the pv has been reached, set the channel to inactive
 
+    elif (time.time() - test_channel.cycle_start > (test_channel.cycle_time * .15)):
+        if test_channel.torque_state == True:
+            pass 
+
+        elif test_channel.torque_state == False:
+            torque = tcf.torqueMeasurement(torq)
+            print(torque)
+            test_channel.torque.append(torque)
+            test_channel.torque_state = True
+
     elif (time.time() - test_channel.cycle_start) > (test_channel.cycle_time): # Check to see if the current cycle has gone past the cycle time
         
         if test_channel.chan_state == HIGH: # If both are yes, change the relay state, and update cycle parameters
             test_channel.relay_channel.off()
             test_channel.chan_state = LOW
             test_channel.cycle_start = time.time()
-            tcf.torqueMeasurement(torq)
+            test_channel.torque_state = False
             print("actuator {} closing".format(test_channel.name))
             time.sleep(0.1)
         
@@ -305,9 +315,8 @@ def cycleCheck(test_channel):
             #test_channel.pos.append(x[0])
             test_channel.currents.append(x[1])
             test_channel.temps.append(x[2])
-            tcf.torqueMeasurement(torq)
+            test_channel.torque_state = False
 
-        
         else:
             print("Something's done messed up") # If the switch states don't match the top two conditions, somehow it went wrong
             test_channel.chanState = LOW
