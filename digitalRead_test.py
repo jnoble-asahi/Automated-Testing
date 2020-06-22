@@ -7,8 +7,10 @@ import subprocess
 
 import wiringpi as wp
 
-wp.pinMode(13, int INPUT)
-wp.pullUpDnControl(13, int PUD_DOWN)
+wp.wiringPiSetupPhys()
+
+wp.pinMode(13, INPUT)
+wp.pullUpDnControl(13, 2)
 wp.digitalRead(13)
 time.sleep(3)
 wp.digitalRead(13)
