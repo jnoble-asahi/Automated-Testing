@@ -7,10 +7,10 @@ import subprocess
 
 import wiringpi as wp
 
-wp.pinMode(13, INPUT)
-wp.pullUpDnControl(13, PUD_DOWN)
+wp.pinMode(13, int INPUT)
+wp.pullUpDnControl(13, int PUD_DOWN)
 wp.digitalRead(13)
-sleep(3)
+time.sleep(3)
 wp.digitalRead(13)
 
 '''import RPi.GPIO as GPIO
