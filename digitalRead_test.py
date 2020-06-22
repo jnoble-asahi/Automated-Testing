@@ -9,11 +9,11 @@ import wiringpi as wp
 
 wp.wiringPiSetupPhys()
 
-wp.pullUpDnControl(35, 3)
-s = wp.digitalRead(35)
+wp.pullUpDnControl(37, 3)
+s = wp.digitalRead(37)
 print(s)
 time.sleep(3)
-state = wp.digitalRead(35)
+state = wp.digitalRead(7)
 print(state)
 
 '''import RPi.GPIO as GPIO
