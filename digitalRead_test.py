@@ -5,7 +5,15 @@ import math as mt
 import numpy as np
 import subprocess
 
-import RPi.GPIO as GPIO
+import wiringpi as wp
+
+wp.pinMode(13, INPUT)
+wp.pullUpDnControl(13, PUD_DOWN)
+wp.digitalRead(13)
+sleep(3)
+wp.digitalRead(13)
+
+'''import RPi.GPIO as GPIO
 
 
 GPIO.setmode(GPIO.BOARD)
@@ -24,4 +32,4 @@ for x in range (0, 30):
     print ('input 26:', GPIO.input(37))
     time.sleep(2.5)
 
-GPIO.cleanup()
+GPIO.cleanup()'''
