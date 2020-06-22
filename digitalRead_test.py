@@ -9,7 +9,6 @@ import wiringpi as wp
 
 wp.wiringPiSetupPhys()
 
-wp.pinMode(13, INPUT)
 wp.pullUpDnControl(13, 2)
 wp.digitalRead(13)
 time.sleep(3)
