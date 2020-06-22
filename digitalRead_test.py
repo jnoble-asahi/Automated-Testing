@@ -14,9 +14,11 @@ GPIO.setup(33, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(35, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(37, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-while True:
+for x in range (0, 30):
     print ('input 6:', GPIO.input(31))
     print ('input 13:', GPIO.input(33))
     print ('input 19:', GPIO.input(35))
     print ('input 26:', GPIO.input(37))
     time.sleep(2.5)
+
+GPIO.cleanup()
