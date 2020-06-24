@@ -1,5 +1,5 @@
 '''
-Takes torque measurements and saves it directly to an excel file in Automated-Testing folder with the torque setpoint and description as the file name.
+Takes torque measurements and saves it directly to an excel file in Automated-Testing folder with the torque setpoint and description as the file name. Written by Julia Noble.
 '''
 
 import os
