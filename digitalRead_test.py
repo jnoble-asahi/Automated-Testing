@@ -20,7 +20,7 @@ import RPi.GPIO as GPIO
 
 
 GPIO.setmode(GPIO.BOARD)
-'''GPIO.setup(31, GPIO.IN, pull_up_down=GPIO.PUD_UP)'''
+GPIO.setup(31, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(33, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(35, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(37, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -29,7 +29,7 @@ GPIO.setup(35, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 GPIO.setup(37, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)'''
 
 for x in range (0, 30):
-    '''print ('input 6:', GPIO.input(31))'''
+    print ('input 6:', GPIO.input(31))
     print ('input 13:', GPIO.input(33))
     print ('input 19:', GPIO.input(35))
     print ('input 26:', GPIO.input(37))
