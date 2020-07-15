@@ -1,3 +1,6 @@
+''' Torque Tester Run Code. Records torque measurements throughout a specified amount of cycles. This code utilizes every function of the Torque Tester but does not 
+include functions related to the actuator tester. Written by Julia Noble.'''
+
 import os
 import time
 import sys

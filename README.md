@@ -50,13 +50,28 @@ The sensor and relay boards communicate with the Raspberry Pi via the SPI Bus. A
   - This clones the repository for working with the DAC chip and the SPI bus, originally created by adn05 on github
   - Original repository here - https://github.com/adn05/dac8552 , again we're working with our own copy for version control
     - License: GNU LGPLv2.1 
+    - Copy dac8552 files into Automated-Testing directory (if using a Pi 4 Model B raspberry pi)
     
 # Making the new libraries work correctly
-- First install the wiringpi library
-  - In directory ./Automated-Testing
-    - Run "sudo pip install wiringpi"
-    - Run "sudo sed -E -i s/"(#)(dtparam=spi).*"/"\2=on"/ /boot/config.txt" (This activates the SPI bus)
-    - Run "sudo reboot"
+- First install the GPIO library (if using Raspberry Pi 4 model B or newer Pi model)
+  -Run "sudo apt-get update"
+  -Run "sudo apt-get install rpi.gpio"
+- Make sure you are in the directory ./Automated-Testing
+- Check if SPI is enabled (optional):
+  - Run "lsmod"
+    - You should see "spi_bcm2708" or "spi_bcm2835" listed in the output. You can use the following comman to filter the list and make it easier to spot the spi entry:
+      "lsmod|grep spi_"
+    - SPI is now enabled
+- Install Python SPI Wrapper (This activates the SPI bus):
+  - Additional libraries are necessary for reading data from the SPI bus in Python. To check if these libraries are installed: 
+    - Run “sudo apt-get install -y python-dev python3-dev”
+    - Run “sudo apt-get install -y python-spidev python3-spidev”
+- Download ‘py-spidev’ and compile it ready for use. From Automated-Testing directory:
+  - Run “git clone https://github.com/Gadgetoid/py-spidev.git”
+  - Run “cd py-spidev”
+  - Run “sudo python setup.py install”
+  - Run “sudo python3 setup.py install”
+  - Run “cd ..”
 - Now install the pigpio library
   - In directory ./Automated-Testing
     - run "wget abyz.me.uk/rpi/pigpio/pigpio.tar"
@@ -64,6 +79,9 @@ The sensor and relay boards communicate with the Raspberry Pi via the SPI Bus. A
     - run "cd PIGPIO"
     - run "make"
     - run "sudo make install"
+- To install the Python client library for Cloud Datastore:
+  - Install the client library locally by using pip:
+    - Run “pip install google-cloud-datastore”
 
 # Assemble the Pi with the external hardware and enclosure
 -Change jumpers:
@@ -72,7 +90,7 @@ The sensor and relay boards communicate with the Raspberry Pi via the SPI Bus. A
 
 # Set the zero off-set and span of the current - voltage converters
 
-# Connect one or more modulating actuators and run rangetests.py
+# Connect one or two modulating actuators and run Ttest.py
 
 
 

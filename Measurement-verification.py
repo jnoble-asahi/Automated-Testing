@@ -1,5 +1,5 @@
 '''
-Takes torque measurements and saves it directly to an excel file in Automated-Testing folder with the torque setpoint and description as the file name.
+Takes torque measurements and saves it directly to an excel file in Automated-Testing folder with the torque setpoint and description as the file name. Written by Julia Noble.
 '''
 
 import os
@@ -50,13 +50,13 @@ EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_
 INPUTS_ADDRESS = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7, EXT8)
 
 CH1_Loc = {'cntrl' : DAC_A,
-           'torq' : INPUTS_ADDRESS[0],
+           'torq' : INPUTS_ADDRESS[4],
            'FK_On': 6,
-           'FK_Off' : 13} #GPIO pin numbers
+           'FK_Off' : 19} #GPIO pin numbers
 
 CH2_Loc = {'cntrl' : DAC_B,
            'torq' : INPUTS_ADDRESS[3],
-           'FK_On': 19,
+           'FK_On': 13,
            'FK_Off' : 26} #GPIO pin numbers
 
 CH_Out = {'1' : DAC_A ,
@@ -92,10 +92,10 @@ headers = [('Time (s)', 'Voltage (V)', 'Torque (in-lbs)', 'Average Voltage (V)',
 for row in headers:
     sheet.append(row)
 
-def torqueMeasurement(input, cyclepoint):
+def torqueMeasurement(input, cyclepoint, pv):
+    print('torqueMeasurement')
     # Collect 10 data point readings across 1 second
-    y = test[0].pv
-    print('pv = ', y)
+    y = pv
     setData=[] #array for average torque calculation
     h = 25
     for i in range (0, h):
@@ -105,7 +105,6 @@ def torqueMeasurement(input, cyclepoint):
         # append data
         setData.append(vo)
         print(vo)
-        print('i: ', i, 'h:', h, 'cyclepoint: ', cyclepoint, 'y: ', y, 'row number: ', i+2+h*cyclepoint+(h*cyclepoint)*(y-1))
         sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoint)*(y-1), column =1).value = ti
         sheet.cell(row=i+2+h*cyclepoint+(h*cyclepoint)*(y-1), column=2).value = vo
         torq = torqueConvert(vo) # Convert voltage value to torque value
@@ -133,17 +132,19 @@ def noSwitchCheck(test, testIndex): # Use this switchCheck if not hooked up to l
     If they changed, do some stuff, if they haven't changed, then do nothing'''
 
     if test.active == True:
+        print('noSwitchCheck')
         if (test.pv < test.target): # Check to see if the current cycle count is less than the target
             # collect "cycle_points" amount of points in cycle
             print('test.pv: ', test.pv)
-            w = 0
-            while w > (test.cycle_points):
+            w = 1
+            while w < (test.cycle_points):
                 print('w = ', w)
-                torqueMeasurement(test_channels[testIndex]['torq'], w)
+                torqueMeasurement(test_channels[testIndex]['torq'], w, test.pv)
                 time.sleep(1)
+                w +=1
                 break
             test.pv+= 1 # Increment the pv counter if the switch changed
-            w +=1
+
         else:
             test.active = False
     else:
@@ -181,7 +182,7 @@ def switchCheck(test, testIndex): # Use this switchCheck if hooked up to actuato
                         while True:
                             # wait 1/3 of cycle time or 1/cyclepoints
                             if (time.time() - test.cycle_start) > (((w)/test.cycle_points)*test.cycle_time):
-                                torqueMeasurement(test_channels[testIndex]['torq'], w)
+                                torqueMeasurement(test_channels[testIndex]['torq'], w, test.pv)
                                 break
                 else:
                     test.bounces = test.bounces + 1
@@ -204,7 +205,7 @@ def switchCheck(test, testIndex): # Use this switchCheck if hooked up to actuato
                         # wait 1/3 of cycle time or 1/cyclepoints
                         while True:
                             if (time.time() - test.cycle_start) > (((w)/test.cycle_points)*test.cycle_time):
-                                torqueMeasurement(test_channels[testIndex]['torq'], w)
+                                torqueMeasurement(test_channels[testIndex]['torq'], w, test.pv)
                                 break
                 else:
                     test.bounces = test.bounces + 1
@@ -322,11 +323,8 @@ while True: # Start a loop to run the torque tests
         pass
 
     else: 
-        t = 0
-        while t < 7:
-            print('wait ', t)
-            t+=1
-            time.sleep(1)
+        print('wait ')
+        time.sleep(2)
         noSwitchCheck(test[i], i)
         stamp = time.time()
         if test[i].pv >= test[i].target:

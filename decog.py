@@ -1,4 +1,4 @@
-''' File for decogging the brake. gain of 40'''
+''' File for decogging the brake. This code assumes the brake controller gain is already set to 40. Written by Julia Noble.'''
 import os
 import time
 import sys
