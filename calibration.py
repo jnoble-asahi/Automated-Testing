@@ -41,7 +41,7 @@ def nice_output(digits, positions):
 The position value being read is:
 Channel
 """
-        + ", ".join(["{: 8d}".format(digits)])
+        + ", ".join(["{: 8d}, {: 1d}".format(digits, positionConvert(digits))])
         +
 
 """
@@ -49,7 +49,7 @@ Channel
 The position value being sent is:
 Channel 
 """
-        + ", ".join(["{: 8.3f}".format(positions)])
+        + ", ".join(["{: 8.3f}, {: 1d}".format(positions,int(positions/(dac.digit_per_v*5))])
         + "\n\033[J\0338" # Restore cursor position etc.
     )
 
@@ -82,7 +82,7 @@ def do_measurement(channel, position):
 def move(position, chan):
     aOut = int((float(position)/100) * (dac.v_ref * dac.digit_per_v))
     dac.write_dac(chan, aOut)
-    print(aOut)
+    #print(aOut)
 
 def prompt():
     x = input("Ready to continue? (Y or N)")
@@ -96,7 +96,7 @@ chanDict = {1 : EXT1, 2 : EXT2}
 aOutDict = {1 : DAC_A, 2 : DAC_B}
 validChans = list(chanDict.keys())
 
-channel = input('Please enter the channel # ')
+channel = int(input('Please enter the channel # '))
 chan = chanDict[channel]
 out = aOutDict[channel]
 
@@ -148,15 +148,21 @@ x = 0
 # The top level loop executes several times while waiting for the comparision operation to return True
 # Re-organize the loop, or break it into functions such that the top level loop won't increment until the actuator has moved, and
 # the readings have finished being taken
+
+move(0, out)
 for i in range(len(places)):
     p = places[i]
     for j in range(20):
         pos = []
         move(p, out)
         if (j > 10):
-            pos.append(do_measurement(chan,p))
+            x = do_measurement(chan,p)
+            pos.append(x)
+            nice_output(x, p)
             time.sleep(1)
         else:
+            x = do_measurement(chan,p)
+            nice_output(x, p)
             time.sleep(1)
     x = np.mean(pos)
     readings.append(x)
