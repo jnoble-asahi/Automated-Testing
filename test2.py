@@ -1,4 +1,5 @@
-"This test is for testing AVA modulating and on/off actuators for test #2 of the AVA evaluation test series. No limit switches are used."
+"""This test is for testing AVA modulating and on/off actuators for test #2 and #3 (max torque and max current) of the AVA evaluation test series. No limit switches are used. 
+Manual brake controls are used so that the torque is adjusted to get the max torque."""
 
 import system_tools as st ### Need to dig through the libraries and see where gpio is called before daemons getting started
 # Putting this at the top until I can sort that out
@@ -11,11 +12,9 @@ import sys
 
 import pigpio as io # pigpio daemon
 from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
-import gpiozero as gz #Library for using the GPIO with python
-import pandas as pd
-import RPi.GPIO as GPIO # Using GPIO instead of wiringpi for reading digital inputs
 
 import gcpConfigs as gcpc
+import Tconfigs as tcon
 from ADS1256_definitions import * #Configuration file for the ADC settings
 import dac8552.dac8552 as dac1
 from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
@@ -85,3 +84,27 @@ while True:
         tc.shut_down(test)
         st.killDaemons()
         raise Warning ("Something went wrong, check your work")
+tc.running_on()
+s = 0
+try: 
+    while True: 
+    tor = torqueMeasurement(CH1_Loc['torq'])
+    print(tor, ' in-lbs')
+    test.torque.append(tor) # store torque reading measurement
+    sleep(test.print_rate - 1) # subtract 1 to adjust for measurement time
+    s += 1
+    if s % 10 == 0:
+        test.update_db()
+    else
+        pass
+except KeyboardInterrupt:
+    test.update_db()
+    # Power down
+    tc.shut_down(test)
+    st.killDaemons()
+
+    print("Test exited with a clean status, shut down by user")
+
+# Power down
+tc.shut_down(test)
+st.killDaemons()

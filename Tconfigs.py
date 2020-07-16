@@ -102,8 +102,8 @@ def ttest_measures(test):
                 tor = torqueMeasurement(CH1_Loc['torq'])
                 test.torque.append(tor) # store torque reading measurement
                 # store other values
-                #measure current at some interval
-                #measure temperature at some interval
+                # measure current at some interval
+                # measure temperature at some interval
                 test.time.append(time.time()-test.cycleStart)
             break
 
