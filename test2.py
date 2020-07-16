@@ -74,27 +74,96 @@ while True:
         tc.shut_down(test)
         st.killDaemons()
         raise Warning ("Something went wrong, check your work")
+
 tc.running_on()
-s = 0
+
+print('Adjust voltage to 10 to 15', '%', ' less than rated voltage.')
+
+# Prompt user for when ready to continue
+print("Enter 'g' when ready.")
+ready = input()
+while True:
+    if ready == 'g':
+        s = 0
+        break
+    else:
+        print("Key not recognized. Enter 'g' when ready.")
+
+# Take torque measurements
 try: 
     while True: 
-    tor = torqueMeasurement(CH1_Loc['torq'])
-    print(tor, ' in-lbs')
-    test.torque.append(tor) # store torque reading measurement
-    sleep(test.print_rate - 1) # subtract 1 to adjust for measurement time
-    s += 1
-    if s % 10 == 0:
+        tor = torqueMeasurement(CH1_Loc['torq'])
+        print(tor, ' in-lbs')
+        test.torque.append(tor) # store torque reading measurement
+        sleep(test.print_rate - 1) # subtract 1 to adjust for measurement time
+        s += 1
+        if s % 10 == 0:
+            test.update_db()
+        else:
+            pass
+    except KeyboardInterrupt:
         test.update_db()
-    else
-        pass
-except KeyboardInterrupt:
-    test.update_db()
-    # Power down
-    tc.shut_down(test)
-    st.killDaemons()
+        break
 
-    print("Test exited with a clean status, shut down by user")
+
+print('Adjust voltage to rated voltage of actuator.')
+# Prompt user for when ready to continue
+print("Enter 'g' when ready.")
+ready = input()
+while True:
+    if ready == 'g':
+        s = 0
+        break
+    else:
+        print("Key not recognized. Enter 'g' when ready.")
+
+# Take torque measurements
+try: 
+    while True: 
+        tor = torqueMeasurement(CH1_Loc['torq'])
+        print(tor, ' in-lbs')
+        test.torque.append(tor) # store torque reading measurement
+        sleep(test.print_rate - 1) # subtract 1 to adjust for measurement time
+        s += 1
+        if s % 10 == 0:
+            test.update_db()
+        else:
+            pass
+    except KeyboardInterrupt:
+        test.update_db()
+        break
+
+
+print('Adjust voltage to 10 to 15', '%', ' above the rated voltage.')
+# Prompt user for when ready to continue
+print("Enter 'g' when ready.")
+ready = input()
+while True:
+    if ready == 'g':
+        s = 0
+        break
+    else:
+        print("Key not recognized. Enter 'g' when ready.")
+
+# Take torque measurements
+try: 
+    while True: 
+        tor = torqueMeasurement(CH1_Loc['torq'])
+        print(tor, ' in-lbs')
+        test.torque.append(tor) # store torque reading measurement
+        sleep(test.print_rate - 1) # subtract 1 to adjust for measurement time
+        s += 1
+        if s % 10 == 0:
+            test.update_db()
+        else:
+            pass
+    except KeyboardInterrupt:
+        test.update_db()
+        break
 
 # Power down
 tc.shut_down(test)
 st.killDaemons()
+
+print("Test exited with a clean status, shut down by user")
+
