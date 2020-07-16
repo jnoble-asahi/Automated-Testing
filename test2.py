@@ -16,22 +16,12 @@ from pipyadc import ADS1256 #Library for interfacing with the ADC via Python
 import gcpConfigs as gcpc
 import Tconfigs as tcon
 from ADS1256_definitions import * #Configuration file for the ADC settings
-import dac8552.dac8552 as dac1
-from dac8552.dac8552 import DAC8552, DAC_A, DAC_B, MODE_POWER_DOWN_100K #Library for using the DAC
 
-# DAC/ADS setup
+# ADS setup
 ads = ADS1256()
 ads.cal_self() 
 astep = ads.v_per_digit
-dac = DAC8552()
-dac.v_ref = 5
-step = dac.digit_per_v
 
-dac.write_dac(DAC_A, 0*dac.digit_per_v) # Set DAC0
-print('DAC_A to LOW')
-
-dac.write_dac(DAC_B, 0*dac.digit_per_v) # Set DAC1
-print('DAC_B to LOW')
 
 # Set pin numbers for the relay channels
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
