@@ -22,6 +22,9 @@ ads = ADS1256()
 ads.cal_self() 
 astep = ads.v_per_digit
 
+# Start with LEDs off
+tc.warning_off()
+tc.running_off()
 
 # Set pin numbers for the relay channels
 ######################## Original Code and Function Definitions from the pipyadc library ################################################
@@ -31,54 +34,16 @@ EXT5, EXT6, EXT7, EXT8 = POS_AIN4|NEG_AINCOM, POS_AIN5|NEG_AINCOM, POS_AIN6|NEG_
 INPUTS_ADDRESS = (EXT1, EXT2, EXT3, EXT4, EXT5, EXT6, EXT7, EXT8)
 
 CH1_Loc = {'cntrl' : DAC_A,
-           'torq' : INPUTS_ADDRESS[4],
-           'FK_On': 6,
-           'FK_Off' : 19} # GPIO pin numbers
+           'torq' : INPUTS_ADDRESS[4]}
 
 ## Set up test
-print('Add test locally or remote? (local/remote)')
-prompt = input() # prompt the user to see if they want to add a new test
-
-HIGH = st.binary['HIGH']
-LOW = st.binary['LOW']
-
-responses = ('local', 'remote', 'exit')
-'''
-To start up the test, users are given an option to either pull parameters from a local JSON file, or from parameters stored in our GCP database
-
-Test definitions and the steps to get there are laid out in the gcp_configs file
-'''
-while True: 
-    if prompt not in responses:
-        print('Input error, please enter local, remote, or exit')
-        tc.warning_on()
-    
-    elif prompt == 'local':
-        tc.warning_off()
-        # Do some stuff to load test parameters locally
-        break
-
-    elif prompt == 'remote':
-        test = gcpf.define_test()
-        test.create_on_off_test()
-        tcf.set_on_off(test, 1)
-        tc.warning_off()
-        break
-
-    elif prompt == 'exit':
-        tc.warning_off()
-        break
-
-    else:
-        tc.warning_on()
-        tc.shut_down(test)
-        st.killDaemons()
-        raise Warning ("Something went wrong, check your work")
+test = gcpf.define_test()
+test.create_on_off_test()
+tcf.set_on_off(test, 1)
 
 tc.running_on()
 
 print('Adjust voltage to 10 to 15', '%', ' less than rated voltage.')
-
 # Prompt user for when ready to continue
 print("Enter 'g' when ready.")
 ready = input()
@@ -89,6 +54,7 @@ while True:
     else:
         print("Key not recognized. Enter 'g' when ready.")
 
+stamp = time.time()
 # Take torque measurements
 try: 
     while True: 
@@ -97,6 +63,7 @@ try:
         test.torque.append(tor) # store torque reading measurement
         sleep(test.print_rate - 1) # subtract 1 to adjust for measurement time
         s += 1
+        test.time.append(time.time()-stamp)
         if s % 10 == 0:
             test.update_db()
         else:
@@ -109,9 +76,9 @@ try:
 print('Adjust voltage to rated voltage of actuator.')
 # Prompt user for when ready to continue
 print("Enter 'g' when ready.")
-ready = input()
+readyy = input()
 while True:
-    if ready == 'g':
+    if readyy == 'g':
         s = 0
         break
     else:
@@ -137,9 +104,9 @@ try:
 print('Adjust voltage to 10 to 15', '%', ' above the rated voltage.')
 # Prompt user for when ready to continue
 print("Enter 'g' when ready.")
-ready = input()
+readyyy = input()
 while True:
-    if ready == 'g':
+    if readyyy == 'g':
         s = 0
         break
     else:
