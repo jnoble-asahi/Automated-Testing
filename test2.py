@@ -92,6 +92,7 @@ try:
         test.torque.append(tor) # store torque reading measurement
         sleep(test.print_rate - 1) # subtract 1 to adjust for measurement time
         s += 1
+        test.time.append(time.time()-stamp)
         if s % 10 == 0:
             test.update_db()
         else:
@@ -120,6 +121,7 @@ try:
         test.torque.append(tor) # store torque reading measurement
         sleep(test.print_rate - 1) # subtract 1 to adjust for measurement time
         s += 1
+        test.time.append(time.time()-stamp)
         if s % 10 == 0:
             test.update_db()
         else:
